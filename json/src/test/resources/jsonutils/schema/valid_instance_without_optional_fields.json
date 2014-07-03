@@ -1,0 +1,8 @@
+{
+  "bidPrice": 1.0,
+  "awsCredentials": {
+    "awsAccessKeyId": "aaa",
+    "awsSecretAccessKey": "key",
+    "region": "us-east-1"
+  }
+} 

@@ -1,0 +1,3 @@
+A very
+interesting string
+indeed.

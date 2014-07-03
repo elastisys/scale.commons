@@ -1,0 +1,38 @@
+{
+    "id": "http://elastisys.com/spotadapter-schema#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "test schema",
+    "type": "object",
+    "properties": {
+        "bidPrice": { 
+          "description": "The bid price (maximum price to pay for an instance hour in dollars) to use when requesting spot instances.",
+          "type": "number",
+          "minimum": 0
+        },
+        "poolUpdatePeriod": {
+          "description": "The time interval (in seconds) between periodical pool size updates.",
+          "type": "number",
+          "minimum": 0
+        },
+        "awsCredentials": {
+          "description": "The credentials to use when authenticating against the Amazon AWS API.", 
+          "type": "object",
+          "properties": {
+             "awsAccessKeyId": { 
+                "description": "Your AWS Access Key ID.", 
+                "type": "string" 
+             },
+             "awsSecretAccessKey": {
+               "description": "Your AWS Access Key ID.", 
+               "type": "string" 
+             },
+             "region": {  
+               "description": "The AWS region to connect to.", 
+               "enum": ["us-west-1", "us-east-1"]
+             }
+          },
+          "required": ["awsAccessKeyId","awsSecretAccessKey", "region"]          
+        },      
+    },
+    "required": [ "bidPrice", "awsCredentials" ]
+}

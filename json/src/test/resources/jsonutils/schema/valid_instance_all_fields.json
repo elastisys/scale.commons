@@ -1,0 +1,9 @@
+{
+  "bidPrice": 1.0,
+  "poolUpdatePeriod": 10,
+  "awsCredentials": {
+    "awsAccessKeyId": "aaa",
+    "awsSecretAccessKey": "key",
+    "region": "us-east-1"
+  }
+} 
