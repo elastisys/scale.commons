@@ -43,6 +43,7 @@
   <scm>
     <developerConnection>scm:git:https://github.com/elastisys/scale.commons.git</developerConnection>
     <tag>HEAD</tag>
+    <url>https://github.com/elastisys/scale.commons</url>
   </scm>
 
   <properties>
