@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.elastisys.scale</groupId>
   <artifactId>commons.root</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>elastisys:scale :: commons :: root</name>
   <description>Common Java libraries and utilities for elastisys:scale-related software.</description>
   <packaging>pom</packaging>
@@ -42,7 +42,7 @@
   <!-- Location of Git repository. Used to tag releases. -->
   <scm>
     <developerConnection>scm:git:https://github.com/elastisys/scale.commons.git</developerConnection>
-    <tag>commons.root-1.0.1</tag>
+    <tag>HEAD</tag>
     <url>https://github.com/elastisys/scale.commons</url>
   </scm>
 
