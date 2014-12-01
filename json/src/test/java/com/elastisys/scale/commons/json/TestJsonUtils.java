@@ -1,23 +1,27 @@
 package com.elastisys.scale.commons.json;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
  * Verifies the behavior of the {@link JsonUtils} class.
- * 
- * 
+ *
+ *
  */
 public class TestJsonUtils {
 
@@ -119,7 +123,22 @@ public class TestJsonUtils {
 				"  \"b\": 1" + "\n" + //
 				"}";
 		assertThat(JsonUtils.toPrettyString(jsonObject), is(prettyJsonString));
+	}
 
+	@Test
+	public void testImmutableList() {
+		String rawJsonString = "{ \"strings\": [\"a\", \"b\", \"c\"] }";
+		List<String> mutableStrings = new LinkedList<String>();
+		mutableStrings.add("a");
+		mutableStrings.add("b");
+		mutableStrings.add("c");
+		SomeClassWithImmutableList expectedObject = new SomeClassWithImmutableList(
+				mutableStrings);
+
+		SomeClassWithImmutableList actualObject = JsonUtils.toObject(
+				JsonUtils.parseJsonString(rawJsonString),
+				SomeClassWithImmutableList.class);
+		assertEquals(expectedObject, actualObject);
 	}
 
 	public static class SomeClass {
@@ -181,6 +200,62 @@ public class TestJsonUtils {
 		public String toString() {
 			return Objects.toStringHelper(this).add("a", this.a)
 					.add("time", this.time).toString();
+		}
+	}
+
+	public static class SomeClassWithImmutableList {
+		private final ImmutableList<String> strings;
+
+		public SomeClassWithImmutableList(List<String> mutableStrings) {
+			this.strings = ImmutableList.copyOf(mutableStrings);
+		}
+
+		/**
+		 * @return the strings
+		 */
+		public ImmutableList<String> getStrings() {
+			return this.strings;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ (this.strings == null ? 0 : this.strings.hashCode());
+			return result;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			SomeClassWithImmutableList other = (SomeClassWithImmutableList) obj;
+			if (this.strings == null) {
+				if (other.strings != null) {
+					return false;
+				}
+			} else if (!this.strings.equals(other.strings)) {
+				return false;
+			}
+			return true;
 		}
 	}
 }

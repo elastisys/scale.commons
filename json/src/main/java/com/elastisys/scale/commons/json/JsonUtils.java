@@ -8,9 +8,11 @@ import org.joda.time.DateTime;
 
 import com.elastisys.scale.commons.json.typeadapters.GsonDateTimeDeserializer;
 import com.elastisys.scale.commons.json.typeadapters.GsonDateTimeSerializer;
+import com.elastisys.scale.commons.json.typeadapters.ImmutableListDeserializer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
@@ -22,8 +24,8 @@ import com.google.gson.JsonParser;
 /**
  * Utility class for parsing JSON files and converting JSON data to their Java
  * type counterparts (via the GSON library).
- * 
- * 
+ *
+ *
  */
 public class JsonUtils {
 
@@ -34,7 +36,7 @@ public class JsonUtils {
 
 	/**
 	 * Parses a JSON-formatted {@link String}.
-	 * 
+	 *
 	 * @param jsonString
 	 *            The JSON-formatted string.
 	 * @return A {@link JsonObject} for the parsed JSON {@link String}.
@@ -50,7 +52,7 @@ public class JsonUtils {
 	/**
 	 * Loads and parses a JSON-formatted resource file (assumed to be found in
 	 * the class path).
-	 * 
+	 *
 	 * @param resourceName
 	 *            The name/path of the resource. The resource file is assumed to
 	 *            be found in the class path.
@@ -71,7 +73,7 @@ public class JsonUtils {
 
 	/**
 	 * Loads and parses a JSON-formatted {@link File}.
-	 * 
+	 *
 	 * @param jsonFile
 	 *            The JSON-formatted {@link File}.
 	 * @return A {@link JsonObject} for the parsed JSON {@link File}.
@@ -95,7 +97,7 @@ public class JsonUtils {
 	 * <p/>
 	 * This method handles serializing {@link DateTime} fields to their string
 	 * representation.
-	 * 
+	 *
 	 * @param object
 	 *            The Java object.
 	 * @return The JSON-serialized representation of the object.
@@ -111,14 +113,14 @@ public class JsonUtils {
 	 * <p/>
 	 * This method handles serializing {@link DateTime} fields to their string
 	 * representation.
-	 * 
+	 *
 	 * @param object
 	 *            The Java object.
 	 * @param serializeNullFields
 	 *            If <code>true</code>, <code>null</code>-values fields are
 	 *            included in the output. If <code>false</code>, they are left
 	 *            out (producing more compact JSON).
-	 * 
+	 *
 	 * @return The JSON-serialized representation of the object.
 	 */
 	public static JsonElement toJson(Object object, boolean serializeNullFields) {
@@ -135,7 +137,7 @@ public class JsonUtils {
 	/**
 	 * Returns the "pretty print" {@link String} version of a
 	 * {@link JsonElement}
-	 * 
+	 *
 	 * @param jsonElement
 	 *            The json element.
 	 * @return The corresponding pretty-printed {@link String}.
@@ -148,7 +150,7 @@ public class JsonUtils {
 
 	/**
 	 * Returns the {@link String} version of a {@link JsonElement}.
-	 * 
+	 *
 	 * @param jsonElement
 	 *            The json element.
 	 * @return The corresponding JSON {@link String}.
@@ -164,7 +166,7 @@ public class JsonUtils {
 	 * <p/>
 	 * This method also handles deserializing time stamp elements into
 	 * {@link DateTime} fields.
-	 * 
+	 *
 	 * @param jsonObject
 	 *            The JSON object.
 	 * @param type
@@ -175,8 +177,12 @@ public class JsonUtils {
 	public static <T> T toObject(JsonElement jsonObject, Class<T> type) {
 		Preconditions.checkNotNull(jsonObject, "null jsonObject not allowed");
 		Preconditions.checkNotNull(type, "null type not allowed");
-		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class,
-				new GsonDateTimeDeserializer()).create();
+		Gson gson = new GsonBuilder()
+		.registerTypeAdapter(DateTime.class,
+				new GsonDateTimeDeserializer())
+				.registerTypeAdapter(ImmutableList.class,
+						new ImmutableListDeserializer()).create();
 		return type.cast(gson.fromJson(jsonObject, type));
 	}
+
 }
