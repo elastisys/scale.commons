@@ -1,5 +1,6 @@
 package com.elastisys.scale.commons.net.retryable.retryhandlers;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -15,9 +16,9 @@ import com.google.common.base.Stopwatch;
 
 /**
  * Exercises the {@link AbstractLimitedRetryHandler}.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TestAbstractLimitedRetryHandler {
 
@@ -134,7 +135,8 @@ public class TestAbstractLimitedRetryHandler {
 		assertThat(retryHandler.onResponse(badResponse), is(RETRY));
 		Action<String> action = retryHandler.onResponse(badResponse);
 		assertThat(action.shouldFail(), is(true));
-		assertThat(action.getError(), is(RetryLimitExceededException.class));
+		assertThat(action.getError(),
+				instanceOf(RetryLimitExceededException.class));
 
 		// retry handler that returns the last unsuccessful response after
 		// maxRetries
@@ -195,7 +197,7 @@ public class TestAbstractLimitedRetryHandler {
 	}
 
 	private static class FailAfterExceedingMaxRetries extends
-			AbstractLimitedRetryHandler<String> {
+	AbstractLimitedRetryHandler<String> {
 
 		public FailAfterExceedingMaxRetries(int maxRetries, long delay) {
 			super(maxRetries, delay);
@@ -215,7 +217,7 @@ public class TestAbstractLimitedRetryHandler {
 	}
 
 	private static class RespondAfterExceedingMaxRetries extends
-			AbstractLimitedRetryHandler<String> {
+	AbstractLimitedRetryHandler<String> {
 
 		public RespondAfterExceedingMaxRetries(int maxRetries, long delay) {
 			super(maxRetries, delay);

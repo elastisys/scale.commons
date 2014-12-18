@@ -6,7 +6,7 @@ import javax.net.ssl.SSLContext;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.elastisys.scale.commons.net.ssl.SslContextBuilder;
@@ -23,9 +23,9 @@ import com.google.gson.JsonObject;
  * The created {@link Client}s support JSON serialization/deserialization of
  * JAXB-annotated Java classes via the {@link JacksonFeature} as well as native
  * support for {@link JsonObject} parameters/responses.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class RestClients {
 
@@ -36,7 +36,7 @@ public class RestClients {
 	 * The created {@link Client} is configured to trust all server certificates
 	 * and approve all host names. (This is similar to using the
 	 * <code>--insecure</code> flag in <code>curl</code>.)
-	 * 
+	 *
 	 * @return The created {@link Client}.
 	 */
 	public static Client httpsNoAuth() {
@@ -60,7 +60,7 @@ public class RestClients {
 	 * The created {@link Client} is configured to trust all server certificates
 	 * and approve all host names. (This is similar to using the
 	 * <code>--insecure</code> flag in <code>curl</code>.)
-	 * 
+	 *
 	 * @param userName
 	 *            The user name used to authenticate.
 	 * @param password
@@ -75,7 +75,7 @@ public class RestClients {
 				.register(JsonObjectMessageBodyReader.class).build();
 		client.register(JacksonFeature.class);
 		client.register(JsonObjectMapperProvider.class);
-		client.register(new HttpBasicAuthFilter(userName, password));
+		client.register(HttpAuthenticationFeature.basic(userName, password));
 		return client;
 	}
 
@@ -86,14 +86,14 @@ public class RestClients {
 	 * The created {@link Client} is configured to trust all server certificates
 	 * and approve all host names. (This is similar to using the
 	 * <code>--insecure</code> flag in <code>curl</code>.)
-	 * 
+	 *
 	 * @param keystore
 	 *            The key store that contains the client's certificate and
 	 *            private key.
 	 * @param password
 	 *            The password used to protect the client key.
 	 * @return The created {@link Client}.
-	 * 
+	 *
 	 * @throws RuntimeException
 	 */
 	public static Client httpsCertAuth(KeyStore keystore, String password)
@@ -119,7 +119,7 @@ public class RestClients {
 	 * Creates a HTTP Jersey REST {@link Client} configured to authenticate (via
 	 * <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic
 	 * authentication<a/>) with a given user name and password.
-	 * 
+	 *
 	 * @param userName
 	 *            The user name used to authenticate.
 	 * @param password
@@ -132,14 +132,14 @@ public class RestClients {
 				.register(JsonObjectMessageBodyReader.class).build();
 		client.register(JacksonFeature.class);
 		client.register(JsonObjectMapperProvider.class);
-		client.register(new HttpBasicAuthFilter(userName, password));
+		client.register(HttpAuthenticationFeature.basic(userName, password));
 		return client;
 	}
 
 	/**
 	 * Creates a HTTP Jersey REST {@link Client} configured to not authenticate
 	 * to the server.
-	 * 
+	 *
 	 * @return The created {@link Client}.
 	 */
 	public static Client httpNoAuth() {

@@ -1,5 +1,10 @@
 package com.elastisys.scale.commons.server;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.util.List;
@@ -11,7 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.client.filter.HttpBasicAuthFilter;
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,16 +27,11 @@ import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.google.common.io.Resources;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import static org.hamcrest.CoreMatchers.is;
-
 /**
  * Exercises the {@link ServletServerBuilder}.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TestServletServerBuilder {
 	static Logger logger = LoggerFactory
@@ -83,7 +83,7 @@ public class TestServletServerBuilder {
 
 	/**
 	 * test deploying on servlet path other than {@code /}
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -125,7 +125,7 @@ public class TestServletServerBuilder {
 		try {
 			httpsNoAuth();
 		} catch (ProcessingException e) {
-			assertThat(e.getCause(), is(ConnectException.class));
+			assertThat(e.getCause(), instanceOf(ConnectException.class));
 		}
 	}
 
@@ -369,7 +369,7 @@ public class TestServletServerBuilder {
 	/**
 	 * Verify that an exception is due to a failure to establish an SSL
 	 * connection.
-	 * 
+	 *
 	 * @param cause
 	 */
 	private void assertSslHandshakeFailure(Throwable cause) {
@@ -519,7 +519,7 @@ public class TestServletServerBuilder {
 			String keyStorePassword, String username, String password) {
 		Client client = RestTestUtils.httpsCertAuth(keyStorePath,
 				keyStorePassword, KeyStoreType.PKCS12);
-		client.register(new HttpBasicAuthFilter(username, password));
+		client.register(HttpAuthenticationFeature.basic(username, password));
 		return client.target(httpsUrl("/")).request().get();
 	}
 
