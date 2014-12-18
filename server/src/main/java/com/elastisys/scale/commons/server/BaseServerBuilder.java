@@ -18,9 +18,9 @@ import com.elastisys.scale.commons.net.ssl.KeyStoreType;
  * The created {@link Server} can be considered a "base server", without any
  * registered request {@link Handler}s. Any request handlers need to be added by
  * the client.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class BaseServerBuilder {
 
@@ -95,7 +95,7 @@ public class BaseServerBuilder {
 
 	/**
 	 * Creates a new {@link BaseServerBuilder}.
-	 * 
+	 *
 	 * @return
 	 */
 	public static BaseServerBuilder create() {
@@ -105,7 +105,7 @@ public class BaseServerBuilder {
 	/**
 	 * Builds a {@link Server} object from the parameters passed to the
 	 * {@link BaseServerBuilder}.
-	 * 
+	 *
 	 * @return
 	 */
 	public Server build() {
@@ -148,6 +148,8 @@ public class BaseServerBuilder {
 				sslContextFactory
 						.setKeyManagerPassword(this.sslKeyStorePassword);
 			}
+
+			sslContextFactory.addExcludeProtocols("SSLv3"); // kill POODLE
 
 			if (this.sslTrustStorePath != null) {
 				checkArgument(this.sslTrustStoreType != null,
@@ -193,7 +195,7 @@ public class BaseServerBuilder {
 	/**
 	 * Set the {@link Server}'s HTTP listen port. May be <code>null</code>, in
 	 * which case the server won't listen to HTTP requests.
-	 * 
+	 *
 	 * @param port
 	 * @return
 	 */
@@ -207,7 +209,7 @@ public class BaseServerBuilder {
 	 * which case the server won't listen to HTTPS requests. <i>Note: setting a
 	 * HTTPS port requires an SSL key store to be set for server
 	 * authentication.</i>
-	 * 
+	 *
 	 * @param port
 	 * @return
 	 */
@@ -221,7 +223,7 @@ public class BaseServerBuilder {
 	 * server's SSL certificate that it will use to authenticate to clients.
 	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port.</i>
-	 * 
+	 *
 	 * @param pathOrUri
 	 * @return
 	 */
@@ -234,7 +236,7 @@ public class BaseServerBuilder {
 	 * Set the type of the SSL key store. Defaults to
 	 * {@link KeyStoreType#PKCS12}. <i>Note: this option is only relevant for
 	 * {@link Server}s with an HTTPS port.</i>
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -246,7 +248,7 @@ public class BaseServerBuilder {
 	/**
 	 * Set the password used to protect SSL key store. <i>Note: this option is
 	 * only relevant for HTTPS {@link Server}s with an HTTPS port.</i>
-	 * 
+	 *
 	 * @param password
 	 * @return
 	 */
@@ -259,7 +261,7 @@ public class BaseServerBuilder {
 	 * Set the password (if any) used to protect the specific server key within
 	 * the key store. <i>Note: this option is only relevant for {@link Server}s
 	 * with an HTTPS port.</i>
-	 * 
+	 *
 	 * @param password
 	 * @return
 	 */
@@ -273,7 +275,7 @@ public class BaseServerBuilder {
 	 * trusted client certificates. <i>Note: this option is only relevant for
 	 * {@link Server}s with an HTTPS port that require client certificate
 	 * authentication.</i>
-	 * 
+	 *
 	 * @param pathOrUri
 	 * @return
 	 */
@@ -286,7 +288,7 @@ public class BaseServerBuilder {
 	 * Set the type of the SSL trust store. Defaults to {@link KeyStoreType#JKS}
 	 * . <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port that require client certificate authentication.</i>
-	 * 
+	 *
 	 * @param type
 	 * @return
 	 */
@@ -299,7 +301,7 @@ public class BaseServerBuilder {
 	 * Set the password used to protect the SSL trust store. <i>Note: this
 	 * option is only relevant for {@link Server}s with an HTTPS port that
 	 * require client certificate authentication.</i>
-	 * 
+	 *
 	 * @param password
 	 * @return
 	 */
@@ -311,7 +313,7 @@ public class BaseServerBuilder {
 	/**
 	 * If set to <code>true</code>, requires SSL clients to authenticate with a
 	 * certificate.
-	 * 
+	 *
 	 * @param requireCertAuthentication
 	 * @return
 	 */
@@ -324,7 +326,7 @@ public class BaseServerBuilder {
 	/**
 	 * Ensures the truth of an expression involving one or more parameters to
 	 * the calling method.
-	 * 
+	 *
 	 * @param expression
 	 *            a boolean expression
 	 * @param errorMessage
