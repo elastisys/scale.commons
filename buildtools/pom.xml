@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.elastisys.scale</groupId>
     <artifactId>commons.root</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3-SNAPSHOT</version>
   </parent>
   <artifactId>commons.buildtools</artifactId>
   <name>elastisys:scale :: commons :: build tools</name>
