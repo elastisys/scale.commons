@@ -1,10 +1,11 @@
 package com.elastisys.scale.commons.net.ssl;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 
+import com.elastisys.scale.commons.net.http.AuthenticatedHttpRequester;
+import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
@@ -12,9 +13,9 @@ import com.google.common.base.Optional;
  * Represents client credentials for certificate-based SSL authentication (as
  * described <a
  * href="http://docs.oracle.com/javaee/6/tutorial/doc/glien.html">here</a>.
- * 
- * 
- * 
+ *
+ * @see AuthenticatedHttpClient
+ * @see AuthenticatedHttpRequester
  */
 public class CertificateCredentials {
 
@@ -32,7 +33,7 @@ public class CertificateCredentials {
 
 	/**
 	 * Constructs new {@link CertificateCredentials} without a key password.
-	 * 
+	 *
 	 * @param keystoreType
 	 *            The type of the key store.
 	 * @param keystorePath
@@ -47,7 +48,7 @@ public class CertificateCredentials {
 
 	/**
 	 * Constructs new {@link CertificateCredentials}.
-	 * 
+	 *
 	 * @param keystoreType
 	 *            The type of the key store (for example, "JKS" or "PKCS12").
 	 * @param keystorePath
@@ -56,19 +57,19 @@ public class CertificateCredentials {
 	 *            The password used to protect the SSL key store.
 	 * @param keyPassword
 	 *            The password used to protect the certificate's private key
-	 *            within the key store (only required for password-protected
-	 *            keys).
+	 *            within the key store. May be <code>null</code>, only required
+	 *            for password-protected keys.
 	 */
 	public CertificateCredentials(KeyStoreType keystoreType,
 			String keystorePath, String keystorePassword, String keyPassword) {
-		checkNotNull(keystoreType,
+		checkArgument(keystoreType != null,
 				"certificate credentials missing keystore type");
-		checkNotNull(keystorePath,
+		checkArgument(keystorePath != null,
 				"certificate credentials missing keystore path");
 		checkArgument(new File(keystorePath).isFile(),
 				"certificate credentials keystore path '%s' is not a file",
-				this.keystorePath);
-		checkNotNull(keystorePassword,
+				keystorePath);
+		checkArgument(keystorePassword != null,
 				"certificate credentials missing keystore password");
 
 		this.keystoreType = keystoreType;
@@ -79,7 +80,7 @@ public class CertificateCredentials {
 
 	/**
 	 * Returns the type of the key store.
-	 * 
+	 *
 	 * @return
 	 */
 	public KeyStoreType getKeystoreType() {
@@ -88,7 +89,7 @@ public class CertificateCredentials {
 
 	/**
 	 * Returns the file system path to the SSL key store.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getKeystorePath() {
@@ -97,7 +98,7 @@ public class CertificateCredentials {
 
 	/**
 	 * Returns the password used to protect the SSL key store.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getKeystorePassword() {
@@ -107,7 +108,7 @@ public class CertificateCredentials {
 	/**
 	 * Returns the password used to protect the certificate's private key within
 	 * the key store (only required for password-protected keys).
-	 * 
+	 *
 	 * @return
 	 */
 	public Optional<String> getKeyPassword() {

@@ -1,16 +1,19 @@
 package com.elastisys.scale.commons.net.ssl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import com.elastisys.scale.commons.net.http.AuthenticatedHttpRequester;
+import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
 import com.google.common.base.Objects;
 
 /**
  * Represents client credentials for <a
  * href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic
  * autentication</a>.
- * 
- * 
- * 
+ *
+ * @see AuthenticatedHttpClient
+ * @see AuthenticatedHttpRequester
+ *
  */
 public class BasicCredentials {
 	/** The user name. */
@@ -20,15 +23,15 @@ public class BasicCredentials {
 
 	/**
 	 * Constructs new {@link BasicCredentials}.
-	 * 
+	 *
 	 * @param username
 	 *            The user name.
 	 * @param password
 	 *            The password.
 	 */
 	public BasicCredentials(String username, String password) {
-		checkNotNull(username, "basic credentials missing username");
-		checkNotNull(password, "basic credentials missing password");
+		checkArgument(username != null, "basic credentials missing username");
+		checkArgument(password != null, "basic credentials missing password");
 
 		this.username = username;
 		this.password = password;
