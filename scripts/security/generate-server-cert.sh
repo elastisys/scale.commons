@@ -40,6 +40,6 @@ echo "generating server's certificate ..."
 openssl req -new -x509 -key ${destdir}/server_private.pem \
    -out ${destdir}/server_certificate.pem -days 365 -subj ${server_subject}
 # 3. Create a PKCS12 key store and import the key and certificate. Set password
-#    to "pkcs12password". This password becomes the "key password":
+#    to ${keystore_password}. This password also becomes the "key password":
 echo "creating server key store ..."
 openssl pkcs12 -export -inkey ${destdir}/server_private.pem -in ${destdir}/server_certificate.pem -out ${destdir}/server_keystore.p12 -password pass:${keystore_password}

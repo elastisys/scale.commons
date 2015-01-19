@@ -8,10 +8,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
 
-import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -30,6 +30,8 @@ import com.elastisys.scale.commons.net.http.HttpRequestResponse;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Range;
 
 /**
  * Performs HTTP requests that are authenticated via Basic authentication and/or
@@ -186,16 +188,20 @@ public class AuthenticatedHttpClient {
 	/**
 	 * Sends a HTTP request to a remote endpoint and returns a
 	 * {@link HttpRequestResponse} object holding the response message status,
-	 * body, and headers.
+	 * body, and headers. If the response code is not a 2XX one, a
+	 * {@link HttpResponseException} is raised.
+	 *
 	 *
 	 * @param request
 	 *            The request to send.
 	 * @return The received response.
+	 * @throws HttpResponseException
+	 *             If a non-2XX response was received.
 	 * @throws IOException
 	 *             If anything went wrong.
 	 */
 	public HttpRequestResponse execute(HttpRequestBase request)
-			throws IOException {
+			throws HttpResponseException, IOException {
 		CloseableHttpClient client;
 		try {
 			client = prepareAuthenticatingClient();
@@ -216,6 +222,7 @@ public class AuthenticatedHttpClient {
 				this.logger.info(format("sending request (%s)", request));
 				httpResponse = client.execute(request);
 			} catch (Exception e) {
+				Throwables.propagateIfInstanceOf(e, IOException.class);
 				throw new IOException(format("failed to send request (%s): %s",
 						request, e.getMessage()), e);
 			}
@@ -223,8 +230,9 @@ public class AuthenticatedHttpClient {
 			HttpRequestResponse response = new HttpRequestResponse(httpResponse);
 			int responseCode = response.getStatusCode();
 			String responseBody = response.getResponseBody();
-			if (responseCode != HttpStatus.SC_OK) {
-				throw new IOException(format(
+			// raise error if response code is not 2XX
+			if (!Range.closed(200, 299).contains(responseCode)) {
+				throw new HttpResponseException(responseCode, format(
 						"error response received from remote endpoint "
 								+ "on request (%s): %s: %s", request,
 						responseCode, responseBody));

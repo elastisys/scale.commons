@@ -13,13 +13,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
 /**
  * Represents a response to a HTTP request.
- * 
- * 
+ *
+ *
  */
 public class HttpRequestResponse {
 	/**
@@ -43,7 +43,7 @@ public class HttpRequestResponse {
 	 * If the character encoding is specified in the response, it will be used
 	 * to interpret the {@link InputStream}. Lacking an explicit encoding, the
 	 * response message is assumed to be encoded in UTF-8.
-	 * 
+	 *
 	 * @param httpResponse
 	 *            A {@link HttpResponse} that will be consumed. That is, the
 	 *            {@link HttpResponse}'s {@link InputStream} will be consumed
@@ -60,7 +60,7 @@ public class HttpRequestResponse {
 	 * particular fall-back character encoding to interpret the content with
 	 * should the character encoding not be possible to determine from the
 	 * response itself.
-	 * 
+	 *
 	 * @param httpResponse
 	 *            A {@link HttpResponse} that will be consumed. That is, the
 	 *            {@link HttpResponse}'s {@link InputStream} will be consumed
@@ -86,7 +86,7 @@ public class HttpRequestResponse {
 	 * Tries to determine the character encoding of a {@link HttpResponse}.
 	 * Returns <code>null</code> if no character set was specified in the
 	 * Content-Type header or if the charset was unrecognized.
-	 * 
+	 *
 	 * @param httpResponse
 	 * @return The response's charset or <code>null</code> if unable to
 	 *         determine it.
@@ -114,7 +114,7 @@ public class HttpRequestResponse {
 
 	/**
 	 * Returns the status code of the HTTP response.
-	 * 
+	 *
 	 * @return
 	 */
 	public int getStatusCode() {
@@ -123,7 +123,7 @@ public class HttpRequestResponse {
 
 	/**
 	 * Returns the headers of the HTTP response.
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<Header> getHeaders() {
@@ -132,7 +132,7 @@ public class HttpRequestResponse {
 
 	/**
 	 * Returns the message body of the HTTP response.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getResponseBody() {
@@ -141,7 +141,8 @@ public class HttpRequestResponse {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("statusCode", this.statusCode)
+		return MoreObjects.toStringHelper(this)
+				.add("statusCode", this.statusCode)
 				.add("headers", this.headers).toString();
 	}
 }

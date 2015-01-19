@@ -11,6 +11,10 @@
   <packaging>jar</packaging>
   
   <dependencies>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>  
     <!-- Embedded jetty server -->
     <dependency>
       <groupId>org.eclipse.jetty.aggregate</groupId>
@@ -21,11 +25,6 @@
       <groupId>args4j</groupId>
       <artifactId>args4j</artifactId>
       <version>2.0.25</version>
-    </dependency>
-    <dependency>
-      <groupId>com.elastisys.scale</groupId>
-      <artifactId>commons.net</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Logging -->
@@ -48,12 +47,17 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
       <scope>test</scope>      
-    </dependency>        
-    <!-- REST client -->
+    </dependency>         
+    <!-- Jersey REST client -->
     <dependency>
-      <groupId>com.elastisys.scale</groupId>
-      <artifactId>commons.rest</artifactId>
-      <version>${project.version}</version>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <scope>test</scope>
+    </dependency>    
+    <!-- to simplify building of SSLContexts -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
       <scope>test</scope>
     </dependency>    
   </dependencies>  

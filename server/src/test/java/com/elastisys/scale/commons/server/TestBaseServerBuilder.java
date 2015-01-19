@@ -16,8 +16,6 @@ import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.junit.Test;
 
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
-
 /**
  * Exercises the {@link BaseServerBuilder} class.
  * 
@@ -63,7 +61,7 @@ public class TestBaseServerBuilder {
 	@Test
 	public void https() throws Exception {
 		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(KeyStoreType.PKCS12)
+				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password").build();
 
@@ -83,7 +81,7 @@ public class TestBaseServerBuilder {
 				.getSslContextFactory();
 		assertThat(sslContextFactory, is(notNullValue()));
 		assertThat(sslContextFactory.getKeyStoreType(),
-				is(KeyStoreType.PKCS12.name()));
+				is(SslKeyStoreType.PKCS12.name()));
 		assertThat(sslContextFactory.getKeyStorePath(), is(ETC_SECURITY
 				+ "/server_keystore.p12"));
 
@@ -96,17 +94,17 @@ public class TestBaseServerBuilder {
 	@Test(expected = IllegalArgumentException.class)
 	public void httpsMissingKeystorePassword() throws Exception {
 		BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(KeyStoreType.PKCS12)
+				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").build();
 	}
 
 	@Test
 	public void httpsWithTrustStore() throws Exception {
 		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(KeyStoreType.PKCS12)
+				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(KeyStoreType.JKS)
+				.sslTrustStoreType(SslKeyStoreType.JKS)
 				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
 				.sslTrustStorePassword("truststorepassword").build();
 
@@ -126,7 +124,7 @@ public class TestBaseServerBuilder {
 				.getSslContextFactory();
 		assertThat(sslContextFactory, is(notNullValue()));
 		assertThat(sslContextFactory.getTrustStoreType(),
-				is(KeyStoreType.JKS.name()));
+				is(SslKeyStoreType.JKS.name()));
 		assertThat(sslContextFactory.getTrustStore(), is(ETC_SECURITY
 				+ "/server_truststore.jks"));
 
@@ -139,10 +137,10 @@ public class TestBaseServerBuilder {
 	@Test
 	public void httpsRequireClientCert() throws Exception {
 		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(KeyStoreType.PKCS12)
+				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(KeyStoreType.JKS).sslRequireClientCert(true)
+				.sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
 				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
 				.sslTrustStorePassword("truststorepassword")
 				.sslRequireClientCert(true).build();
@@ -168,10 +166,10 @@ public class TestBaseServerBuilder {
 	@Test
 	public void httpAndHttps() {
 		Server server = BaseServerBuilder.create().httpPort(8080)
-				.httpsPort(8443).sslKeyStoreType(KeyStoreType.PKCS12)
+				.httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(KeyStoreType.JKS).sslRequireClientCert(true)
+				.sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
 				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
 				.sslTrustStorePassword("truststorepassword")
 				.sslRequireClientCert(true).build();

@@ -14,6 +14,9 @@
   <logger name="com.elastisys">
     <level value="trace" />
   </logger>
+  <logger name="org.eclipse.jetty">
+    <level value="info" />
+  </logger>  
   <!-- Log all HTTP content (headers, parameters, content, etc) for -->
   <!-- all requests and responses. Very verbose! -->
   <logger name="httpclient.wire">

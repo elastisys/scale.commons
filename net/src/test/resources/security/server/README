@@ -1,0 +1,8 @@
+These files were generated with generate-client-cert.sh script in 
+scale.commons/scripts/security.
+
+The passwords are as follows:
+ - server_keystore.p12: serverpassword
+ - server_truststore.jks: servertrustpass
+ 
+ Note that the server_truststore.jks contains ../client/client_certificate.pem.

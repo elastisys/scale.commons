@@ -9,8 +9,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
-
 /**
  * A flexible Builder for creating embedded HTTP(S) {@link Server}s with a range
  * of possible configuration combinations.
@@ -45,11 +43,11 @@ public class BaseServerBuilder {
 	private String sslKeyStorePath = null;
 
 	/**
-	 * The type of the SSL key store. Defaults to {@link KeyStoreType#PKCS12}.
+	 * The type of the SSL key store. Defaults to {@link SslKeyStoreType#PKCS12}.
 	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port.</i>
 	 */
-	private KeyStoreType sslKeyStoreType = KeyStoreType.PKCS12;
+	private SslKeyStoreType sslKeyStoreType = SslKeyStoreType.PKCS12;
 
 	/**
 	 * Password used to protect SSL key store. <i>Note: this option is only
@@ -71,11 +69,11 @@ public class BaseServerBuilder {
 	 */
 	private String sslTrustStorePath = null;
 	/**
-	 * The type of the SSL trust store. Defaults to {@link KeyStoreType#JKS}.
+	 * The type of the SSL trust store. Defaults to {@link SslKeyStoreType#JKS}.
 	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port that require client certificate authentication.</i>
 	 */
-	private KeyStoreType sslTrustStoreType = KeyStoreType.JKS;
+	private SslKeyStoreType sslTrustStoreType = SslKeyStoreType.JKS;
 	/**
 	 * Password used to protect the SSL trust store. <i>Note: this option is
 	 * only relevant for {@link Server}s with an HTTPS port that require client
@@ -234,13 +232,13 @@ public class BaseServerBuilder {
 
 	/**
 	 * Set the type of the SSL key store. Defaults to
-	 * {@link KeyStoreType#PKCS12}. <i>Note: this option is only relevant for
+	 * {@link SslKeyStoreType#PKCS12}. <i>Note: this option is only relevant for
 	 * {@link Server}s with an HTTPS port.</i>
 	 *
 	 * @param type
 	 * @return
 	 */
-	public BaseServerBuilder sslKeyStoreType(KeyStoreType type) {
+	public BaseServerBuilder sslKeyStoreType(SslKeyStoreType type) {
 		this.sslKeyStoreType = type;
 		return this;
 	}
@@ -285,14 +283,14 @@ public class BaseServerBuilder {
 	}
 
 	/**
-	 * Set the type of the SSL trust store. Defaults to {@link KeyStoreType#JKS}
+	 * Set the type of the SSL trust store. Defaults to {@link SslKeyStoreType#JKS}
 	 * . <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port that require client certificate authentication.</i>
 	 *
 	 * @param type
 	 * @return
 	 */
-	public BaseServerBuilder sslTrustStoreType(KeyStoreType type) {
+	public BaseServerBuilder sslTrustStoreType(SslKeyStoreType type) {
 		this.sslTrustStoreType = type;
 		return this;
 	}

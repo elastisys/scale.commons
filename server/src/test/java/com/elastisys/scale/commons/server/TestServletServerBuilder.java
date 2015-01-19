@@ -23,8 +23,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.elastisys.scale.commons.net.host.HostUtils;
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.google.common.io.Resources;
 
 /**
@@ -62,13 +60,14 @@ public class TestServletServerBuilder {
 
 	@Before
 	public void onSetup() {
-		List<Integer> freePorts = HostUtils.findFreePorts(2);
+		List<Integer> freePorts = ServerSocketUtils.findUnusedPorts(2);
 		this.httpPort = freePorts.get(0);
 		this.httpsPort = freePorts.get(1);
 
 		// server instances are created by each individual test method
 		this.server = null;
 	}
+
 
 	/**
 	 * Tears down the {@link Server} instance (if any) created by the test.
@@ -97,7 +96,7 @@ public class TestServletServerBuilder {
 
 		// try accessing servlet at path "/": should fail
 		String rootUrl = httpUrl("/");
-		Client noAuthClient = RestTestUtils.httpsNoAuth();
+		Client noAuthClient = RestClientUtils.httpsNoAuth();
 		Response response = noAuthClient.target(rootUrl).request().get();
 		assertThat(response.getStatus(), is(Status.NOT_FOUND.getStatusCode()));
 
@@ -401,7 +400,7 @@ public class TestServletServerBuilder {
 		String servlet1Url = httpUrl("/servlet1");
 		String servlet2Url = httpUrl("/servlet2");
 
-		Client noAuthClient = RestTestUtils.httpNoAuth();
+		Client noAuthClient = RestClientUtils.httpNoAuth();
 		Response response = noAuthClient.target(servlet1Url).request().get();
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("1"));
@@ -449,7 +448,7 @@ public class TestServletServerBuilder {
 		// Uninterruptibles.sleepUninterruptibly(500, TimeUnit.SECONDS);
 
 		// http access to servlet1: allowed
-		Client client = RestTestUtils.httpNoAuth();
+		Client client = RestClientUtils.httpNoAuth();
 		Response response = client.target(httpUrl("/servlet1")).request().get();
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("UNSECURED"));
@@ -461,7 +460,7 @@ public class TestServletServerBuilder {
 		assertThat(response.getStatus(), is(Status.FOUND.getStatusCode()));
 
 		// unauthenticated https access to servlet1: allowed
-		client = RestTestUtils.httpsNoAuth();
+		client = RestClientUtils.httpsNoAuth();
 		response = client.target(httpsUrl("/servlet1")).request().get();
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("UNSECURED"));
@@ -475,7 +474,7 @@ public class TestServletServerBuilder {
 				is(Status.UNAUTHORIZED.getStatusCode()));
 
 		// authenticated https access to servlet1: allowed
-		client = RestTestUtils.httpsBasicAuth("admin", "adminpassword");
+		client = RestClientUtils.httpsBasicAuth("admin", "adminpassword");
 		response = client.target(httpsUrl("/servlet1")).request().get();
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("UNSECURED"));
@@ -490,35 +489,35 @@ public class TestServletServerBuilder {
 	}
 
 	private Response httpNoAuth() {
-		Client noAuthClient = RestTestUtils.httpNoAuth();
+		Client noAuthClient = RestClientUtils.httpNoAuth();
 		return noAuthClient.target(httpUrl("/")).request().get();
 	}
 
 	private Response httpsNoAuth() {
-		Client noAuthClient = RestTestUtils.httpsNoAuth();
+		Client noAuthClient = RestClientUtils.httpsNoAuth();
 		return noAuthClient.target(httpsUrl("/")).request().get();
 	}
 
 	private Response httpBasicAuth(String username, String password) {
-		Client client = RestTestUtils.httpBasicAuth(username, password);
+		Client client = RestClientUtils.httpBasicAuth(username, password);
 		return client.target(httpUrl("/")).request().get();
 	}
 
 	private Response httpsBasicAuth(String username, String password) {
-		Client client = RestTestUtils.httpsBasicAuth(username, password);
+		Client client = RestClientUtils.httpsBasicAuth(username, password);
 		return client.target(httpsUrl("/")).request().get();
 	}
 
 	private Response httpsCertAuth(String keyStorePath, String keyStorePassword) {
-		Client client = RestTestUtils.httpsCertAuth(keyStorePath,
-				keyStorePassword, KeyStoreType.PKCS12);
+		Client client = RestClientUtils.httpsCertAuth(keyStorePath,
+				keyStorePassword, SslKeyStoreType.PKCS12);
 		return client.target(httpsUrl("/")).request().get();
 	}
 
 	private Response httpsCertAndBasicAuth(String keyStorePath,
 			String keyStorePassword, String username, String password) {
-		Client client = RestTestUtils.httpsCertAuth(keyStorePath,
-				keyStorePassword, KeyStoreType.PKCS12);
+		Client client = RestClientUtils.httpsCertAuth(keyStorePath,
+				keyStorePassword, SslKeyStoreType.PKCS12);
 		client.register(HttpAuthenticationFeature.basic(username, password));
 		return client.target(httpsUrl("/")).request().get();
 	}

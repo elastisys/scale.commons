@@ -18,7 +18,6 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.google.common.collect.Lists;
 
 /**
@@ -222,9 +221,9 @@ public class ServletServerBuilder {
 	/**
 	 * @param type
 	 * @return
-	 * @see com.elastisys.scale.commons.server.BaseServerBuilder#sslKeyStoreType(com.elastisys.scale.commons.net.ssl.KeyStoreType)
+	 * @see com.elastisys.scale.commons.server.BaseServerBuilder#sslKeyStoreType(com.elastisys.scale.commons.SslKeyStoreType.ssl.KeyStoreType)
 	 */
-	public ServletServerBuilder sslKeyStoreType(KeyStoreType type) {
+	public ServletServerBuilder sslKeyStoreType(SslKeyStoreType type) {
 		this.baseServerBuilder.sslKeyStoreType(type);
 		return this;
 	}
@@ -262,9 +261,9 @@ public class ServletServerBuilder {
 	/**
 	 * @param type
 	 * @return
-	 * @see com.elastisys.scale.commons.server.BaseServerBuilder#sslTrustStoreType(com.elastisys.scale.commons.net.ssl.KeyStoreType)
+	 * @see com.elastisys.scale.commons.server.BaseServerBuilder#sslTrustStoreType(com.elastisys.scale.commons.SslKeyStoreType.ssl.KeyStoreType)
 	 */
-	public ServletServerBuilder sslTrustStoreType(KeyStoreType type) {
+	public ServletServerBuilder sslTrustStoreType(SslKeyStoreType type) {
 		this.baseServerBuilder.sslTrustStoreType(type);
 		return this;
 	}
