@@ -26,10 +26,10 @@ import com.elastisys.scale.commons.net.retryable.RetryableRequest;
 
 /**
  * A {@link Requester} that performs a HTTP POST.
- * 
+ *
  * @see RetryableRequest
- * 
- * 
+ *
+ *
  */
 public class HttpPostRequester implements Requester<HttpRequestResponse> {
 
@@ -47,7 +47,7 @@ public class HttpPostRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Constructs a new {@link HttpGetRequester} that requests a certain HTTP
 	 * URL with default request configuration.
-	 * 
+	 *
 	 * @param httpPost
 	 *            The HTTP POST request to submit.
 	 */
@@ -58,7 +58,7 @@ public class HttpPostRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Constructs a new {@link HttpGetRequester} that requests a certain HTTP
 	 * URL with.
-	 * 
+	 *
 	 * @param httpPost
 	 *            The HTTP POST request to submit.
 	 * @param requestConfig
@@ -131,7 +131,7 @@ public class HttpPostRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Converts a {@link HttpResponse} to a {@link HttpRequestResponse} by fully
 	 * consuming the {@link HttpResponse}'s {@link InputStream}.
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws IOException

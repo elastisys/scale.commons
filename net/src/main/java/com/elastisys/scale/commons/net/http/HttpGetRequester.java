@@ -24,10 +24,10 @@ import com.elastisys.scale.commons.net.retryable.RetryableRequest;
 
 /**
  * A {@link Requester} that performs a HTTP GET against a certain URL.
- * 
+ *
  * @see RetryableRequest
- * 
- * 
+ *
+ *
  */
 public class HttpGetRequester implements Requester<HttpRequestResponse> {
 
@@ -45,7 +45,7 @@ public class HttpGetRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Constructs a new {@link HttpGetRequester} that requests a certain HTTP
 	 * URL with default request configuration.
-	 * 
+	 *
 	 * @param url
 	 *            The HTTP URL that will be requested.
 	 */
@@ -56,7 +56,7 @@ public class HttpGetRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Constructs a new {@link HttpGetRequester} that requests a certain HTTP
 	 * URL with.
-	 * 
+	 *
 	 * @param url
 	 *            The HTTP URL that will be requested.
 	 * @param requestConfig
@@ -129,7 +129,7 @@ public class HttpGetRequester implements Requester<HttpRequestResponse> {
 	/**
 	 * Converts a {@link HttpResponse} to a {@link HttpRequestResponse} by fully
 	 * consuming the {@link HttpResponse}'s {@link InputStream}.
-	 * 
+	 *
 	 * @param response
 	 * @return
 	 * @throws IOException

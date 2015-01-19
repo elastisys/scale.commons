@@ -2,7 +2,6 @@ package com.elastisys.scale.commons.net.ssl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.elastisys.scale.commons.net.http.AuthenticatedHttpRequester;
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
 import com.google.common.base.Objects;
 
@@ -12,7 +11,6 @@ import com.google.common.base.Objects;
  * autentication</a>.
  *
  * @see AuthenticatedHttpClient
- * @see AuthenticatedHttpRequester
  *
  */
 public class BasicCredentials {

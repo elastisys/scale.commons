@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
 
-import com.elastisys.scale.commons.net.http.AuthenticatedHttpRequester;
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
@@ -15,7 +14,6 @@ import com.google.common.base.Optional;
  * href="http://docs.oracle.com/javaee/6/tutorial/doc/glien.html">here</a>.
  *
  * @see AuthenticatedHttpClient
- * @see AuthenticatedHttpRequester
  */
 public class CertificateCredentials {
 
