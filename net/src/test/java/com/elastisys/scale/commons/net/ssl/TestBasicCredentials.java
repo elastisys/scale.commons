@@ -20,6 +20,7 @@ public class TestBasicCredentials {
 		BasicCredentials credentials = new BasicCredentials("johndoe", "secret");
 		assertThat(credentials.getUsername(), is("johndoe"));
 		assertThat(credentials.getPassword(), is("secret"));
+		credentials.validate();
 
 		// comparison of equivalent credentials
 		BasicCredentials copy = new BasicCredentials("johndoe", "secret");

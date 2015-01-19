@@ -133,4 +133,22 @@ public class CertificateCredentials {
 		}
 		return false;
 	}
+
+	/**
+	 * Performs a basic sanity check to verify that the combination of
+	 * parameters is valid. If validation fails an
+	 * {@link IllegalArgumentException} is thrown.
+	 *
+	 * @throws IllegalArgumentException
+	 *             If any configuration field is missing.
+	 */
+	public void validate() throws IllegalArgumentException {
+		checkArgument(this.keystorePath != null,
+				"certificate credentials missing keystore path");
+		checkArgument(new File(this.keystorePath).isFile(),
+				"certificate credentials keystore path '%s' is not a file",
+				this.keystorePath);
+		checkArgument(this.keystorePassword != null,
+				"certificate credentials missing keystore password");
+	}
 }

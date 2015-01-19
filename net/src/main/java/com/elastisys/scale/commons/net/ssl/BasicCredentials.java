@@ -50,6 +50,21 @@ public class BasicCredentials {
 		return Objects.hashCode(this.username, this.password);
 	}
 
+	/**
+	 * Performs a basic sanity check to verify that the combination of
+	 * parameters is valid. If validation fails an
+	 * {@link IllegalArgumentException} is thrown.
+	 *
+	 * @throws IllegalArgumentException
+	 *             If any configuration field is missing.
+	 */
+	public void validate() throws IllegalArgumentException {
+		checkArgument(this.username != null,
+				"basic credentials missing username");
+		checkArgument(this.password != null,
+				"basic credentials missing password");
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof BasicCredentials) {

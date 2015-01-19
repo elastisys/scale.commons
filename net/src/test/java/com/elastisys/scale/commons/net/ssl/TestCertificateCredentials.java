@@ -42,6 +42,7 @@ public class TestCertificateCredentials {
 		assertThat(credentials.getKeystorePath(), is(PKCS12_KEYSTORE));
 		assertThat(credentials.getKeystorePassword(),
 				is(PKCS12_KEYSTORE_PASSWORD));
+		credentials.validate();
 
 		// comparison of equivalent credentials
 		CertificateCredentials copy = new CertificateCredentials(
