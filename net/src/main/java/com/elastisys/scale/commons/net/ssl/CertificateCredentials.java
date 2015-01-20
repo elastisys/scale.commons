@@ -16,6 +16,8 @@ import com.google.common.base.Optional;
  * @see AuthenticatedHttpClient
  */
 public class CertificateCredentials {
+	/** Default keystore type. */
+	private static final KeyStoreType DEFAULT_KEYSTORE_TYPE = KeyStoreType.PKCS12;
 
 	/** The type of the key store. */
 	private final KeyStoreType keystoreType;
@@ -30,7 +32,21 @@ public class CertificateCredentials {
 	private final String keyPassword;
 
 	/**
-	 * Constructs new {@link CertificateCredentials} without a key password.
+	 * Constructs {@link CertificateCredentials} that are read from a PKCS12 key
+	 * store.
+	 *
+	 * @param keystorePath
+	 *            File system path to the SSL key store.
+	 * @param keystorePassword
+	 *            The password used to protect the SSL key store.
+	 */
+	public CertificateCredentials(String keystorePath, String keystorePassword) {
+		this(DEFAULT_KEYSTORE_TYPE, keystorePath, keystorePassword, null);
+	}
+
+	/**
+	 * Constructs {@link CertificateCredentials} that are read from a key store
+	 * without a key password.
 	 *
 	 * @param keystoreType
 	 *            The type of the key store.
@@ -45,7 +61,7 @@ public class CertificateCredentials {
 	}
 
 	/**
-	 * Constructs new {@link CertificateCredentials}.
+	 * Constructs {@link CertificateCredentials} that are read from a key store.
 	 *
 	 * @param keystoreType
 	 *            The type of the key store (for example, "JKS" or "PKCS12").
@@ -82,7 +98,10 @@ public class CertificateCredentials {
 	 * @return
 	 */
 	public KeyStoreType getKeystoreType() {
-		return this.keystoreType;
+		// in case the object was parsed from JSON, it may be that keystoreType
+		// is null
+		return Optional.fromNullable(this.keystoreType).or(
+				DEFAULT_KEYSTORE_TYPE);
 	}
 
 	/**
@@ -115,7 +134,7 @@ public class CertificateCredentials {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.keystoreType, this.keystorePath,
+		return Objects.hashCode(getKeystoreType(), this.keystorePath,
 				this.keystorePassword, this.keyPassword);
 	}
 
@@ -123,7 +142,8 @@ public class CertificateCredentials {
 	public boolean equals(Object obj) {
 		if (obj instanceof CertificateCredentials) {
 			CertificateCredentials that = (CertificateCredentials) obj;
-			return Objects.equal(this.keystoreType, that.keystoreType)
+			return Objects
+					.equal(this.getKeystoreType(), that.getKeystoreType())
 					&& Objects.equal(this.keystorePath, that.keystorePath)
 					&& Objects.equal(this.keystorePassword,
 							that.keystorePassword)

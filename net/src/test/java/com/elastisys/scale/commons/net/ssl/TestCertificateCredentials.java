@@ -59,6 +59,20 @@ public class TestCertificateCredentials {
 	}
 
 	/**
+	 * Verify that minimal constructor works as expected.
+	 */
+	@Test
+	public void testDefaults() {
+		CertificateCredentials credentials = new CertificateCredentials(
+				PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD);
+		assertThat(credentials.getKeystoreType().name(), is("PKCS12"));
+		assertThat(credentials.getKeystorePath(), is(PKCS12_KEYSTORE));
+		assertThat(credentials.getKeystorePassword(),
+				is(PKCS12_KEYSTORE_PASSWORD));
+		credentials.validate();
+	}
+
+	/**
 	 * Test loading a client certificate key from a PKCS12 store with a
 	 * {@link CertificateCredentials} object.
 	 * <p/>
