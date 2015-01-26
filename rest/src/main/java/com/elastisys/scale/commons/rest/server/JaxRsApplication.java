@@ -28,9 +28,9 @@ import com.google.gson.JsonObject;
  * singletons, which means that the same handler instance will be used to
  * service all incoming requests. Handlers should therefore be thread-safe to
  * ensure proper operation even in the face of multiple concurrent requests
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @ApplicationPath("/")
 public class JaxRsApplication extends Application {
@@ -44,7 +44,7 @@ public class JaxRsApplication extends Application {
 	/**
 	 * Creates a {@link JaxRsApplication} from a number of response handler web
 	 * resources.
-	 * 
+	 *
 	 * @param responseHandlers
 	 *            The response handler web resources.
 	 */
@@ -54,7 +54,7 @@ public class JaxRsApplication extends Application {
 
 	/**
 	 * Register an additional response handler web resource.
-	 * 
+	 *
 	 * @param handler
 	 *            An instance of a web resource class.
 	 */
@@ -65,7 +65,7 @@ public class JaxRsApplication extends Application {
 	/**
 	 * Registers the all response handler web resources as singleton root
 	 * resources.
-	 * 
+	 *
 	 * @see javax.ws.rs.core.Application#getSingletons()
 	 */
 	@Override
@@ -81,7 +81,7 @@ public class JaxRsApplication extends Application {
 
 	/**
 	 * Takes care of registering required provider classes and features.
-	 * 
+	 *
 	 * @see javax.ws.rs.core.Application#getClasses()
 	 */
 	@Override
@@ -91,6 +91,9 @@ public class JaxRsApplication extends Application {
 		// add message body reader/writer for JsonObject conversion
 		classes.add(JsonObjectMessageBodyReader.class);
 		classes.add(JsonObjectMessageBodyWriter.class);
+
+		// could add filters here as well
+		// classes.add(LoggingFilter.class);
 
 		// support Jackson JSON serialization/deserialization of JAXB-annotated
 		// Java classes.
