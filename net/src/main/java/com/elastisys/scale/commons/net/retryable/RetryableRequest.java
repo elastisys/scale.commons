@@ -24,12 +24,12 @@ import org.slf4j.LoggerFactory;
  * successful) or failing with an {@link Exception}. In case of a failure
  * {@link Action}, the cause {@link Exception} will be wrapped inside an
  * {@link ExecutionException}.
- * 
+ *
  * @see Requester
  * @see RetryHandler
- * 
- * 
- * 
+ *
+ *
+ *
  * @param <R>
  *            The response type.
  */
@@ -54,7 +54,7 @@ public class RetryableRequest<R> implements Callable<R> {
 	/**
 	 * Constructs a {@link RetryableRequest} without an explicit name. Instead,
 	 * the task will be named after the {@link Requester} class.
-	 * 
+	 *
 	 * @param requester
 	 *            The task that carries out request attempts.
 	 * @param retryHandler
@@ -67,7 +67,7 @@ public class RetryableRequest<R> implements Callable<R> {
 
 	/**
 	 * Constructs a named {@link RetryableRequest}.
-	 * 
+	 *
 	 * @param requester
 	 *            The task that carries out request attempts.
 	 * @param retryHandler
@@ -95,10 +95,11 @@ public class RetryableRequest<R> implements Callable<R> {
 				attempts++;
 				logger.debug("{}: attempting request {}", this.name, attempts);
 				R response = this.requester.call();
-				logger.debug("{}: response: {}", this.name, response);
+				logger.debug("{}: attempt response: {}", this.name, response);
 				retryAction = this.retryHandler.onResponse(response);
 			} catch (Exception e) {
-				logger.debug("{}: request failed: {}", this.name, e);
+				logger.debug("{}: attempt failed: {}", this.name,
+						e.getMessage());
 				retryAction = this.retryHandler.onError(e);
 			}
 			if (!retryAction.shouldRetry()) {
