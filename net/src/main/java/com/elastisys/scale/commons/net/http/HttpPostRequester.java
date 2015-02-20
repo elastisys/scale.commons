@@ -8,6 +8,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Callable;
 
 import javax.net.ssl.SSLContext;
 
@@ -21,17 +22,10 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import com.elastisys.scale.commons.net.retryable.Requester;
-import com.elastisys.scale.commons.net.retryable.RetryableRequest;
-
 /**
- * A {@link Requester} that performs a HTTP POST.
- *
- * @see RetryableRequest
- *
- *
+ * A {@link Callable} that performs a HTTP POST.
  */
-public class HttpPostRequester implements Requester<HttpRequestResponse> {
+public class HttpPostRequester implements Callable<HttpRequestResponse> {
 
 	/** Default connection timeout (in ms). */
 	private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;

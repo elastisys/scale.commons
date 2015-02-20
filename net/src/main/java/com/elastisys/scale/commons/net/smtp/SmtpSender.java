@@ -2,28 +2,24 @@ package com.elastisys.scale.commons.net.smtp;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.concurrent.Callable;
+
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.elastisys.scale.commons.net.retryable.Requester;
-import com.elastisys.scale.commons.net.retryable.RetryableRequest;
-
 /**
- * A {@link Requester} that sends an email message ({@link SmtpMessage}) to a
+ * A {@link Callable} that sends an email message ({@link SmtpMessage}) to a
  * certain SMTP server ({@link SmtpServerSettings}).
  * <p/>
- * The task will return <code>true</code> when the message is successfully sent.
+ * The task returns <code>true</code> if the message was successfully sent.
  * <p/>
  * For details on JavaMail and security, refer to <a
  * href="https://javamail.java.net/docs/SSLNOTES.txt">these notes</a>.
- * 
- * @see RetryableRequest
- * 
  */
-public class SmtpSender implements Requester<Boolean> {
+public class SmtpSender implements Callable<Boolean> {
 	static final Logger LOG = LoggerFactory.getLogger(SmtpSender.class);
 
 	/** The message to send. */
@@ -34,7 +30,7 @@ public class SmtpSender implements Requester<Boolean> {
 	/**
 	 * Constructs a new {@link SmtpSender} that will send an email message to a
 	 * given SMTP server.
-	 * 
+	 *
 	 * @param message
 	 *            The email message to send.
 	 * @param serverSettings

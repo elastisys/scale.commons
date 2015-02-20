@@ -1,6 +1,5 @@
 package com.elastisys.scale.commons.net.http.client;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
@@ -34,10 +33,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Range;
 
 /**
- * Performs HTTP requests that are authenticated via Basic authentication and/or
- * a client certificate.
- *
- *
+ * Performs HTTP requests that may optionally authenticate using Basic
+ * authentication, client certificate authentication or both.
  */
 public class AuthenticatedHttpClient {
 	private static Logger LOG = LoggerFactory
@@ -72,16 +69,24 @@ public class AuthenticatedHttpClient {
 	private final int socketTimeout;
 
 	/**
+	 * Constructs an {@link AuthenticatedHttpClient} that doesn't attempt to do
+	 * any authentication and that uses default socket and connection timeouts.
+	 */
+	public AuthenticatedHttpClient() {
+		this(LOG, Optional.<BasicCredentials> absent(), Optional
+				.<CertificateCredentials> absent(), DEFAULT_CONNECTION_TIMEOUT,
+				DEFAULT_SOCKET_TIMEOUT);
+	}
+
+	/**
 	 * Constructs an {@link AuthenticatedHttpClient} with default socket and
 	 * connection timeouts.
 	 *
 	 * @param basicCredentials
 	 *            Username/password credentials for basic authentication.
-	 *            Optional if {@code certificateCredentials} are given.
 	 * @param certificateCredentials
 	 *            Certificate credentials for certificate-based client
-	 *            authentication. Optional if {@code basicCredentials} are
-	 *            given.
+	 *            authentication.
 	 */
 	public AuthenticatedHttpClient(Optional<BasicCredentials> basicCredentials,
 			Optional<CertificateCredentials> certificateCredentials) {
@@ -96,11 +101,9 @@ public class AuthenticatedHttpClient {
 	 *            The {@link Logger} instance to make use of.
 	 * @param basicCredentials
 	 *            Username/password credentials for basic authentication.
-	 *            Optional if {@code certificateCredentials} are given.
 	 * @param certificateCredentials
 	 *            Certificate credentials for certificate-based client
-	 *            authentication. Optional if {@code basicCredentials} are
-	 *            given.
+	 *            authentication.
 	 * @param connectTimeout
 	 *            The timeout in milliseconds until a connection is established.
 	 *            A timeout value of zero is interpreted as an infinite timeout.
@@ -118,11 +121,6 @@ public class AuthenticatedHttpClient {
 			Optional<CertificateCredentials> certificateCredentials,
 			int connectTimeout, int socketTimeout) {
 		checkNotNull(logger, "null logger provided");
-		checkArgument(
-				basicCredentials.isPresent()
-						|| certificateCredentials.isPresent(),
-				"neither basic credentials nor certificate "
-						+ "credentials were provided");
 		this.logger = logger;
 		this.basicCredentials = basicCredentials;
 		this.certificateCredentials = certificateCredentials;

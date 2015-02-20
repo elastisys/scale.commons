@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.concurrent.Callable;
 
 import javax.net.ssl.SSLContext;
 
@@ -19,17 +20,10 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-import com.elastisys.scale.commons.net.retryable.Requester;
-import com.elastisys.scale.commons.net.retryable.RetryableRequest;
-
 /**
- * A {@link Requester} that performs a HTTP GET against a certain URL.
- *
- * @see RetryableRequest
- *
- *
+ * A {@link Callable} that performs a HTTP GET against a certain URL.
  */
-public class HttpGetRequester implements Requester<HttpRequestResponse> {
+public class HttpGetRequester implements Callable<HttpRequestResponse> {
 
 	/** Default connection timeout (in ms). */
 	private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;

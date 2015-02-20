@@ -14,7 +14,9 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
 
 /**
  * Represents a response to a HTTP request.
@@ -144,5 +146,21 @@ public class HttpRequestResponse {
 		return MoreObjects.toStringHelper(this)
 				.add("statusCode", this.statusCode)
 				.add("headers", this.headers).toString();
+	}
+
+	/**
+	 * Returns a {@link Predicate} that accepts {@link HttpRequestResponse}s
+	 * with a successfull status code {@code 2XX}.
+	 *
+	 * @return
+	 */
+	public static Predicate<HttpRequestResponse> isOkResponse() {
+		return new Predicate<HttpRequestResponse>() {
+			@Override
+			public boolean apply(HttpRequestResponse response) {
+				return Range.closed(200, 299)
+						.contains(response.getStatusCode());
+			}
+		};
 	}
 }

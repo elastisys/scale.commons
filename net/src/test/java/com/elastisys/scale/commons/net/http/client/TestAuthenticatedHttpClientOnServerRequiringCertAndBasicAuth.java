@@ -2,10 +2,13 @@ package com.elastisys.scale.commons.net.http.client;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
+
+import javax.net.ssl.SSLException;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
@@ -89,9 +92,9 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 	 */
 	private static Server createHttpsServer(int httpsPort) {
 		ServletDefinition servlet = new ServletDefinition.Builder()
-				.servlet(new HelloWorldServlet()).servletPath("/")
-				.requireBasicAuth(true).realmFile(SERVER_REALM_FILE)
-				.requireRole("USER").build();
+		.servlet(new HelloWorldServlet()).servletPath("/")
+		.requireBasicAuth(true).realmFile(SERVER_REALM_FILE)
+		.requireRole("USER").build();
 		return ServletServerBuilder.create().httpsPort(httpsPort)
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(SERVER_PKCS12_KEYSTORE)
@@ -107,6 +110,21 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 		if (server != null) {
 			server.stop();
 			server.join();
+		}
+	}
+
+	/**
+	 * Access with no authentication shoud fail.
+	 */
+	@Test
+	public void nonAuthenticatedClient() throws IOException {
+		AuthenticatedHttpClient client = new AuthenticatedHttpClient();
+
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("unauthenticated client should not have access");
+		} catch (SSLException e) {
+			// expected
 		}
 	}
 

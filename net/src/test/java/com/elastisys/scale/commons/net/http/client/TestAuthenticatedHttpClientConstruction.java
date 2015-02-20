@@ -35,8 +35,10 @@ public class TestAuthenticatedHttpClientConstruction {
 				Optional.of(this.correctCertificateCredentials));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void missingBothCredentialTypes() {
+	@Test
+	public void noAuthentication() {
+		// test both constructors which are equivalent
+		new AuthenticatedHttpClient();
 		new AuthenticatedHttpClient(Optional.<BasicCredentials> absent(),
 				Optional.<CertificateCredentials> absent());
 	}

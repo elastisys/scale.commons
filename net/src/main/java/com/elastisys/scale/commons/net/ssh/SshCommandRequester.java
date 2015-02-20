@@ -4,12 +4,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.elastisys.scale.commons.net.retryable.Requester;
-import com.elastisys.scale.commons.net.retryable.RetryableRequest;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closer;
 import com.jcraft.jsch.ChannelExec;
@@ -17,15 +16,11 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 /**
- * A {@link Requester} that executes a script against a remote host over SSH.
+ * A {@link Callable} that executes a script against a remote host over SSH.
  * <p/>
  * Public key-based authentication is assumed.
- * 
- * @see RetryableRequest
- * 
- * 
  */
-public class SshCommandRequester implements Requester<SshCommandResult> {
+public class SshCommandRequester implements Callable<SshCommandResult> {
 	static final Logger logger = LoggerFactory
 			.getLogger(SshCommandRequester.class);
 
@@ -56,7 +51,7 @@ public class SshCommandRequester implements Requester<SshCommandResult> {
 
 	/**
 	 * Constructs a new {@link SshCommandRequester}.
-	 * 
+	 *
 	 * @param hostname
 	 *            The remote host.
 	 * @param sshPort
@@ -78,7 +73,7 @@ public class SshCommandRequester implements Requester<SshCommandResult> {
 
 	/**
 	 * Constructs a new {@link SshCommandRequester}.
-	 * 
+	 *
 	 * @param hostname
 	 *            The hostname or IP address of the remote host.
 	 * @param sshPort
@@ -129,7 +124,7 @@ public class SshCommandRequester implements Requester<SshCommandResult> {
 
 	/**
 	 * Executes a script in an open SSH {@link Session}.
-	 * 
+	 *
 	 * @param session
 	 *            The SSH {@link Session}. Must be in a connected state.
 	 * @param script

@@ -2,12 +2,10 @@ package com.elastisys.scale.commons.net.http.client;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
 import org.junit.BeforeClass;
@@ -24,10 +22,10 @@ import com.elastisys.scale.commons.server.SslKeyStoreType;
 import com.google.common.base.Optional;
 
 /**
- * Tests that exercise the {@link AuthenticatedHttpClient} class against a HTTPS
- * server set up to require BASIC client authentication.
+ * Tests the {@link AuthenticatedHttpClient} class against a HTTPS server set up
+ * to require no client authentication.
  */
-public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
+public class TestAuthenticatedHttpClientOnServerRequiringNoAuth {
 
 	// Keystore for a client certificate: even if used, this should be ignored
 	// by the test server, which isn't configured to check client certificates
@@ -40,13 +38,9 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 	private static final BasicCredentials trustedPasswordCredentials = new BasicCredentials(
 			"user", "secret");
 
-	private static final BasicCredentials untrustedPasswordCredentials = new BasicCredentials(
-			"molly", "secretpassword");
-
 	// Server keystore set up to only trust the trusted client's certificate
 	private static final String SERVER_PKCS12_KEYSTORE = "src/test/resources/security/server/server_keystore.p12";
 	private static final String SERVER_PKCS12_KEYSTORE_PASSWORD = "serverpassword";
-	private static final String SERVER_REALM_FILE = "src/test/resources/security/server/security-realm.properties";
 
 	/** The port where a HTTPS server is set up. */
 	private static Integer httpsPort;
@@ -65,8 +59,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 
 	/**
 	 * Creates a HTTPS server to be used during the test methods. The server
-	 * requires BASIC client authentication and is set up to only trust the
-	 * users in the security realm file.
+	 * requires no client authentication.
 	 *
 	 * @param httpsPort
 	 * @return
@@ -74,8 +67,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 	private static Server createHttpsServer(int httpsPort) {
 		ServletDefinition servlet = new ServletDefinition.Builder()
 				.servlet(new HelloWorldServlet()).servletPath("/")
-				.requireBasicAuth(true).realmFile(SERVER_REALM_FILE)
-				.requireRole("USER").build();
+				.requireBasicAuth(false).requireRole("USER").build();
 		return ServletServerBuilder.create().httpsPort(httpsPort)
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(SERVER_PKCS12_KEYSTORE)
@@ -84,25 +76,23 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 	}
 
 	/**
-	 * Access with no authentication shoud fail.
+	 * Access with no authentication.
 	 */
 	@Test
 	public void nonAuthenticatedClient() throws IOException {
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient();
 
-		try {
-			client.execute(new HttpGet(url("/")));
-			fail("unauthenticated client should not have access");
-		} catch (HttpResponseException e) {
-			assertThat(e.getStatusCode(), is(401));
-		}
+		HttpRequestResponse response = client.execute(new HttpGet(url("/")));
+		assertThat(response.getStatusCode(), is(200));
+		assertThat(response.getResponseBody(), is("Hello World!"));
 	}
 
 	/**
-	 * Authenticating with an authorized user.
+	 * Authenticating with basic authentication (should work, server doesn't
+	 * care).
 	 */
 	@Test
-	public void authenticateWithTrustedUser() throws IOException {
+	public void basicCredentialsClient() throws IOException {
 		Optional<CertificateCredentials> absent = Optional.absent();
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(
 				Optional.of(trustedPasswordCredentials), absent);
@@ -113,25 +103,24 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 	}
 
 	/**
-	 * An unauthorized user should get a {@code 401} (unauthorized) response.
+	 * Authenticating with cert authentication (should work, server doesn't
+	 * care).
 	 */
 	@Test
-	public void authenticateWithUntrustedUser() throws IOException {
-		Optional<CertificateCredentials> absent = Optional.absent();
-		AuthenticatedHttpClient client = new AuthenticatedHttpClient(
-				Optional.of(untrustedPasswordCredentials), absent);
+	public void certCredentialsClient() throws IOException {
+		Optional<BasicCredentials> absent = Optional.absent();
+		AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent,
+				Optional.of(certCredentials));
 
-		try {
-			client.execute(new HttpGet(url("/")));
-		} catch (HttpResponseException e) {
-			assertThat(e.getStatusCode(), is(401));
-		}
+		HttpRequestResponse response = client.execute(new HttpGet(url("/")));
+		assertThat(response.getStatusCode(), is(200));
+		assertThat(response.getResponseBody(), is("Hello World!"));
 	}
 
 	/**
 	 * Make sure the client can connect when supplying *both* BASIC and
-	 * certificate credentials. The server, which isn't configured to check the
-	 * certificate, should simply ignore the certificate.
+	 * certificate credentials. The server should simply ignore all
+	 * authentication credentials.
 	 */
 	@Test
 	public void authenticateWithBasicAndCertCredentials() throws IOException {
@@ -142,7 +131,6 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 		HttpRequestResponse response = client.execute(new HttpGet(url("/")));
 		assertThat(response.getStatusCode(), is(200));
 		assertThat(response.getResponseBody(), is("Hello World!"));
-
 	}
 
 	private String url(String path) {
