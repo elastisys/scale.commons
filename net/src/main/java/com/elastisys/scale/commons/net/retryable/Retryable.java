@@ -33,7 +33,7 @@ import com.google.common.collect.Sets;
  *     stop(StopStrategies.afterAttempts(10)).
  *     delay(DelayStrategies.exponentialBackoff(1));
  * </pre>
- * 
+ *
  * <p/>
  * If no successful response has been received before the {@link StopStrategy}
  * decides to give up, a {@link GaveUpException} is raised, which includes the
@@ -52,6 +52,14 @@ import com.google.common.collect.Sets;
  */
 public class Retryable<R> implements Callable<R> {
 	private final static Logger LOG = LoggerFactory.getLogger(Retryable.class);
+
+	/**
+	 * A maximum limit to the number of characters included when logging the
+	 * result from a retry (intended to reduce log noise in case the
+	 * {@link Callable} returns a lot of data in each attempt). Longer result
+	 * strings will be truncated.
+	 */
+	private final static int MAX_LOGGED_RESULT_STRING = 200;
 
 	/** The {@link Callable} that is to be retried. */
 	private final Callable<R> task;
@@ -253,8 +261,12 @@ public class Retryable<R> implements Callable<R> {
 
 	private void logResult(int attempts, Object lastResult) {
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("{}: attempt {}: {}", this.name, attempts,
-					asString(lastResult));
+			String resultString = asString(lastResult);
+			if (resultString.length() > MAX_LOGGED_RESULT_STRING) {
+				resultString = resultString.substring(0,
+						MAX_LOGGED_RESULT_STRING) + " ... (truncated)";
+			}
+			LOG.debug("{}: attempt {}: '{}'", this.name, attempts, resultString);
 		}
 	}
 
