@@ -2,7 +2,7 @@ scale.commons
 =============
 The `scale.commons` project contains common Java utilities for building
 [elastisys:scale](http://elastisys.com/scale)-related software, such as 
-[cloud pool managers](http://cloudadapterapi.readthedocs.org/en/latest).
+[cloud pool managers](http://cloudpoolrestapi.readthedocs.org/en/latest).
 
 Getting started
 ===============
