@@ -40,10 +40,20 @@ public class AuthenticatedHttpClient {
 	private static Logger LOG = LoggerFactory
 			.getLogger(AuthenticatedHttpClient.class);
 
-	/** Default value for {@link #connectTimeout} in ms. */
-	private final static int DEFAULT_CONNECTION_TIMEOUT = 10000;
-	/** Default value for {@link #socketTimeout} in ms. */
-	private final static int DEFAULT_SOCKET_TIMEOUT = 10000;
+	/**
+	 * The default timeout in milliseconds until a connection is established. A
+	 * timeout value of zero is interpreted as an infinite timeout. A negative
+	 * value is interpreted as undefined (system default).
+	 */
+	private static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+	/**
+	 * The default socket timeout ({@code SO_TIMEOUT}) in milliseconds, which is
+	 * the timeout for waiting for data or, put differently, a maximum period
+	 * inactivity between two consecutive data packets). A timeout value of zero
+	 * is interpreted as an infinite timeout. A negative value is interpreted as
+	 * undefined (system default).
+	 */
+	private static final int DEFAULT_SOCKET_TIMEOUT = 60000;
 
 	/** The {@link Logger} instance to make use of. */
 	private final Logger logger;
@@ -92,6 +102,33 @@ public class AuthenticatedHttpClient {
 			Optional<CertificateCredentials> certificateCredentials) {
 		this(LOG, basicCredentials, certificateCredentials,
 				DEFAULT_CONNECTION_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
+	}
+
+	/**
+	 * Constructs a {@link AuthenticatedHttpClient}.
+	 *
+	 * @param basicCredentials
+	 *            Username/password credentials for basic authentication.
+	 * @param certificateCredentials
+	 *            Certificate credentials for certificate-based client
+	 *            authentication.
+	 * @param connectTimeout
+	 *            The timeout in milliseconds until a connection is established.
+	 *            A timeout value of zero is interpreted as an infinite timeout.
+	 *            A negative value is interpreted as undefined (system default).
+	 * @param socketTimeout
+	 *            The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which
+	 *            is the timeout for waiting for data or, put differently, a
+	 *            maximum period inactivity between two consecutive data
+	 *            packets). A timeout value of zero is interpreted as an
+	 *            infinite timeout. A negative value is interpreted as undefined
+	 *            (system default).
+	 */
+	public AuthenticatedHttpClient(Optional<BasicCredentials> basicCredentials,
+			Optional<CertificateCredentials> certificateCredentials,
+			int connectTimeout, int socketTimeout) {
+		this(LOG, basicCredentials, certificateCredentials, connectTimeout,
+				socketTimeout);
 	}
 
 	/**
