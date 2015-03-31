@@ -4,16 +4,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.joda.time.DateTime;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * Represents a system event that can be sent by an {@link EmailAlerter}.
- * 
+ *
  * @see EmailAlerter
  */
 public class Alert {
@@ -32,14 +34,14 @@ public class Alert {
 	/** A message with details about the triggering event. */
 	private final String message;
 	/**
-	 * A collection of tags that carry additional meta data about the
-	 * {@link Alert}.
+	 * Additional JSON meta data about the {@link Alert} as a {@link Map} of
+	 * meta data keys mapped to a {@link JsonObject}s.
 	 */
-	private final SortedMap<String, String> tags;
+	private final Map<String, JsonElement> metadata;
 
 	/**
 	 * Constructs a new {@link Alert} without tags.
-	 * 
+	 *
 	 * @param topic
 	 *            The topic that this {@link Alert} is categorized under.
 	 *            Although a topic can be an arbitrary {@link String}, the
@@ -57,12 +59,12 @@ public class Alert {
 	public Alert(String topic, AlertSeverity severity, DateTime timestamp,
 			String message) {
 		this(topic, severity, timestamp, message,
-				new HashMap<String, String>(0));
+				new HashMap<String, JsonElement>(0));
 	}
 
 	/**
 	 * Constructs a new {@link Alert} with a collection of tags.
-	 * 
+	 *
 	 * @param topic
 	 *            The topic that this {@link Alert} is categorized under.
 	 *            Although a topic can be an arbitrary {@link String}, the
@@ -76,9 +78,9 @@ public class Alert {
 	 *            The time at which the triggering event occurred.
 	 * @param message
 	 *            A message with details about the triggering event.
-	 * @param tags
-	 *            A collection of tags that carry additional meta data about the
-	 *            {@link Alert}.
+	 * @param metadata
+	 *            Additional JSON meta data about the {@link Alert} as a
+	 *            {@link Map} of meta data keys mapped to {@link JsonObject}s.
 	 *            <p/>
 	 *            These name-value pairs can, for example, be used to convey
 	 *            meta data about the {@link AutoScaler} that produced the
@@ -89,19 +91,19 @@ public class Alert {
 	 *            availability or to monitor several application layers).
 	 */
 	public Alert(String topic, AlertSeverity severity, DateTime timestamp,
-			String message, Map<String, String> tags) {
+			String message, Map<String, JsonElement> metadata) {
 		checkNotNull(topic, "topic cannot be null");
 		checkNotNull(severity, "severity cannot be null");
 		checkNotNull(timestamp, "timestamp cannot be null");
 		checkNotNull(message, "message cannot be null");
-		checkNotNull(tags, "tags cannot be null");
+		checkNotNull(metadata, "metadata cannot be null");
 
 		this.topic = topic;
 		this.severity = severity;
 		this.timestamp = timestamp;
 		this.message = message;
-		this.tags = Maps.newTreeMap();
-		this.tags.putAll(tags);
+		this.metadata = Maps.newTreeMap();
+		this.metadata.putAll(metadata);
 	}
 
 	/**
@@ -111,7 +113,7 @@ public class Alert {
 	 * for a topic to be structured as a {@code /} -separated path , with the
 	 * subsystem that produced the {@link Alert} as the leading path entry. For
 	 * example, {@code /cloudAdapter/machinePool/CHANGED}.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getTopic() {
@@ -120,7 +122,7 @@ public class Alert {
 
 	/**
 	 * Returns the severity of this {@link Alert}.
-	 * 
+	 *
 	 * @return
 	 */
 	public AlertSeverity getSeverity() {
@@ -130,7 +132,7 @@ public class Alert {
 	/**
 	 * Returns the time at which the triggering event occurred that gave rise to
 	 * this {@link Alert}.
-	 * 
+	 *
 	 * @return
 	 */
 	public DateTime getTimestamp() {
@@ -140,7 +142,7 @@ public class Alert {
 	/**
 	 * Returns a message with details about the triggering event of this
 	 * {@link Alert}.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getMessage() {
@@ -148,27 +150,27 @@ public class Alert {
 	}
 
 	/**
-	 * Returns the collection of tags that carry additional meta data about the
-	 * {@link Alert}.
-	 * 
+	 * Returns meta data about the {@link Alert} as a {@link Map} of meta data
+	 * keys mapped to a {@link JsonObject}.
+	 *
 	 * @return
 	 */
-	public Map<String, String> getTags() {
-		return this.tags;
+	public Map<String, JsonElement> getMetadata() {
+		return this.metadata;
 	}
 
 	/**
-	 * Builds a copy of this {@link Alert} with an additional tag added. The
-	 * original object (this) remains unchanged.
-	 * 
+	 * Builds a copy of this {@link Alert} with an additional metadata tag
+	 * added. The original object (this) remains unchanged.
+	 *
 	 * @param tag
 	 *            The tag key.
 	 * @param value
 	 *            The tag value.
 	 * @return A field-by-field copy with an additional tag.
 	 */
-	public Alert withTag(String tag, String value) {
-		Map<String, String> extendedTags = Maps.newHashMap(getTags());
+	public Alert withMetadata(String tag, JsonElement value) {
+		Map<String, JsonElement> extendedTags = Maps.newHashMap(getMetadata());
 		extendedTags.put(tag, value);
 
 		return new Alert(this.topic, this.severity, this.timestamp,
@@ -177,16 +179,16 @@ public class Alert {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("topic", this.topic)
+		return MoreObjects.toStringHelper(this).add("topic", this.topic)
 				.add("severity", this.severity)
 				.add("timestamp", this.timestamp).add("message", this.message)
-				.add("tags", this.tags).toString();
+				.add("metadata", this.metadata).toString();
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.topic, this.severity, this.timestamp,
-				this.message, this.tags);
+				this.message, this.metadata);
 	}
 
 	@Override
@@ -197,7 +199,7 @@ public class Alert {
 					&& Objects.equal(this.severity, that.severity)
 					&& Objects.equal(this.timestamp, that.timestamp)
 					&& Objects.equal(this.message, that.message)
-					&& Objects.equal(this.tags, that.tags);
+					&& Objects.equal(this.metadata, that.metadata);
 		} else {
 			return false;
 		}

@@ -11,16 +11,12 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonElement;
 
-/**
- * Excercises the {@link Alert} class.
- * 
- * 
- * 
- */
 public class TestAlertMessage {
 
 	@Before
@@ -33,27 +29,34 @@ public class TestAlertMessage {
 	 */
 	@Test
 	public void testEquality() {
-		Map<String, String> tags = ImmutableMap.of("tag1", "value1", "tag2",
-				"value2");
+		Map<String, JsonElement> metadata = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"), "tag2", JsonUtils.toJson("value2"));
 		Alert alert = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", tags);
+				"message", metadata);
 
 		Alert identical = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", tags);
+				"message", metadata);
 		Alert differentTopic = new Alert("othertopic", AlertSeverity.INFO,
-				UtcTime.now(), "message", tags);
+				UtcTime.now(), "message", metadata);
 		Alert differentSeverity = new Alert("topic", AlertSeverity.WARN,
-				UtcTime.now(), "message", tags);
-		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime.now()
-				.plus(1), "message", tags);
+				UtcTime.now(), "message", metadata);
+		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime
+				.now().plus(1), "message", metadata);
 		Alert differentMessage = new Alert("topic", AlertSeverity.INFO,
-				UtcTime.now(), "othermessage", tags);
-		Alert differentTags = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", ImmutableMap.of("tag1", "value1"));
-		Alert differentTags2 = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", ImmutableMap.of("tag1", "value1", "tag3", "value2"));
-		Alert differentTags3 = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message");
+				UtcTime.now(), "othermessage", metadata);
+
+		Map<String, JsonElement> metadata2 = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"));
+		Alert differentTags = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message", metadata2);
+
+		Map<String, JsonElement> metadata3 = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"), "tag2",
+				JsonUtils.parseJsonString("{\"k1\": true, \"k2\": \"v2\"}"));
+		Alert differentTags2 = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message", metadata3);
+		Alert differentTags3 = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message");
 
 		assertTrue(alert.equals(identical));
 		assertFalse(alert.equals(differentTopic));
@@ -67,27 +70,34 @@ public class TestAlertMessage {
 
 	@Test
 	public void testHashcode() {
-		Map<String, String> tags = ImmutableMap.of("tag1", "value1", "tag2",
-				"value2");
+		Map<String, JsonElement> metadata = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"), "tag2", JsonUtils.toJson("value2"));
 		Alert alert = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", tags);
+				"message", metadata);
 
 		Alert identical = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", tags);
+				"message", metadata);
 		Alert differentTopic = new Alert("othertopic", AlertSeverity.INFO,
-				UtcTime.now(), "message", tags);
+				UtcTime.now(), "message", metadata);
 		Alert differentSeverity = new Alert("topic", AlertSeverity.WARN,
-				UtcTime.now(), "message", tags);
-		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime.now()
-				.plus(1), "message", tags);
+				UtcTime.now(), "message", metadata);
+		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime
+				.now().plus(1), "message", metadata);
 		Alert differentMessage = new Alert("topic", AlertSeverity.INFO,
-				UtcTime.now(), "othermessage", tags);
-		Alert differentTags = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", ImmutableMap.of("tag1", "value1"));
-		Alert differentTags2 = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message", ImmutableMap.of("tag1", "value1", "tag3", "value2"));
-		Alert differentTags3 = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
-				"message");
+				UtcTime.now(), "othermessage", metadata);
+
+		Map<String, JsonElement> metadata2 = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"));
+		Alert differentTags = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message", metadata2);
+
+		Map<String, JsonElement> metadata3 = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"), "tag2",
+				JsonUtils.parseJsonString("{\"k1\": true, \"k2\": \"v2\"}"));
+		Alert differentTags2 = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message", metadata3);
+		Alert differentTags3 = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now(), "message");
 
 		assertTrue(alert.hashCode() == identical.hashCode());
 		assertFalse(alert.hashCode() == differentTopic.hashCode());
@@ -110,7 +120,7 @@ public class TestAlertMessage {
 		int originalHash = original.hashCode();
 
 		// create a copy with an additional tag
-		Alert copy = original.withTag("tag1", "value1");
+		Alert copy = original.withMetadata("tag1", JsonUtils.toJson("value1"));
 		assertNotSame(original, copy);
 		// original should be unmodified
 		assertThat(original.hashCode(), is(originalHash));
@@ -119,12 +129,15 @@ public class TestAlertMessage {
 		assertThat(copy.getMessage(), is(original.getMessage()));
 		assertThat(copy.getSeverity(), is(original.getSeverity()));
 		assertThat(copy.getTimestamp(), is(original.getTimestamp()));
-		Map<String, String> expectedTags = ImmutableMap.of("tag1", "value1");
-		assertThat(copy.getTags(), is(expectedTags));
+		Map<String, JsonElement> expectedTags = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"));
+		assertThat(copy.getMetadata(), is(expectedTags));
 
 		// test chaining
-		copy = original.withTag("tag1", "value1").withTag("tag2", "value2");
-		expectedTags = ImmutableMap.of("tag1", "value1", "tag2", "value2");
-		assertThat(copy.getTags(), is(expectedTags));
+		copy = original.withMetadata("tag1", JsonUtils.toJson("value1"))
+				.withMetadata("tag2", JsonUtils.toJson("value2"));
+		expectedTags = ImmutableMap.of("tag1", JsonUtils.toJson("value1"),
+				"tag2", JsonUtils.toJson("value2"));
+		assertThat(copy.getMetadata(), is(expectedTags));
 	}
 }

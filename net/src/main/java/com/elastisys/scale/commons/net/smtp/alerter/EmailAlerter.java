@@ -15,6 +15,7 @@ import com.elastisys.scale.commons.net.smtp.SmtpServerSettings;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.JsonElement;
 
 /**
  * An alerter that, whenever its {@link #handleAlert(Alert)} method is invoked,
@@ -34,10 +35,10 @@ public class EmailAlerter {
 	/** Common settings for the {@link Alert} emails to be sent. */
 	private final SendSettings sendSettings;
 	/**
-	 * Standard tags to append to every received {@link Alert} before sending to
-	 * the final receiver.
+	 * Standard meta data to append to every received {@link Alert} before
+	 * sending to the final receiver.
 	 */
-	private final Map<String, String> standardTags;
+	private final Map<String, JsonElement> standardMetadata;
 
 	/**
 	 * Constructs an {@link EmailAlerter} configured to send {@link Alert}
@@ -50,7 +51,8 @@ public class EmailAlerter {
 	 */
 	public EmailAlerter(SmtpServerSettings smtpServerSettings,
 			SendSettings sendSettings) {
-		this(smtpServerSettings, sendSettings, new HashMap<String, String>());
+		this(smtpServerSettings, sendSettings,
+				new HashMap<String, JsonElement>());
 	}
 
 	/**
@@ -61,15 +63,15 @@ public class EmailAlerter {
 	 *            SMTP server settings.
 	 * @param sendSettings
 	 *            Common settings for the {@link Alert} emails to be sent.
-	 * @param standardTags
-	 *            Standard tags to append to every received {@link Alert} before
+	 * @param standardMetadata
+	 *            Standard meta data to every received {@link Alert} before
 	 *            sending to the final receiver.
 	 */
 	public EmailAlerter(SmtpServerSettings smtpServerSettings,
-			SendSettings sendSettings, Map<String, String> standardTags) {
+			SendSettings sendSettings, Map<String, JsonElement> standardMetadata) {
 		this.smtpServerSettings = smtpServerSettings;
 		this.sendSettings = sendSettings;
-		this.standardTags = standardTags;
+		this.standardMetadata = standardMetadata;
 	}
 
 	/**
@@ -117,8 +119,10 @@ public class EmailAlerter {
 	}
 
 	private Alert appendStandardTags(Alert alert) {
-		for (Entry<String, String> standardTag : this.standardTags.entrySet()) {
-			alert = alert.withTag(standardTag.getKey(), standardTag.getValue());
+		for (Entry<String, JsonElement> standardMetadata : this.standardMetadata
+				.entrySet()) {
+			alert = alert.withMetadata(standardMetadata.getKey(),
+					standardMetadata.getValue());
 		}
 		return alert;
 	}

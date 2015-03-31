@@ -12,18 +12,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 
+import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.smtp.ClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpServerSettings;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
+import com.google.gson.JsonElement;
 
 /**
  * Exercise the mail sending of the {@link EmailAlerter} with a mocked JavaMail
  * implementation, which only sends email messages to an in-memory mail box.
  *
- * 
+ *
  *
  */
 public class TestEmailAlerter {
@@ -70,7 +72,7 @@ public class TestEmailAlerter {
 				+ "\n  \"severity\": \"INFO\"," //
 				+ "\n  \"timestamp\": \"2014-03-12T12:00:00.000Z\"," //
 				+ "\n  \"message\": \"message\"," //
-				+ "\n  \"tags\": {}" //
+				+ "\n  \"metadata\": {}" //
 				+ "\n}";
 		assertThat(mailbox.get(0).getContent(), is(expectedContent));
 		assertThat(mailbox.get(0).getSubject(), is("subject"));
@@ -100,7 +102,7 @@ public class TestEmailAlerter {
 				+ "\n  \"severity\": \"INFO\"," //
 				+ "\n  \"timestamp\": \"2014-03-12T12:00:00.000Z\"," //
 				+ "\n  \"message\": \"message\"," //
-				+ "\n  \"tags\": {}" //
+				+ "\n  \"metadata\": {}" //
 				+ "\n}";
 		assertThat(mailbox.get(0).getContent(), is(expectedContent));
 		assertThat(mailbox.get(0).getSubject(), is("subject"));
@@ -117,8 +119,9 @@ public class TestEmailAlerter {
 	public void sendWithStandardTags() throws Exception {
 		assertTrue(Mailbox.get("recipient@elastisys.com").isEmpty());
 
-		Map<String, String> standardTags = ImmutableMap.of("tag1", "value1",
-				"tag2", "value2");
+		Map<String, JsonElement> standardTags = ImmutableMap
+				.of("tag1", JsonUtils.toJson("value1"), "tag2", JsonUtils
+						.parseJsonString("{\"k1\": true, \"k2\": \"value2\"}"));
 		SmtpServerSettings smtpServerSettings = new SmtpServerSettings(
 				"some.smtp.host", 25, null, false);
 		SendSettings sendSettings = new SendSettings(
@@ -140,9 +143,12 @@ public class TestEmailAlerter {
 				+ "\n  \"severity\": \"INFO\"," //
 				+ "\n  \"timestamp\": \"2014-03-12T12:00:00.000Z\"," //
 				+ "\n  \"message\": \"message\"," //
-				+ "\n  \"tags\": {" //
+				+ "\n  \"metadata\": {" //
 				+ "\n    \"tag1\": \"value1\"," //
-				+ "\n    \"tag2\": \"value2\"" //
+				+ "\n    \"tag2\": {"//
+				+ "\n      \"k1\": true," //
+				+ "\n      \"k2\": \"value2\"" //
+				+ "\n    }" //
 				+ "\n  }" //
 				+ "\n}";
 		assertThat(mailbox.get(0).getContent(), is(expectedContent));
@@ -151,8 +157,8 @@ public class TestEmailAlerter {
 	}
 
 	/**
-	 * Verify that {@link EmailAlerter} suppresses any {@link Alert}s
-	 * whose {@link AlertSeverity} doesn't match the specified severity filter.
+	 * Verify that {@link EmailAlerter} suppresses any {@link Alert}s whose
+	 * {@link AlertSeverity} doesn't match the specified severity filter.
 	 */
 	@Test
 	public void suppressAlertWithWrongSeverity() throws Exception {
@@ -172,10 +178,10 @@ public class TestEmailAlerter {
 				UtcTime.now(), "info message"));
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.WARN,
 				UtcTime.now(), "warn message"));
-		this.eventBus.post(new Alert("/alert/topic",
-				AlertSeverity.ERROR, UtcTime.now(), "error message"));
-		this.eventBus.post(new Alert("/alert/topic",
-				AlertSeverity.FATAL, UtcTime.now(), "fatal message"));
+		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.ERROR,
+				UtcTime.now(), "error message"));
+		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.FATAL,
+				UtcTime.now(), "fatal message"));
 
 		// check mailbox after alerts: should only contain alerts that match
 		// filter
