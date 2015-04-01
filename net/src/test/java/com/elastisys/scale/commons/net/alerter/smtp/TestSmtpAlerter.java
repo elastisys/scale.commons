@@ -1,4 +1,4 @@
-package com.elastisys.scale.commons.net.smtp.alerter;
+package com.elastisys.scale.commons.net.alerter.smtp;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,8 +13,10 @@ import org.junit.Test;
 import org.jvnet.mock_javamail.Mailbox;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.elastisys.scale.commons.net.smtp.ClientAuthentication;
-import com.elastisys.scale.commons.net.smtp.SmtpServerSettings;
+import com.elastisys.scale.commons.net.alerter.Alert;
+import com.elastisys.scale.commons.net.alerter.AlertSeverity;
+import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
+import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.collect.ImmutableMap;
@@ -22,13 +24,13 @@ import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonElement;
 
 /**
- * Exercise the mail sending of the {@link EmailAlerter} with a mocked JavaMail
+ * Exercise the mail sending of the {@link SmtpAlerter} with a mocked JavaMail
  * implementation, which only sends email messages to an in-memory mail box.
  *
  *
  *
  */
-public class TestEmailAlerter {
+public class TestSmtpAlerter {
 	private EventBus eventBus;
 
 	@Before
@@ -54,10 +56,11 @@ public class TestEmailAlerter {
 	public void sendUnauthenticatedNoSsl() throws Exception {
 		assertTrue(Mailbox.get("recipient@elastisys.com").isEmpty());
 
-		EmailAlerter alerter = new EmailAlerter(new SmtpServerSettings(
-				"some.smtp.host", 25, null, false), new SendSettings(
+		SmtpClientConfig noAuthNoSslClient = new SmtpClientConfig(
+				"some.smtp.host", 25, null, false);
+		SmtpAlerter alerter = new SmtpAlerter(new SmtpAlerterConfig(
 				Arrays.asList("recipient@elastisys.com"),
-				"sender@elastisys.com", "subject", null));
+				"sender@elastisys.com", "subject", null, noAuthNoSslClient));
 		this.eventBus.register(alerter);
 
 		// post an Alert on the event bus
@@ -83,11 +86,12 @@ public class TestEmailAlerter {
 	public void sendAuthenticatedWithSsl() throws Exception {
 		assertTrue(Mailbox.get("recipient@elastisys.com").isEmpty());
 
-		EmailAlerter alerter = new EmailAlerter(new SmtpServerSettings(
-				"some.smtp.host", 25, new ClientAuthentication("user", "pass"),
-				true), new SendSettings(
+		SmtpClientConfig authSslClient = new SmtpClientConfig(
+				"some.smtp.host", 25, new SmtpClientAuthentication("user", "pass"),
+				true);
+		SmtpAlerter alerter = new SmtpAlerter(new SmtpAlerterConfig(
 				Arrays.asList("recipient@elastisys.com"),
-				"sender@elastisys.com", "subject", null));
+				"sender@elastisys.com", "subject", null, authSslClient));
 		this.eventBus.register(alerter);
 
 		// post an Alert on the event bus
@@ -110,7 +114,7 @@ public class TestEmailAlerter {
 	}
 
 	/**
-	 * Test creating a {@link EmailAlerter} that will include standard tags in
+	 * Test creating a {@link SmtpAlerter} that will include standard tags in
 	 * every alert it receives.
 	 *
 	 * @throws Exception
@@ -122,13 +126,12 @@ public class TestEmailAlerter {
 		Map<String, JsonElement> standardTags = ImmutableMap
 				.of("tag1", JsonUtils.toJson("value1"), "tag2", JsonUtils
 						.parseJsonString("{\"k1\": true, \"k2\": \"value2\"}"));
-		SmtpServerSettings smtpServerSettings = new SmtpServerSettings(
+		SmtpClientConfig clientSettings = new SmtpClientConfig(
 				"some.smtp.host", 25, null, false);
-		SendSettings sendSettings = new SendSettings(
+		SmtpAlerterConfig config = new SmtpAlerterConfig(
 				Arrays.asList("recipient@elastisys.com"),
-				"sender@elastisys.com", "subject", null);
-		EmailAlerter alerter = new EmailAlerter(smtpServerSettings,
-				sendSettings, standardTags);
+				"sender@elastisys.com", "subject", null, clientSettings);
+		SmtpAlerter alerter = new SmtpAlerter(config, standardTags);
 		this.eventBus.register(alerter);
 
 		// post an Alert on the event bus
@@ -157,7 +160,7 @@ public class TestEmailAlerter {
 	}
 
 	/**
-	 * Verify that {@link EmailAlerter} suppresses any {@link Alert}s whose
+	 * Verify that {@link SmtpAlerter} suppresses any {@link Alert}s whose
 	 * {@link AlertSeverity} doesn't match the specified severity filter.
 	 */
 	@Test
@@ -166,11 +169,11 @@ public class TestEmailAlerter {
 
 		// specify severity filter
 		String severityFilter = "ERROR|FATAL";
-		EmailAlerter alerter = new EmailAlerter(new SmtpServerSettings(
-				"some.smtp.host", 25, new ClientAuthentication("user", "pass"),
-				true), new SendSettings(
+		SmtpAlerter alerter = new SmtpAlerter(new SmtpAlerterConfig(
 				Arrays.asList("recipient@elastisys.com"),
-				"sender@elastisys.com", "subject", severityFilter));
+				"sender@elastisys.com", "subject", severityFilter,
+				new SmtpClientConfig("some.smtp.host", 25,
+						new SmtpClientAuthentication("user", "pass"), true)));
 		this.eventBus.register(alerter);
 
 		// post Alerts with different severity on the event bus

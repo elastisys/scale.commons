@@ -1,25 +1,28 @@
-package com.elastisys.scale.commons.net.smtp.alerter;
+package com.elastisys.scale.commons.net.alerter.smtp;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
+import com.elastisys.scale.commons.net.alerter.Alert;
+import com.elastisys.scale.commons.net.alerter.AlertSeverity;
+import com.elastisys.scale.commons.net.alerter.SeverityFilter;
+import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 /**
- * Common email send settings for the {@link EmailAlerter}.
+ * Common email send settings for the {@link SmtpAlerter}.
  *
- * @see EmailAlerter
+ * @see SmtpAlerter
  */
-public class SendSettings {
+public class SmtpAlerterConfig {
 	/**
-	 * The default severity filter to apply to {@link Alert}s. This
-	 * filter accepts any severity.
+	 * The default severity filter to apply to {@link Alert}s. This filter
+	 * accepts any severity.
 	 */
 	public static final String DEFAULT_SEVERITY_FILTER = ".*";
 
@@ -30,15 +33,18 @@ public class SendSettings {
 	/** The email subject line. */
 	private final String subject;
 	/**
-	 * The regular expression used to filter {@link Alert}s.
-	 * {@link Alert}s with an {@link AlertSeverity} that doesn't match
-	 * the filter expression are suppressed and not sent.
+	 * The regular expression used to filter {@link Alert}s. {@link Alert}s with
+	 * an {@link AlertSeverity} that doesn't match the filter expression are
+	 * suppressed and not sent.
 	 */
 	private final String severityFilter;
 
+	/** SMTP client connection settings. */
+	private final SmtpClientConfig smtpClientConfig;
+
 	/**
-	 * Constructs common email settings for {@link Alert} emails sent by
-	 * an {@link EmailAlerter}.
+	 * Constructs common email settings for {@link Alert} emails sent by an
+	 * {@link SmtpAlerter}.
 	 *
 	 * @param recipients
 	 *            The email recipients to use in sent mails ({@code To:}).
@@ -48,16 +54,20 @@ public class SendSettings {
 	 *            The email subject line.
 	 * @param severityFilter
 	 *            The regular expression used to filter {@link Alert}s.
-	 *            {@link Alert}s with an {@link AlertSeverity} that
-	 *            doesn't match the filter expression are suppressed and not
-	 *            sent. Set to <code>null</code> to accept any severity.
+	 *            {@link Alert}s with an {@link AlertSeverity} that doesn't
+	 *            match the filter expression are suppressed and not sent. Set
+	 *            to <code>null</code> to accept any severity.
+	 * @param smtpClientConfig
+	 *            SMTP client connection settings.
 	 */
-	public SendSettings(List<String> recipients, String sender, String subject,
-			String severityFilter) {
+	public SmtpAlerterConfig(List<String> recipients, String sender,
+			String subject, String severityFilter,
+			SmtpClientConfig smtpClientConfig) {
 		this.recipients = recipients;
 		this.sender = sender;
 		this.subject = subject;
 		this.severityFilter = severityFilter;
+		this.smtpClientConfig = smtpClientConfig;
 		validate();
 	}
 
@@ -90,31 +100,42 @@ public class SendSettings {
 
 	/**
 	 * Returns the regular expression used to filter {@link Alert}s.
-	 * {@link Alert}s with an {@link AlertSeverity} that doesn't match
-	 * the filter expression are suppressed and not sent.
+	 * {@link Alert}s with an {@link AlertSeverity} that doesn't match the
+	 * filter expression are suppressed and not sent.
 	 *
 	 * @return
 	 */
-	public String getSeverityFilter() {
-		return Optional.fromNullable(this.severityFilter).or(
-				DEFAULT_SEVERITY_FILTER);
+	public SeverityFilter getSeverityFilter() {
+		return new SeverityFilter(Optional.fromNullable(this.severityFilter)
+				.or(DEFAULT_SEVERITY_FILTER));
+	}
+
+	/**
+	 * Returns SMTP client connection settings.
+	 *
+	 * @return
+	 */
+	public SmtpClientConfig getSmtpClientConfig() {
+		return this.smtpClientConfig;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.recipients, this.sender, this.subject,
-				getSeverityFilter());
+				getSeverityFilter(), this.smtpClientConfig);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof SendSettings) {
-			SendSettings that = (SendSettings) obj;
+		if (obj instanceof SmtpAlerterConfig) {
+			SmtpAlerterConfig that = (SmtpAlerterConfig) obj;
 			return Objects.equal(this.recipients, that.recipients)
 					&& Objects.equal(this.sender, that.sender)
 					&& Objects.equal(this.subject, that.subject)
 					&& Objects.equal(this.getSeverityFilter(),
-							that.getSeverityFilter());
+							that.getSeverityFilter())
+					&& Objects.equal(this.smtpClientConfig,
+							that.smtpClientConfig);
 		}
 		return false;
 	}
@@ -127,6 +148,7 @@ public class SendSettings {
 	 * @throws IllegalArgumentException
 	 */
 	public void validate() throws IllegalArgumentException {
+		checkArgument(this.subject != null, "subject cannot be null");
 		checkArgument(this.recipients != null, "recipients list cannot be null");
 		for (String recipient : this.recipients) {
 			checkArgument(recipient != null, "recipient cannot be null");
@@ -134,7 +156,8 @@ public class SendSettings {
 		}
 		checkArgument(this.sender != null, "sender cannot be null");
 		verifyEmailAddress(this.sender);
-		verifySeverityFilter(getSeverityFilter());
+		getSeverityFilter();
+		this.smtpClientConfig.validate();
 	}
 
 	private void verifyEmailAddress(String address) {
@@ -145,14 +168,4 @@ public class SendSettings {
 					"illegal email address '%s'", address));
 		}
 	}
-
-	private void verifySeverityFilter(String severityFilter) {
-		try {
-			Pattern.compile(severityFilter);
-		} catch (Exception e) {
-			throw new IllegalArgumentException(
-					"illegal severity filter expression: " + e.getMessage(), e);
-		}
-	}
-
 }

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A {@link Callable} that sends an email message ({@link SmtpMessage}) to a
- * certain SMTP server ({@link SmtpServerSettings}).
+ * certain SMTP server ({@link SmtpClientConfig}).
  * <p/>
  * The task returns <code>true</code> if the message was successfully sent.
  * <p/>
@@ -25,7 +25,7 @@ public class SmtpSender implements Callable<Boolean> {
 	/** The message to send. */
 	private final SmtpMessage message;
 	/** The SMTP server settings to use. */
-	private final SmtpServerSettings serverSettings;
+	private final SmtpClientConfig serverSettings;
 
 	/**
 	 * Constructs a new {@link SmtpSender} that will send an email message to a
@@ -36,7 +36,7 @@ public class SmtpSender implements Callable<Boolean> {
 	 * @param serverSettings
 	 *            The SMTP server settings to use.
 	 */
-	public SmtpSender(SmtpMessage message, SmtpServerSettings serverSettings) {
+	public SmtpSender(SmtpMessage message, SmtpClientConfig serverSettings) {
 		this.message = message;
 		this.serverSettings = serverSettings;
 	}
@@ -48,7 +48,7 @@ public class SmtpSender implements Callable<Boolean> {
 	}
 
 	private void sendMessage(SmtpMessage smtpMessage,
-			SmtpServerSettings settings) throws EmailException {
+			SmtpClientConfig settings) throws EmailException {
 		checkNotNull(this.message, "alert message cannot be null");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("sending email to {} with server settings {}",
@@ -64,7 +64,7 @@ public class SmtpSender implements Callable<Boolean> {
 		email.setTo(smtpMessage.getTo());
 		email.setSentDate(smtpMessage.getDateSent().toDate());
 		if (settings.getAuthentication() != null) {
-			email.setAuthentication(settings.getAuthentication().getUserName(),
+			email.setAuthentication(settings.getAuthentication().getUsername(),
 					settings.getAuthentication().getPassword());
 		}
 		if (settings.isUseSsl()) {

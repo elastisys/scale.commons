@@ -8,30 +8,28 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Exercises the {@link ClientAuthentication} class.
- * 
- * 
- * 
+ * Exercises the {@link SmtpClientAuthentication} class.
  */
-public class TestClientAuthentication {
+public class TestSmtpClientAuthentication {
 
 	@Test
 	public void fieldAccess() {
-		assertThat(new ClientAuthentication("user", "pass").getUserName(),
+		assertThat(new SmtpClientAuthentication("user", "pass").getUsername(),
 				is("user"));
-		assertThat(new ClientAuthentication("user", "pass").getPassword(),
+		assertThat(new SmtpClientAuthentication("user", "pass").getPassword(),
 				is("pass"));
 	}
 
 	@Test
 	public void equality() {
-		ClientAuthentication auth1 = new ClientAuthentication("user1", "pass1");
-		ClientAuthentication auth1Copy = new ClientAuthentication("user1",
+		SmtpClientAuthentication auth1 = new SmtpClientAuthentication("user1",
 				"pass1");
+		SmtpClientAuthentication auth1Copy = new SmtpClientAuthentication(
+				"user1", "pass1");
 
-		ClientAuthentication sameUserWrongPassword = new ClientAuthentication(
+		SmtpClientAuthentication sameUserWrongPassword = new SmtpClientAuthentication(
 				"user1", "pass2");
-		ClientAuthentication samePasswordWrongUser = new ClientAuthentication(
+		SmtpClientAuthentication samePasswordWrongUser = new SmtpClientAuthentication(
 				"user2", "pass1");
 
 		assertTrue(auth1.equals(auth1));
@@ -47,12 +45,13 @@ public class TestClientAuthentication {
 
 	@Test
 	public void testHashCode() {
-		ClientAuthentication auth1 = new ClientAuthentication("user1", "pass1");
-		ClientAuthentication auth1Copy = new ClientAuthentication("user1",
+		SmtpClientAuthentication auth1 = new SmtpClientAuthentication("user1",
 				"pass1");
-		ClientAuthentication sameUserWrongPassword = new ClientAuthentication(
+		SmtpClientAuthentication auth1Copy = new SmtpClientAuthentication(
+				"user1", "pass1");
+		SmtpClientAuthentication sameUserWrongPassword = new SmtpClientAuthentication(
 				"user1", "pass2");
-		ClientAuthentication samePasswordWrongUser = new ClientAuthentication(
+		SmtpClientAuthentication samePasswordWrongUser = new SmtpClientAuthentication(
 				"user2", "pass1");
 
 		assertTrue(auth1.hashCode() == auth1.hashCode());
@@ -63,12 +62,12 @@ public class TestClientAuthentication {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createWithNullUsername() {
-		new ClientAuthentication(null, "pass");
+		new SmtpClientAuthentication(null, "pass");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void createWithNullPassword() {
-		new ClientAuthentication("user", null);
+		new SmtpClientAuthentication("user", null);
 	}
 
 }

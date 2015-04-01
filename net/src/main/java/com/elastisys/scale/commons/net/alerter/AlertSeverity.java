@@ -1,8 +1,10 @@
-package com.elastisys.scale.commons.net.smtp.alerter;
+package com.elastisys.scale.commons.net.alerter;
 
 /**
  * The range of supported {@link Alert} severities.
  *
+ * @see Alerter
+ * @see Alert
  */
 public enum AlertSeverity {
 	/**

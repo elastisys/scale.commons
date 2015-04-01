@@ -1,4 +1,4 @@
-package com.elastisys.scale.commons.net.smtp.alerter;
+package com.elastisys.scale.commons.net.alerter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -12,12 +12,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.json.JsonUtils;
+import com.elastisys.scale.commons.net.alerter.Alert;
+import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 
-public class TestAlertMessage {
+public class TestAlert {
 
 	@Before
 	public void onSetup() {

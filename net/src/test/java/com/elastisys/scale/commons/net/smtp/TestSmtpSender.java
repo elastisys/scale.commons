@@ -39,7 +39,7 @@ public class TestSmtpSender {
 		SmtpSender sender = new SmtpSender(new SmtpMessage(
 				Arrays.asList("recipient@elastisys.com"),
 				"sender@elastisys.com", "subject", "content", null),
-				new SmtpServerSettings("some.smtp.host", 25, null, false));
+				new SmtpClientConfig("some.smtp.host", 25, null, false));
 		sender.call();
 
 		// check mailbox after sending
@@ -59,8 +59,8 @@ public class TestSmtpSender {
 		SmtpSender sender = new SmtpSender(new SmtpMessage(
 				Arrays.asList("recipient@elastisys.com"),
 				"sender@elastisys.com", "subject", "content", null),
-				new SmtpServerSettings("some.smtp.host", 25,
-						new ClientAuthentication("user", "pass"), true));
+				new SmtpClientConfig("some.smtp.host", 25,
+						new SmtpClientAuthentication("user", "pass"), true));
 		sender.call();
 
 		// check mailbox after sending

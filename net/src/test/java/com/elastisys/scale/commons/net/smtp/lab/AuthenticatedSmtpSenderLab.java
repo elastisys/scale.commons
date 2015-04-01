@@ -3,10 +3,10 @@ package com.elastisys.scale.commons.net.smtp.lab;
 import java.util.Arrays;
 import java.util.List;
 
-import com.elastisys.scale.commons.net.smtp.ClientAuthentication;
+import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpMessage;
 import com.elastisys.scale.commons.net.smtp.SmtpSender;
-import com.elastisys.scale.commons.net.smtp.SmtpServerSettings;
+import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.util.time.UtcTime;
 
 /**
@@ -29,7 +29,7 @@ public class AuthenticatedSmtpSenderLab {
 	private static final int MAIL_PORT = 465;
 	// TODO: make sure ${EMAIL_USER} is set
 	// TODO: make sure ${EMAIL_PASSWORD} is set
-	private static final ClientAuthentication AUTH = new ClientAuthentication(
+	private static final SmtpClientAuthentication AUTH = new SmtpClientAuthentication(
 			System.getenv("EMAIL_USER"), System.getenv("EMAIL_PASSWORD"));
 	private static final boolean USE_SSL = true;
 
@@ -38,7 +38,7 @@ public class AuthenticatedSmtpSenderLab {
 
 		SmtpSender requester = new SmtpSender(new SmtpMessage(RECIPIENTS,
 				"noreply@elastisys.com", "testing 1, 2, 3", content,
-				UtcTime.now()), new SmtpServerSettings(MAIL_SERVER, MAIL_PORT,
+				UtcTime.now()), new SmtpClientConfig(MAIL_SERVER, MAIL_PORT,
 				AUTH, USE_SSL, 10000, 10000));
 
 		System.out.println("sending email ...");

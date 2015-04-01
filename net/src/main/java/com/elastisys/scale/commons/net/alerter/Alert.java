@@ -1,4 +1,4 @@
-package com.elastisys.scale.commons.net.smtp.alerter;
+package com.elastisys.scale.commons.net.alerter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -14,17 +14,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
- * Represents a system event that can be sent by an {@link EmailAlerter}.
+ * Represents a system event that can be sent by an {@link Alerter}.
  *
- * @see EmailAlerter
+ * @see Alerter
  */
 public class Alert {
 	/**
 	 * The topic that this {@link Alert} is categorized under. Although a topic
 	 * can be an arbitrary {@link String}, a useful convention is for a topic to
-	 * be structured as a {@code /}-separated path, with the subsystem that
-	 * produced the {@link Alert} as the leading path entry. For example,
-	 * {@code /cloudAdapter/machinePool/CHANGED}.
+	 * be structured as a {@code /}-separated path. For example,
+	 * {@code /cloudpool/size/CHANGED}.
 	 */
 	private final String topic;
 	/** The severity of this {@link Alert}. */
@@ -40,15 +39,10 @@ public class Alert {
 	private final Map<String, JsonElement> metadata;
 
 	/**
-	 * Constructs a new {@link Alert} without tags.
+	 * Constructs a new {@link Alert} without metadata tags.
 	 *
 	 * @param topic
 	 *            The topic that this {@link Alert} is categorized under.
-	 *            Although a topic can be an arbitrary {@link String}, the
-	 *            convention is for a topic to be structured as a {@code /}
-	 *            -separated path , with the subsystem that produced the
-	 *            {@link Alert} as the leading path entry. For example,
-	 *            {@code /cloudAdapter/machinePool/CHANGED}.
 	 * @param severity
 	 *            The severity of this {@link Alert}.
 	 * @param timestamp
@@ -67,11 +61,6 @@ public class Alert {
 	 *
 	 * @param topic
 	 *            The topic that this {@link Alert} is categorized under.
-	 *            Although a topic can be an arbitrary {@link String}, the
-	 *            convention is for a topic to be structured as a {@code /}
-	 *            -separated path , with the subsystem that produced the
-	 *            {@link Alert} as the leading path entry. For example,
-	 *            {@code /cloudAdapter/machinePool/CHANGED}.
 	 * @param severity
 	 *            The severity of this {@link Alert}.
 	 * @param timestamp
@@ -81,14 +70,6 @@ public class Alert {
 	 * @param metadata
 	 *            Additional JSON meta data about the {@link Alert} as a
 	 *            {@link Map} of meta data keys mapped to {@link JsonObject}s.
-	 *            <p/>
-	 *            These name-value pairs can, for example, be used to convey
-	 *            meta data about the {@link AutoScaler} that produced the
-	 *            {@link Alert} (such as {@link AutoScaler} id, host). Such meta
-	 *            data is useful to distinguish {@link AutoScaler} messages from
-	 *            each other in scenarios where several {@link AutoScaler}
-	 *            instances are employed (for example, to achieve high
-	 *            availability or to monitor several application layers).
 	 */
 	public Alert(String topic, AlertSeverity severity, DateTime timestamp,
 			String message, Map<String, JsonElement> metadata) {
@@ -108,11 +89,6 @@ public class Alert {
 
 	/**
 	 * Returns the topic that this {@link Alert} is categorized under.
-	 * <p/>
-	 * Although a topic can be an arbitrary {@link String}, the convention is
-	 * for a topic to be structured as a {@code /} -separated path , with the
-	 * subsystem that produced the {@link Alert} as the leading path entry. For
-	 * example, {@code /cloudAdapter/machinePool/CHANGED}.
 	 *
 	 * @return
 	 */

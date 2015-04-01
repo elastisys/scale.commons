@@ -92,9 +92,9 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 	 */
 	private static Server createHttpsServer(int httpsPort) {
 		ServletDefinition servlet = new ServletDefinition.Builder()
-		.servlet(new HelloWorldServlet()).servletPath("/")
-		.requireBasicAuth(true).realmFile(SERVER_REALM_FILE)
-		.requireRole("USER").build();
+				.servlet(new HelloWorldServlet()).servletPath("/")
+				.requireBasicAuth(true).realmFile(SERVER_REALM_FILE)
+				.requireRole("USER").build();
 		return ServletServerBuilder.create().httpsPort(httpsPort)
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(SERVER_PKCS12_KEYSTORE)
@@ -123,7 +123,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 		try {
 			client.execute(new HttpGet(url("/")));
 			fail("unauthenticated client should not have access");
-		} catch (SSLException e) {
+		} catch (SocketException | SSLException e) {
 			// expected
 		}
 	}
