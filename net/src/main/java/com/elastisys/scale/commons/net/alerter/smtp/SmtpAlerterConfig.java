@@ -148,15 +148,16 @@ public class SmtpAlerterConfig {
 	 * @throws IllegalArgumentException
 	 */
 	public void validate() throws IllegalArgumentException {
-		checkArgument(this.subject != null, "subject cannot be null");
-		checkArgument(this.recipients != null, "recipients list cannot be null");
+		checkArgument(this.subject != null, "missing subject");
+		checkArgument(this.recipients != null, "missing recipients list");
 		for (String recipient : this.recipients) {
 			checkArgument(recipient != null, "recipient cannot be null");
 			verifyEmailAddress(recipient);
 		}
-		checkArgument(this.sender != null, "sender cannot be null");
+		checkArgument(this.sender != null, "missing sender");
 		verifyEmailAddress(this.sender);
 		getSeverityFilter();
+		checkArgument(this.smtpClientConfig != null, "missing smtpClientConfig");
 		this.smtpClientConfig.validate();
 	}
 

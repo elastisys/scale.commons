@@ -1,5 +1,6 @@
 package com.elastisys.scale.commons.net.alerter;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -30,5 +31,6 @@ public interface Alerter {
 	 *             if the alert could not be sent.
 	 */
 	@Subscribe
+	@AllowConcurrentEvents
 	public void handleAlert(Alert alert) throws RuntimeException;
 }

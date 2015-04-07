@@ -159,7 +159,8 @@ public class HttpAlerterConfig {
 	 */
 	public HttpAuthConfig getAuth() {
 		// if unset, return an auth config with no auth credentials
-		return Optional.fromNullable(this.auth).or(new HttpAuthConfig(null, null));
+		return Optional.fromNullable(this.auth).or(
+				new HttpAuthConfig(null, null));
 	}
 
 	/**
@@ -222,7 +223,7 @@ public class HttpAlerterConfig {
 	 */
 	public void validate() throws IllegalArgumentException {
 		checkArgument(this.destinationUrls != null,
-				"http alerter: destinationUrl cannot be null");
+				"http alerter: missing destinationUrls");
 		for (String url : this.destinationUrls) {
 			checkArgument(url != null, "http alerter: URL cannot be null");
 			verifyUrl(url);
