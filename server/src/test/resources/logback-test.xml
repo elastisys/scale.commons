@@ -18,5 +18,9 @@
   <logger name="org.eclipse.jetty">
     <level value="info" />
   </logger>
+  
+  <logger name="org.eclipse.jetty.servlets.CrossOriginFilter">
+    <level value="debug" />
+  </logger>
 
 </configuration>

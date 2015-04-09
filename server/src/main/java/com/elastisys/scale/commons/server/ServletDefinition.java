@@ -18,11 +18,11 @@ import org.eclipse.jetty.server.Server;
  * {@link Builder}.The builder allows a {@link ServletDefinition}s to be created
  * with a range of possible security configurations, such as authentication
  * mechanism and authorization.
- * 
+ *
  * @see ServletServerBuilder
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ServletDefinition {
 
@@ -69,20 +69,30 @@ public class ServletDefinition {
 	 */
 	private final String requireRole;
 
+	/**
+	 * Indicates if this {@link Servlet} is to accept cross-origin requests from
+	 * web pages loaded from a different web domain. Default is
+	 * <code>true</code>. For details, see <a
+	 * href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+	 * >CORS</a>.
+	 */
+	private final boolean supportCors;
+
 	private ServletDefinition(Servlet servlet, String servletPath,
 			boolean requireHttps, boolean requireBasicAuth, String realmFile,
-			String requireRole) {
+			String requireRole, boolean supportCors) {
 		this.servlet = servlet;
 		this.servletPath = servletPath;
 		this.requireHttps = requireHttps;
 		this.requireBasicAuth = requireBasicAuth;
 		this.realmFile = realmFile;
 		this.requireRole = requireRole;
+		this.supportCors = supportCors;
 	}
 
 	/**
 	 * Returns the {@link Servlet} that is to be published.
-	 * 
+	 *
 	 * @return
 	 */
 	public Servlet getServlet() {
@@ -91,7 +101,7 @@ public class ServletDefinition {
 
 	/**
 	 * Returns the context path on which the {@link Servlet} will be published.
-	 * 
+	 *
 	 * @return the servletPath
 	 */
 	public String getServletPath() {
@@ -103,7 +113,7 @@ public class ServletDefinition {
 	 * take place over a secure port. That is, any request attempts over HTTP
 	 * (should the server port be open) will be redirected to the secure (HTTPS)
 	 * port.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isRequireHttps() {
@@ -117,7 +127,7 @@ public class ServletDefinition {
 	 * <p/>
 	 * <i>Note: user credentials are specified in {@link #realmFile} and
 	 * role-based authorization in {@link #requireRole}.</i>
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isRequireBasicAuth() {
@@ -130,7 +140,7 @@ public class ServletDefinition {
 	 * {@link HashLoginService}.
 	 * <p/>
 	 * <i/>Note: only relevant when HTTP BASIC authentication is specified</i>.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getRealmFile() {
@@ -143,7 +153,7 @@ public class ServletDefinition {
 	 * {@link #realmFile}.
 	 * <p/>
 	 * <i/>Note: only relevant when HTTP BASIC authentication is specified</i>.
-	 * 
+	 *
 	 * @return
 	 */
 	public String getRequireRole() {
@@ -151,10 +161,23 @@ public class ServletDefinition {
 	}
 
 	/**
+	 * Returns a {@link Boolean} indicating if the {@link Servlet} is to accept
+	 * cross-origin requests from web pages loaded from a different web domain.
+	 * For details, see <a
+	 * href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+	 * >CORS</a>.
+	 *
+	 * @return
+	 */
+	public boolean isSupportCors() {
+		return this.supportCors;
+	}
+
+	/**
 	 * A builder for {@link ServletDefinition}s.
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 */
 	public static class Builder {
 		/** The {@link Servlet} that is to be published. */
@@ -202,6 +225,15 @@ public class ServletDefinition {
 		private String requireRole = null;
 
 		/**
+		 * Indicates if this {@link Servlet} is to accept cross-origin requests
+		 * from web pages loaded from a different web domain. Default is
+		 * <code>true</code>. For details, see <a
+		 * href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+		 * >CORS</a>.
+		 */
+		private boolean supportCors = true;
+
+		/**
 		 * Creates a new {@link ServletDefinition} builder.
 		 */
 		public Builder() {
@@ -210,7 +242,7 @@ public class ServletDefinition {
 		/**
 		 * Builds a {@link Server} object from the parameters passed to the
 		 * {@link BaseServerBuilder}.
-		 * 
+		 *
 		 * @return
 		 */
 		public ServletDefinition build() {
@@ -221,7 +253,7 @@ public class ServletDefinition {
 
 			return new ServletDefinition(this.servlet, this.servletPath,
 					this.requireHttps, this.requireBasicAuth, this.realmFile,
-					this.requireRole);
+					this.requireRole, this.supportCors);
 		}
 
 		private void validateSecurityConfig() {
@@ -240,7 +272,7 @@ public class ServletDefinition {
 
 		/**
 		 * Set the {@link Servlet} that is to be published.
-		 * 
+		 *
 		 * @param servlet
 		 * @return
 		 */
@@ -250,10 +282,10 @@ public class ServletDefinition {
 		}
 
 		/**
-		 * 
+		 *
 		 * Set the context path on which the {@link Servlet} will be published.
 		 * Defaults to: {@code /}.
-		 * 
+		 *
 		 * @param servletPath
 		 * @return
 		 */
@@ -267,7 +299,7 @@ public class ServletDefinition {
 		 * to be over a secure port. That is, any request attempts over HTTP
 		 * (should the server port be open) will be redirected to the secure
 		 * (HTTPS) port. Default: true.
-		 * 
+		 *
 		 * @param requireSecureAccess
 		 * @return
 		 */
@@ -284,7 +316,7 @@ public class ServletDefinition {
 		 * <i>Note: user credentials need to be specified via the
 		 * {@link #realmFile} option and role-based authorization via the
 		 * {@link #requireRole} option.</i>
-		 * 
+		 *
 		 * @param requireBasicAuth
 		 * @return
 		 */
@@ -300,7 +332,7 @@ public class ServletDefinition {
 		 * <p/>
 		 * <i/>Note: this option is only required when {@link #requireBasicAuth}
 		 * is set</i>.
-		 * 
+		 *
 		 * @param realmFile
 		 * @return
 		 */
@@ -316,7 +348,7 @@ public class ServletDefinition {
 		 * <p/>
 		 * <i/>Note: this option is only required when {@link #requireBasicAuth}
 		 * is set</i>.
-		 * 
+		 *
 		 * @param role
 		 * @return
 		 */
@@ -325,5 +357,21 @@ public class ServletDefinition {
 			return this;
 		}
 
+		/**
+		 * Indicates if the {@link Servlet} is to accept cross-origin requests
+		 * from web pages loaded from a different web domain. Default is
+		 * <code>true</code>. For details, see <a
+		 * href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+		 * >CORS</a>.
+		 *
+		 * @param supportCors
+		 *            <code>true</code> if cross-origin requests are to be
+		 *            supported, <code>false</code> otherwise.
+		 * @return
+		 */
+		public Builder supportCors(boolean supportCors) {
+			this.supportCors = supportCors;
+			return this;
+		}
 	}
 }

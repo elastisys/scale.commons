@@ -1,7 +1,9 @@
 package com.elastisys.scale.commons.server;
 
+import java.util.EnumSet;
 import java.util.List;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
 import org.eclipse.jetty.security.ConstraintMapping;
@@ -12,8 +14,10 @@ import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.eclipse.jetty.util.security.Constraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +36,11 @@ import com.google.common.collect.Lists;
  * <p/>
  * This builder extends on the {@link BaseServerBuilder} through the delegate
  * pattern.
- * 
+ *
  * @see BaseServerBuilder
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ServletServerBuilder {
 	static Logger LOG = LoggerFactory.getLogger(ServletServerBuilder.class);
@@ -51,7 +55,7 @@ public class ServletServerBuilder {
 
 	/**
 	 * Constructs a new {@link ServletServerBuilder}.
-	 * 
+	 *
 	 * @param serverBuilder
 	 *            The builder that builds the "base server" (that is, a server
 	 *            without an application).
@@ -62,7 +66,7 @@ public class ServletServerBuilder {
 
 	/**
 	 * Creates a new {@link ServletServerBuilder}.
-	 * 
+	 *
 	 * @return
 	 */
 	public static ServletServerBuilder create() {
@@ -72,7 +76,7 @@ public class ServletServerBuilder {
 	/**
 	 * Builds a {@link Server} object from the parameters passed to the
 	 * {@link ServletServerBuilder}.
-	 * 
+	 *
 	 * @return
 	 */
 	public Server build() {
@@ -84,12 +88,16 @@ public class ServletServerBuilder {
 		for (ServletDefinition servletDefinition : this.servletDefinitions) {
 			// create the servlet request handler
 			ServletContextHandler servletHandler = createServletHandler(servletDefinition);
+
 			// add security handler if security settings were specified
 			if (servletDefinition.isRequireHttps()
 					|| servletDefinition.isRequireBasicAuth()) {
 				ConstraintSecurityHandler securityHandler = createSecurityHandler(
 						server, servletDefinition);
 				servletHandler.setSecurityHandler(securityHandler);
+			}
+			if (servletDefinition.isSupportCors()) {
+				addCrossOriginFilter(servletHandler);
 			}
 			servletHandlers.addHandler(servletHandler);
 		}
@@ -99,10 +107,32 @@ public class ServletServerBuilder {
 	}
 
 	/**
+	 * Adds support for <a
+	 * href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing"
+	 * >CORS</a> to the {@link Servlet} by adding a {@link CrossOriginFilter}.
+	 *
+	 * @param servletHandler
+	 */
+	private void addCrossOriginFilter(ServletContextHandler servletHandler) {
+		LOG.debug("enabling CORS support");
+		EnumSet<DispatcherType> dispatches = EnumSet.of(DispatcherType.ASYNC,
+				DispatcherType.ERROR, DispatcherType.FORWARD,
+				DispatcherType.INCLUDE, DispatcherType.REQUEST);
+		CrossOriginFilter corsFilter = new CrossOriginFilter();
+		FilterHolder filterHolder = new FilterHolder(corsFilter);
+		// use defaults for filter parameters except for the below ones
+		filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM,
+				"GET,PUT,POST,HEAD,DELETE,OPTIONS");
+		filterHolder.setInitParameter(
+				CrossOriginFilter.ALLOW_CREDENTIALS_PARAM, "true");
+		servletHandler.addFilter(filterHolder, "/*", dispatches);
+	}
+
+	/**
 	 * Creates a {@link ConstraintSecurityHandler} for the server that
 	 * configures (secure) transport guarantees, authentication, authorization,
 	 * etc according to the builder security settings.
-	 * 
+	 *
 	 * @param server
 	 *            The {@link Server} for which the security handler is created.
 	 * @return
@@ -146,7 +176,7 @@ public class ServletServerBuilder {
 
 	/**
 	 * Adds a {@link Servlet} that is to be published.
-	 * 
+	 *
 	 * @param servletDefinition
 	 *            The servlet definition. See {@link ServletDefinition.Builder}.
 	 * @return
@@ -159,7 +189,7 @@ public class ServletServerBuilder {
 	/**
 	 * Creates a request {@link Handler} for a {@link Servlet} that is to be
 	 * published.
-	 * 
+	 *
 	 * @param servletDefinition
 	 * @return
 	 */

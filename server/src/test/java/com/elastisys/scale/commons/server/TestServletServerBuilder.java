@@ -12,6 +12,7 @@ import java.util.List;
 import javax.net.ssl.SSLHandshakeException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -19,6 +20,7 @@ import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,13 @@ public class TestServletServerBuilder {
 	/** HTTPS port to use for the server in a test. */
 	private int httpsPort;
 
+	@BeforeClass
+	public static void beforeTests() {
+		// need to set this property to prevent HttpUrlConnection from ignoring
+		// client CORS headers (such as Origin)
+		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+	}
+
 	@Before
 	public void onSetup() {
 		List<Integer> freePorts = ServerSocketUtils.findUnusedPorts(2);
@@ -67,7 +76,6 @@ public class TestServletServerBuilder {
 		// server instances are created by each individual test method
 		this.server = null;
 	}
-
 
 	/**
 	 * Tears down the {@link Server} instance (if any) created by the test.
@@ -486,6 +494,79 @@ public class TestServletServerBuilder {
 		response = client.target(httpsUrl("/servlet3")).request().get();
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("SECURED_AUTH"));
+	}
+
+	/**
+	 * Test support for cross-origin resource sharing (CORS). That is, create a
+	 * servlet that supports requests from web pages loaded from a different
+	 * domain.
+	 */
+	@Test
+	public void testCorsSupport() throws Exception {
+		// create a servlet that (by the default value) supports CORS requests.
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).supportCors(true).build();
+		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
+				.addServlet(servlet).build();
+		this.server.start();
+		// make a CORS request
+		Client noAuthClient = RestClientUtils.httpNoAuth();
+		Builder request = noAuthClient.target(httpUrl("/")).request();
+		request.header("Origin", "http://www.foo.com");
+		Response response = request.get();
+		// verify response contains CORS header
+		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+		assertThat(response.getHeaders()
+				.getFirst("Access-Control-Allow-Origin").toString(),
+				is("http://www.foo.com"));
+	}
+
+	/**
+	 * Test support for cross-origin resource sharing (CORS) is enabled by
+	 * default.
+	 */
+	@Test
+	public void testCorsSupportEnabledByDefault() throws Exception {
+		// create a servlet that (by the default value) supports CORS requests.
+		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
+				new EchoServlet()).build();
+		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
+				.addServlet(servlet).build();
+		this.server.start();
+		// make a CORS request
+		Client noAuthClient = RestClientUtils.httpNoAuth();
+		Builder request = noAuthClient.target(httpUrl("/")).request();
+		request.header("Origin", "http://www.foo.com");
+		Response response = request.get();
+		// verify response contains CORS header
+		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+		assertThat(response.getHeaders()
+				.getFirst("Access-Control-Allow-Origin").toString(),
+				is("http://www.foo.com"));
+	}
+
+	/**
+	 * Test disabling support for cross-origin resource sharing (CORS) is
+	 * enabled by default.
+	 */
+	@Test
+	public void testDisablingCorsSupport() throws Exception {
+		// create a servlet that (by the default value) supports CORS requests.
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).supportCors(false).build();
+		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
+				.addServlet(servlet).build();
+		this.server.start();
+		// make a CORS request
+		Client noAuthClient = RestClientUtils.httpNoAuth();
+		Builder request = noAuthClient.target(httpUrl("/")).request();
+		request.header("Origin", "http://www.foo.com");
+		Response response = request.get();
+		// verify response does not contain CORS headers
+		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
+		assertThat(
+				response.getHeaders()
+						.containsKey("Access-Control-Allow-Origin"), is(false));
 	}
 
 	private Response httpNoAuth() {
