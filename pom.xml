@@ -69,7 +69,7 @@
     <quarts.version>2.2.1</quarts.version>
     <commons.math.version>3.3</commons.math.version>
     <jsch.version>0.1.51</jsch.version>
-    <args4j.version>2.0.29</args4j.version>
+    <args4j.version>2.32</args4j.version>
     
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
