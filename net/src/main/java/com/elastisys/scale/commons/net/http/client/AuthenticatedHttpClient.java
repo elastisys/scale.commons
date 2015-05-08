@@ -254,7 +254,7 @@ public class AuthenticatedHttpClient {
 		try {
 			CloseableHttpResponse httpResponse = null;
 			try {
-				this.logger.info(format("sending request (%s)", request));
+				this.logger.debug(format("sending request (%s)", request));
 				httpResponse = client.execute(request);
 			} catch (Exception e) {
 				Throwables.propagateIfInstanceOf(e, IOException.class);
