@@ -91,8 +91,8 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 	 */
 	private static Server createHttpsServer(int httpsPort) {
 		ServletDefinition servlet = new ServletDefinition.Builder()
-		.servlet(new HelloWorldServlet()).servletPath("/")
-		.requireBasicAuth(false).build();
+				.servlet(new HelloWorldServlet()).servletPath("/")
+				.requireBasicAuth(false).build();
 		return ServletServerBuilder.create().httpsPort(httpsPort)
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(SERVER_PKCS12_KEYSTORE)
@@ -121,7 +121,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 		try {
 			client.execute(new HttpGet(url("/")));
 			fail("unauthenticated client should not have access");
-		} catch (SSLException e) {
+		} catch (SocketException | SSLException e) {
 			// expected
 		}
 	}
