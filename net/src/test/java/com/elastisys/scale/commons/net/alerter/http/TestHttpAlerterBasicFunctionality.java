@@ -126,7 +126,8 @@ public class TestHttpAlerterBasicFunctionality {
 		// create alerter with standard metadata tags
 		Map<String, JsonElement> standardMetadata = Maps.newHashMap();
 		standardMetadata.put("key1", JsonUtils.toJson("value1"));
-		JsonObject value2 = JsonUtils.parseJsonString("{'x': true, 'y': 'z'}");
+		JsonObject value2 = JsonUtils.parseJsonString("{'x': true, 'y': 'z'}")
+				.getAsJsonObject();
 		standardMetadata.put("key2", value2);
 		HttpAlerter alerter = new HttpAlerter(config(webhookUrl(), null, null),
 				standardMetadata);

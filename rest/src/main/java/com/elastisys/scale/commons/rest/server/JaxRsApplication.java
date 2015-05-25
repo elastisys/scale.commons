@@ -7,10 +7,8 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
-
-import com.elastisys.scale.commons.rest.converters.JsonObjectMessageBodyReader;
-import com.elastisys.scale.commons.rest.converters.JsonObjectMessageBodyWriter;
+import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
+import com.elastisys.scale.commons.rest.converters.GsonMessageBodyWriter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
@@ -20,17 +18,15 @@ import com.google.gson.JsonObject;
  * response handlers (resources in JAX-RS terminology) to handle client
  * requests.
  * <p/>
- * The {@link Application} supports JSON serialization/deserialization of
- * JAXB-annotated Java classes via the {@link JacksonFeature} as well as native
- * support for {@link JsonObject} parameters/response types in resource methods.
+ * The {@link Application} supports JSON serialization/deserialization of Java
+ * classes via the {@link GsonMessageBodyReader} and
+ * {@link GsonMessageBodyWriter} as well as native support for
+ * {@link JsonObject} parameters/response types in resource methods.
  * <p/>
  * Registered handlers (resources in JAX-RS terminology) are added as
  * singletons, which means that the same handler instance will be used to
  * service all incoming requests. Handlers should therefore be thread-safe to
  * ensure proper operation even in the face of multiple concurrent requests
- *
- *
- *
  */
 @ApplicationPath("/")
 public class JaxRsApplication extends Application {
@@ -88,16 +84,13 @@ public class JaxRsApplication extends Application {
 	public Set<Class<?>> getClasses() {
 		final Set<Class<?>> classes = new HashSet<Class<?>>();
 
-		// add message body reader/writer for JsonObject conversion
-		classes.add(JsonObjectMessageBodyReader.class);
-		classes.add(JsonObjectMessageBodyWriter.class);
+		// support JSON serialization/deserialization of Java classes and
+		// JsonObject
+		classes.add(GsonMessageBodyReader.class);
+		classes.add(GsonMessageBodyWriter.class);
 
 		// could add filters here as well
 		// classes.add(LoggingFilter.class);
-
-		// support Jackson JSON serialization/deserialization of JAXB-annotated
-		// Java classes.
-		classes.add(JacksonFeature.class);
 
 		return classes;
 	}

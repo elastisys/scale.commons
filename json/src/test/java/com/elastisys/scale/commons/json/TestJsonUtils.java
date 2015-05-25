@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -28,15 +29,54 @@ public class TestJsonUtils {
 	@Test
 	public void parseJsonString() throws IOException {
 		String json = "{\"a\":\"value\",\"b\":1}";
-		JsonObject jsonObject = JsonUtils.parseJsonString(json);
+		JsonObject jsonObject = JsonUtils.parseJsonString(json)
+				.getAsJsonObject();
 		assertThat(jsonObject.get("a").getAsString(), is("value"));
 		assertThat(jsonObject.get("b").getAsInt(), is(1));
 	}
 
 	@Test
+	public void parseArray() throws IOException {
+		String json = "[0, 1, 2, 3]";
+		JsonElement jsonArray = JsonUtils.parseJsonString(json);
+		assertThat(jsonArray.isJsonArray(), is(true));
+		assertThat(jsonArray.getAsJsonArray().size(), is(4));
+		assertThat(jsonArray.getAsJsonArray().get(0).getAsInt(), is(0));
+		assertThat(jsonArray.getAsJsonArray().get(1).getAsInt(), is(1));
+		assertThat(jsonArray.getAsJsonArray().get(2).getAsInt(), is(2));
+		assertThat(jsonArray.getAsJsonArray().get(3).getAsInt(), is(3));
+	}
+
+	@Test
+	public void parsePrimitive() throws IOException {
+		String json = "true";
+		JsonElement jsonPrimitive = JsonUtils.parseJsonString(json);
+		assertThat(jsonPrimitive.isJsonPrimitive(), is(true));
+		assertThat(jsonPrimitive.getAsBoolean(), is(true));
+
+		json = "1";
+		jsonPrimitive = JsonUtils.parseJsonString(json);
+		assertThat(jsonPrimitive.isJsonPrimitive(), is(true));
+		assertThat(jsonPrimitive.getAsInt(), is(1));
+
+		json = "\"value\"";
+		jsonPrimitive = JsonUtils.parseJsonString(json);
+		assertThat(jsonPrimitive.isJsonPrimitive(), is(true));
+		assertThat(jsonPrimitive.getAsString(), is("value"));
+	}
+
+	@Test
+	public void parseNull() throws IOException {
+		String json = "null";
+		JsonElement jsonNull = JsonUtils.parseJsonString(json);
+		assertThat(jsonNull.isJsonNull(), is(true));
+	}
+
+	@Test
 	public void parseJsonResource() throws IOException {
 		String jsonResource = "jsonutils/json-resource.txt";
-		JsonObject jsonObject = JsonUtils.parseJsonResource(jsonResource);
+		JsonObject jsonObject = JsonUtils.parseJsonResource(jsonResource)
+				.getAsJsonObject();
 		assertThat(jsonObject.get("a").getAsString(), is("value"));
 		assertThat(jsonObject.get("b").getAsInt(), is(1));
 	}
@@ -45,7 +85,8 @@ public class TestJsonUtils {
 	public void parseJsonFile() throws IOException {
 		File jsonFile = new File(
 				"target/test-classes/jsonutils/json-resource.txt");
-		JsonObject jsonObject = JsonUtils.parseJsonFile(jsonFile);
+		JsonObject jsonObject = JsonUtils.parseJsonFile(jsonFile)
+				.getAsJsonObject();
 		assertThat(jsonObject.get("a").getAsString(), is("value"));
 		assertThat(jsonObject.get("b").getAsInt(), is(1));
 	}
@@ -219,7 +260,7 @@ public class TestJsonUtils {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.lang.Object#hashCode()
 		 */
 		@Override
@@ -233,7 +274,7 @@ public class TestJsonUtils {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
 		@Override

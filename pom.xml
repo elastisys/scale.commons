@@ -165,12 +165,6 @@
         <artifactId>jersey-client</artifactId>
         <version>${jersey.version}</version>
       </dependency>
-      <!-- Jersey XML/JSON JAXB (de)serialization support -->
-      <dependency>
-        <groupId>org.glassfish.jersey.media</groupId>
-        <artifactId>jersey-media-json-jackson</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
 
       <!-- Embeddable Jetty HTTP server -->
       <dependency>

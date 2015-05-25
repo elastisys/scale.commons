@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.util.List;
 
 import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLHandshakeException;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
@@ -186,7 +185,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 	 * Make sure a client that doesn't include a certificate can <b>not</b>
 	 * connect.
 	 */
-	@Test(expected = SSLHandshakeException.class)
+	@Test
 	public void callWithoutClientCertificate() throws IOException {
 		BasicCredentials basicCredentials = new BasicCredentials("johndoe",
 				"secret");
@@ -194,7 +193,12 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(
 				Optional.of(basicCredentials), absent);
 
-		client.execute(new HttpGet(url("/")));
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("call without client cert should not succeed");
+		} catch (SocketException | SSLException e) {
+			// expected
+		}
 	}
 
 	private String url(String path) {

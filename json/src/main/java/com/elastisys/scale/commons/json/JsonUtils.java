@@ -11,14 +11,13 @@ import com.elastisys.scale.commons.json.typeadapters.GsonDateTimeSerializer;
 import com.elastisys.scale.commons.json.typeadapters.ImmutableListDeserializer;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -39,14 +38,15 @@ public class JsonUtils {
 	 *
 	 * @param jsonString
 	 *            The JSON-formatted string.
-	 * @return A {@link JsonObject} for the parsed JSON {@link String}.
-	 * @throws RuntimeException
-	 *             If parsing fails.
+	 * @return A {@link JsonElement} for the parsed JSON {@link String}.
+	 * @throws JsonParseException
+	 * @throws IllegalArgumentException
 	 */
-	public static JsonObject parseJsonString(String jsonString)
-			throws RuntimeException {
-		Preconditions.checkNotNull(jsonString, "null argument not allowed");
-		return new JsonParser().parse(jsonString).getAsJsonObject();
+	public static JsonElement parseJsonString(String jsonString)
+			throws JsonParseException, IllegalArgumentException {
+		Preconditions.checkArgument(jsonString != null,
+				"null argument not allowed");
+		return new JsonParser().parse(jsonString);
 	}
 
 	/**
@@ -56,18 +56,20 @@ public class JsonUtils {
 	 * @param resourceName
 	 *            The name/path of the resource. The resource file is assumed to
 	 *            be found in the class path.
-	 * @return A {@link JsonObject} for the parsed JSON file.
-	 * @throws RuntimeException
-	 *             If reading/parsing fails.
+	 * @return A {@link JsonElement} for the parsed JSON file.
+	 * @throws JsonParseException
+	 * @throws IllegalArgumentException
 	 */
-	public static JsonObject parseJsonResource(String resourceName)
-			throws RuntimeException {
-		Preconditions.checkNotNull(resourceName, "null resource not allowed");
+	public static JsonElement parseJsonResource(String resourceName)
+			throws JsonParseException, IllegalArgumentException {
+		Preconditions.checkArgument(resourceName != null,
+				"null resource not allowed");
 		URL resource = Resources.getResource(resourceName);
 		try {
 			return parseJsonString(Resources.toString(resource, Charsets.UTF_8));
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new JsonParseException(String.format(
+					"failed to parse JSON resource %s", resourceName), e);
 		}
 	}
 
@@ -76,17 +78,19 @@ public class JsonUtils {
 	 *
 	 * @param jsonFile
 	 *            The JSON-formatted {@link File}.
-	 * @return A {@link JsonObject} for the parsed JSON {@link File}.
-	 * @throws RuntimeException
-	 *             If reading/parsing fails.
+	 * @return A {@link JsonElement} for the parsed JSON {@link File}.
+	 * @throws JsonParseException
+	 * @throws IllegalArgumentException
 	 */
-	public static JsonObject parseJsonFile(File jsonFile)
-			throws RuntimeException {
-		Preconditions.checkNotNull(jsonFile, "null file not allowed");
+	public static JsonElement parseJsonFile(File jsonFile)
+			throws JsonParseException, IllegalArgumentException {
+		Preconditions.checkArgument(jsonFile != null, "null file not allowed");
 		try {
 			return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
 		} catch (IOException e) {
-			throw Throwables.propagate(e);
+			throw new JsonParseException(
+					String.format("failed to parse JSON file %s",
+							jsonFile.getAbsolutePath()), e);
 		}
 	}
 
@@ -124,7 +128,7 @@ public class JsonUtils {
 	 * @return The JSON-serialized representation of the object.
 	 */
 	public static JsonElement toJson(Object object, boolean serializeNullFields) {
-		Preconditions.checkNotNull(object, "null object not allowed");
+		Preconditions.checkArgument(object != null, "null object not allowed");
 		GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(
 				DateTime.class, new GsonDateTimeSerializer());
 		if (serializeNullFields) {
@@ -143,7 +147,8 @@ public class JsonUtils {
 	 * @return The corresponding pretty-printed {@link String}.
 	 */
 	public static String toPrettyString(JsonElement jsonElement) {
-		Preconditions.checkNotNull(jsonElement, "null jsonElement not allowed");
+		Preconditions.checkArgument(jsonElement != null,
+				"null jsonElement not allowed");
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(jsonElement);
 	}
@@ -156,7 +161,8 @@ public class JsonUtils {
 	 * @return The corresponding JSON {@link String}.
 	 */
 	public static String toString(JsonElement jsonElement) {
-		Preconditions.checkNotNull(jsonElement, "null jsonElement not allowed");
+		Preconditions.checkArgument(jsonElement != null,
+				"null jsonElement not allowed");
 		Gson gson = new GsonBuilder().create();
 		return gson.toJson(jsonElement);
 	}
@@ -167,22 +173,23 @@ public class JsonUtils {
 	 * This method also handles deserializing time stamp elements into
 	 * {@link DateTime} fields.
 	 *
-	 * @param jsonObject
-	 *            The JSON object.
+	 * @param jsonElement
+	 *            The JSON element to serialize.
 	 * @param type
 	 *            The class of the Java object.
 	 * @return An instance of the specified {@code type}, created by
-	 *         deserializing the given {@code jsonObject}.
+	 *         deserializing the given {@code jsonElement}.
 	 */
-	public static <T> T toObject(JsonElement jsonObject, Class<T> type) {
-		Preconditions.checkNotNull(jsonObject, "null jsonObject not allowed");
-		Preconditions.checkNotNull(type, "null type not allowed");
+	public static <T> T toObject(JsonElement jsonElement, Class<T> type) {
+		Preconditions.checkArgument(jsonElement != null,
+				"null jsonElement not allowed");
+		Preconditions.checkArgument(type != null, "null type not allowed");
 		Gson gson = new GsonBuilder()
-		.registerTypeAdapter(DateTime.class,
-				new GsonDateTimeDeserializer())
+				.registerTypeAdapter(DateTime.class,
+						new GsonDateTimeDeserializer())
 				.registerTypeAdapter(ImmutableList.class,
 						new ImmutableListDeserializer()).create();
-		return type.cast(gson.fromJson(jsonObject, type));
+		return type.cast(gson.fromJson(jsonElement, type));
 	}
 
 }

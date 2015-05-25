@@ -7,13 +7,11 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.jackson.JacksonFeature;
 
 import com.elastisys.scale.commons.net.ssl.SslContextBuilder;
 import com.elastisys.scale.commons.net.ssl.SslUtils;
-import com.elastisys.scale.commons.rest.converters.JsonObjectMapperProvider;
-import com.elastisys.scale.commons.rest.converters.JsonObjectMessageBodyReader;
-import com.elastisys.scale.commons.rest.converters.JsonObjectMessageBodyWriter;
+import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
+import com.elastisys.scale.commons.rest.converters.GsonMessageBodyWriter;
 import com.google.common.base.Throwables;
 import com.google.gson.JsonObject;
 
@@ -21,11 +19,9 @@ import com.google.gson.JsonObject;
  * A utility class for creating different forms of REST clients.
  * <p/>
  * The created {@link Client}s support JSON serialization/deserialization of
- * JAXB-annotated Java classes via the {@link JacksonFeature} as well as native
- * support for {@link JsonObject} parameters/responses.
- *
- *
- *
+ * Java classes via {@link GsonMessageBodyReader} and
+ * {@link GsonMessageBodyWriter}, as well as native support for
+ * {@link JsonObject} parameters/responses.
  */
 public class RestClients {
 
@@ -43,10 +39,8 @@ public class RestClients {
 		Client client = ClientBuilder.newBuilder()
 				.sslContext(SslUtils.trustAllCertsSslContext())
 				.hostnameVerifier(SslUtils.allowAllHostNames())
-				.register(JsonObjectMessageBodyWriter.class)
-				.register(JsonObjectMessageBodyReader.class).build();
-		client.register(JacksonFeature.class);
-		client.register(JsonObjectMapperProvider.class);
+				.register(GsonMessageBodyReader.class)
+				.register(GsonMessageBodyWriter.class).build();
 
 		return client;
 	}
@@ -71,10 +65,8 @@ public class RestClients {
 		Client client = ClientBuilder.newBuilder()
 				.sslContext(SslUtils.trustAllCertsSslContext())
 				.hostnameVerifier(SslUtils.allowAllHostNames())
-				.register(JsonObjectMessageBodyWriter.class)
-				.register(JsonObjectMessageBodyReader.class).build();
-		client.register(JacksonFeature.class);
-		client.register(JsonObjectMapperProvider.class);
+				.register(GsonMessageBodyReader.class)
+				.register(GsonMessageBodyWriter.class).build();
 		client.register(HttpAuthenticationFeature.basic(userName, password));
 		return client;
 	}
@@ -105,10 +97,8 @@ public class RestClients {
 			Client client = ClientBuilder.newBuilder()
 					.sslContext(clientCertSslContext)
 					.hostnameVerifier(SslUtils.allowAllHostNames())
-					.register(JsonObjectMessageBodyWriter.class)
-					.register(JsonObjectMessageBodyReader.class).build();
-			client.register(JacksonFeature.class);
-			client.register(JsonObjectMapperProvider.class);
+					.register(GsonMessageBodyReader.class)
+					.register(GsonMessageBodyWriter.class).build();
 			return client;
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
@@ -128,10 +118,8 @@ public class RestClients {
 	 */
 	public static Client httpBasicAuth(String userName, String password) {
 		Client client = ClientBuilder.newBuilder()
-				.register(JsonObjectMessageBodyWriter.class)
-				.register(JsonObjectMessageBodyReader.class).build();
-		client.register(JacksonFeature.class);
-		client.register(JsonObjectMapperProvider.class);
+				.register(GsonMessageBodyReader.class)
+				.register(GsonMessageBodyWriter.class).build();
 		client.register(HttpAuthenticationFeature.basic(userName, password));
 		return client;
 	}
@@ -144,10 +132,8 @@ public class RestClients {
 	 */
 	public static Client httpNoAuth() {
 		Client client = ClientBuilder.newBuilder()
-				.register(JsonObjectMessageBodyWriter.class)
-				.register(JsonObjectMessageBodyReader.class).build();
-		client.register(JacksonFeature.class);
-		client.register(JsonObjectMapperProvider.class);
+				.register(GsonMessageBodyReader.class)
+				.register(GsonMessageBodyWriter.class).build();
 		return client;
 	}
 }
