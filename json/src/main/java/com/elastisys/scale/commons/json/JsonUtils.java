@@ -69,7 +69,8 @@ public class JsonUtils {
 			return parseJsonString(Resources.toString(resource, Charsets.UTF_8));
 		} catch (IOException e) {
 			throw new JsonParseException(String.format(
-					"failed to parse JSON resource %s", resourceName), e);
+					"failed to parse JSON resource %s: %s", resourceName,
+					e.getMessage()), e);
 		}
 	}
 
@@ -88,9 +89,9 @@ public class JsonUtils {
 		try {
 			return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
 		} catch (IOException e) {
-			throw new JsonParseException(
-					String.format("failed to parse JSON file %s",
-							jsonFile.getAbsolutePath()), e);
+			throw new JsonParseException(String.format(
+					"failed to parse JSON file %s: %s",
+					jsonFile.getAbsolutePath(), e.getMessage()), e);
 		}
 	}
 
