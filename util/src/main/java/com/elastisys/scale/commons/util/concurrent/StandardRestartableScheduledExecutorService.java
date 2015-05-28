@@ -15,9 +15,9 @@ import java.util.concurrent.TimeoutException;
 
 /**
  * Standard implementation of the {@link RestartableScheduledExecutorService}.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class StandardRestartableScheduledExecutorService implements
 		RestartableScheduledExecutorService {
@@ -38,7 +38,7 @@ public class StandardRestartableScheduledExecutorService implements
 	 * On return, the created {@link RestartableScheduledExecutorService} will
 	 * be in an unstarted state and needs to be explicity started via a call to
 	 * {@link #start()}.
-	 * 
+	 *
 	 * @param corePoolSize
 	 *            the fixed number of threads to keep in the pool, even if they
 	 *            are idle.
@@ -54,7 +54,7 @@ public class StandardRestartableScheduledExecutorService implements
 	 * On return, the created {@link RestartableScheduledExecutorService} will
 	 * be in an unstarted state and needs to be explicity started via a call to
 	 * {@link #start()}.
-	 * 
+	 *
 	 * @param corePoolSize
 	 *            the fixed number of threads to keep in the pool, even if they
 	 *            are idle.
@@ -78,7 +78,7 @@ public class StandardRestartableScheduledExecutorService implements
 	}
 
 	@Override
-	public void stop(int taskTerminationGracePeriod)
+	public void stop(int taskTerminationGracePeriod, TimeUnit unit)
 			throws InterruptedException {
 		if (!isStarted()) {
 			// idempotent operation
@@ -87,7 +87,7 @@ public class StandardRestartableScheduledExecutorService implements
 
 		this.executorService.shutdown();
 		boolean allDone = this.executorService.awaitTermination(
-				taskTerminationGracePeriod, TimeUnit.SECONDS);
+				taskTerminationGracePeriod, unit);
 		if (!allDone) {
 			this.executorService.shutdownNow();
 		}
@@ -98,7 +98,7 @@ public class StandardRestartableScheduledExecutorService implements
 	 * Returns <code>true</code> if this
 	 * {@link StandardRestartableScheduledExecutorService} has been started,
 	 * <code>false</code> otherwise.
-	 * 
+	 *
 	 * @return
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class StandardRestartableScheduledExecutorService implements
 	/**
 	 * Returns the inner (delegate) {@link ExecutorService} used by this
 	 * {@link StandardRestartableScheduledExecutorService}.
-	 * 
+	 *
 	 * @return
 	 */
 	ExecutorService innerExecutor() {

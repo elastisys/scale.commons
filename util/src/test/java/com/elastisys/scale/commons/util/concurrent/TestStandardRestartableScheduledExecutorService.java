@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +16,8 @@ import org.junit.Test;
 /**
  * Exercises the restart semantics of the
  * {@link StandardRestartableScheduledExecutorService}.
- * 
- * 
+ *
+ *
  */
 public class TestStandardRestartableScheduledExecutorService {
 
@@ -59,7 +60,7 @@ public class TestStandardRestartableScheduledExecutorService {
 		this.executor.start();
 		assertThat(this.executor.isStarted(), is(true));
 		assertThat(this.executor.innerExecutor(), is(not(nullValue())));
-		this.executor.stop(0);
+		this.executor.stop(0, TimeUnit.MILLISECONDS);
 		assertThat(this.executor.isStarted(), is(false));
 		assertThat(this.executor.innerExecutor(), is(nullValue()));
 	}
@@ -67,7 +68,7 @@ public class TestStandardRestartableScheduledExecutorService {
 	@Test
 	public void stopWhenStopped() throws InterruptedException {
 		assertThat(this.executor.isStarted(), is(false));
-		this.executor.stop(0);
+		this.executor.stop(0, TimeUnit.MILLISECONDS);
 		assertThat(this.executor.isStarted(), is(false));
 	}
 
@@ -82,7 +83,7 @@ public class TestStandardRestartableScheduledExecutorService {
 		assertThat(firstExecutor, is(not(nullValue())));
 
 		// stop
-		this.executor.stop(0);
+		this.executor.stop(0, TimeUnit.MILLISECONDS);
 		assertThat(this.executor.isStarted(), is(false));
 		assertThat(this.executor.innerExecutor(), is(nullValue()));
 
