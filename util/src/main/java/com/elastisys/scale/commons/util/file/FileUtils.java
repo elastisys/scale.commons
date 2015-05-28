@@ -11,8 +11,8 @@ import java.util.List;
 
 /**
  * Convenience file system methods.
- * 
- * 
+ *
+ *
  */
 public class FileUtils {
 
@@ -22,15 +22,44 @@ public class FileUtils {
 	}
 
 	/**
+	 * Returns <code>true</code> if the user owning the process can write to the
+	 * given directory.
+	 * <p/>
+	 * The method will make an attempt to create a file in the directory.
+	 *
+	 * @param dir
+	 *            A directory.
+	 * @return
+	 * @throws IllegalArgumentException
+	 *             If the passed directory doesn't exist or is something other
+	 *             than a directory.
+	 */
+	public static boolean canWriteTo(File directory)
+			throws IllegalArgumentException {
+		checkArgument(directory != null, "directory cannot be null");
+		checkArgument(directory.exists(), "directory %s doesn't exist",
+				directory.getAbsolutePath());
+		checkArgument(directory.isDirectory(), "%s is not a directory",
+				directory.getAbsolutePath());
+		try {
+			File probe = File.createTempFile("testprobe", null, directory);
+			probe.delete();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Deletes a file or directory (recursively).
-	 * 
+	 *
 	 * @param dirEntry
 	 *            A file or directory to be deleted.
 	 * @throws IOException
 	 *             Thrown if deletion fails.
 	 */
 	public static void deleteRecursively(File dirEntry) throws IOException {
-		checkNotNull(dirEntry, "null directory entry");
+		checkArgument(dirEntry != null, "null directory entry");
 
 		if (!dirEntry.exists()) {
 			return;
@@ -51,7 +80,7 @@ public class FileUtils {
 
 	/**
 	 * Lists all sub-directories in a file system directory.
-	 * 
+	 *
 	 * @param directory
 	 *            A file system directory.
 	 * @return
@@ -71,7 +100,7 @@ public class FileUtils {
 
 	/**
 	 * Returns the current working directory of the JVM.
-	 * 
+	 *
 	 * @return the current working directory.
 	 */
 	public static File cwd() {

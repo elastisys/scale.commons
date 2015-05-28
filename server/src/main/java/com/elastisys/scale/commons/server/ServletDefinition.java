@@ -4,6 +4,8 @@ import static com.elastisys.scale.commons.server.BaseServerBuilder.checkArgument
 import static java.lang.String.format;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.Servlet;
 
@@ -78,9 +80,17 @@ public class ServletDefinition {
 	 */
 	private final boolean supportCors;
 
+	/**
+	 * Init parameters to be passed to the {@link Servlet} on start-up. These
+	 * are the parameters typically found in {@code <init-param>} tags in the
+	 * {@code web.xml} file.
+	 */
+	private final Map<String, String> initParameters;
+
 	private ServletDefinition(Servlet servlet, String servletPath,
 			boolean requireHttps, boolean requireBasicAuth, String realmFile,
-			String requireRole, boolean supportCors) {
+			String requireRole, boolean supportCors,
+			Map<String, String> initParameters) {
 		this.servlet = servlet;
 		this.servletPath = servletPath;
 		this.requireHttps = requireHttps;
@@ -88,6 +98,7 @@ public class ServletDefinition {
 		this.realmFile = realmFile;
 		this.requireRole = requireRole;
 		this.supportCors = supportCors;
+		this.initParameters = initParameters;
 	}
 
 	/**
@@ -174,6 +185,17 @@ public class ServletDefinition {
 	}
 
 	/**
+	 * Returns the init parameters to be passed to the {@link Servlet} on
+	 * start-up. These are the parameters typically found in
+	 * {@code <init-param>} tags in the {@code web.xml} file.
+	 *
+	 * @return
+	 */
+	public Map<String, String> getInitParameters() {
+		return this.initParameters;
+	}
+
+	/**
 	 * A builder for {@link ServletDefinition}s.
 	 *
 	 *
@@ -234,6 +256,13 @@ public class ServletDefinition {
 		private boolean supportCors = true;
 
 		/**
+		 * Init parameters to be passed to the {@link Servlet} on start-up.
+		 * These are the parameters typically found in {@code <init-param>} tags
+		 * in the {@code web.xml} file.
+		 */
+		private Map<String, String> initParameters = new HashMap<>();
+
+		/**
 		 * Creates a new {@link ServletDefinition} builder.
 		 */
 		public Builder() {
@@ -253,7 +282,7 @@ public class ServletDefinition {
 
 			return new ServletDefinition(this.servlet, this.servletPath,
 					this.requireHttps, this.requireBasicAuth, this.realmFile,
-					this.requireRole, this.supportCors);
+					this.requireRole, this.supportCors, this.initParameters);
 		}
 
 		private void validateSecurityConfig() {
@@ -371,6 +400,20 @@ public class ServletDefinition {
 		 */
 		public Builder supportCors(boolean supportCors) {
 			this.supportCors = supportCors;
+			return this;
+		}
+
+		/**
+		 * Adds an init parameter to be passed to the {@link Servlet} on
+		 * start-up. These are the parameters typically found in
+		 * {@code <init-param>} tags in the {@code web.xml} file.
+		 *
+		 * @param parameter
+		 * @param value
+		 * @return
+		 */
+		public Builder addInitParameter(String parameter, String value) {
+			this.initParameters.put(parameter, value);
 			return this;
 		}
 	}

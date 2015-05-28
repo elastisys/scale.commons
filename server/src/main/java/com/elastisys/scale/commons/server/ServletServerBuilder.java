@@ -2,6 +2,7 @@ package com.elastisys.scale.commons.server;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
@@ -211,10 +212,13 @@ public class ServletServerBuilder {
 		// String pathSpec = servletPath + "/*";
 		// pathSpec = pathSpec.replaceAll("/+", "/");
 		String pathSpec = "/*";
-		servletHandler.addServlet(new ServletHolder(servlet), pathSpec);
+		ServletHolder servletHolder = new ServletHolder(servlet);
+		Map<String, String> initParams = servletDefinition.getInitParameters();
+		servletHolder.setInitParameters(initParams);
+		servletHandler.addServlet(servletHolder, pathSpec);
 		LOG.debug(
-				"adding servlet '{}' at context path '{}' with path spec '{}'",
-				servlet, servletPath, pathSpec);
+				"adding servlet '{}' at context path '{}' with path spec '{}' and init-params {}",
+				servlet, servletPath, pathSpec, initParams);
 		return servletHandler;
 	}
 

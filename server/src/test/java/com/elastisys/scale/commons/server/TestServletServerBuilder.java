@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.ws.rs.ProcessingException;
@@ -25,13 +26,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 
 /**
  * Exercises the {@link ServletServerBuilder}.
- *
- *
- *
  */
 public class TestServletServerBuilder {
 	static Logger logger = LoggerFactory
@@ -452,9 +451,6 @@ public class TestServletServerBuilder {
 				.build();
 		this.server.start();
 
-		// TODO: remove
-		// Uninterruptibles.sleepUninterruptibly(500, TimeUnit.SECONDS);
-
 		// http access to servlet1: allowed
 		Client client = RestClientUtils.httpNoAuth();
 		Response response = client.target(httpUrl("/servlet1")).request().get();
@@ -567,6 +563,28 @@ public class TestServletServerBuilder {
 		assertThat(
 				response.getHeaders()
 						.containsKey("Access-Control-Allow-Origin"), is(false));
+	}
+
+	/**
+	 * Pass init-params to the created servlet.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void passInitParams() throws Exception {
+		// create a servlet that (by the default value) supports CORS requests.
+		MessageServlet deployedServlet = new MessageServlet("hello world");
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(deployedServlet).addInitParameter("param1", "value1")
+				.addInitParameter("param2", "value2").build();
+		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
+				.addServlet(servlet).build();
+
+		this.server.start();
+		Map<String, String> expectedInitParams = ImmutableMap.of(//
+				"param1", "value1", //
+				"param2", "value2");
+		assertThat(deployedServlet.getInitParams(), is(expectedInitParams));
 	}
 
 	private Response httpNoAuth() {
