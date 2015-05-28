@@ -80,8 +80,15 @@ public class HttpRequestResponse {
 		Charset responseCharset = determineCharset(httpResponse);
 		Charset charset = responseCharset == null ? fallbackCharset
 				: responseCharset;
-		this.responseBody = EntityUtils.toString(httpResponse.getEntity(),
-				charset);
+
+		// http response may not contain a message body, for example on 204 (No
+		// Content) responses
+		if (httpResponse.getEntity() != null) {
+			this.responseBody = EntityUtils.toString(httpResponse.getEntity(),
+					charset);
+		} else {
+			this.responseBody = null;
+		}
 	}
 
 	/**
@@ -133,7 +140,9 @@ public class HttpRequestResponse {
 	}
 
 	/**
-	 * Returns the message body of the HTTP response.
+	 * Returns the message body of the HTTP response or <code>null</code> if the
+	 * response contained no body (this could be the case on
+	 * {@code 204 (No Content)} responses.
 	 *
 	 * @return
 	 */
