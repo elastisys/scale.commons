@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.util.concurrent;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -119,35 +121,41 @@ public class StandardRestartableScheduledExecutorService implements
 	@Override
 	public ScheduledFuture<?> schedule(Runnable command, long delay,
 			TimeUnit unit) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.schedule(command, delay, unit);
 	}
 
 	@Override
 	public void execute(Runnable command) {
+		checkState(isStarted(), "executor is not started");
 		this.executorService.execute(command);
 	}
 
 	@Override
 	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay,
 			TimeUnit unit) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.schedule(callable, delay, unit);
 	}
 
 	@Override
 	public ScheduledFuture<?> scheduleAtFixedRate(Runnable command,
 			long initialDelay, long period, TimeUnit unit) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.scheduleAtFixedRate(command, initialDelay,
 				period, unit);
 	}
 
 	@Override
 	public void shutdown() {
+		checkState(isStarted(), "executor is not started");
 		this.executorService.shutdown();
 		this.executorService = null;
 	}
 
 	@Override
 	public List<Runnable> shutdownNow() {
+		checkState(isStarted(), "executor is not started");
 		List<Runnable> remainingTasks = this.executorService.shutdownNow();
 		this.executorService = null;
 		return remainingTasks;
@@ -156,44 +164,52 @@ public class StandardRestartableScheduledExecutorService implements
 	@Override
 	public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command,
 			long initialDelay, long delay, TimeUnit unit) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.scheduleWithFixedDelay(command,
 				initialDelay, delay, unit);
 	}
 
 	@Override
 	public boolean isShutdown() {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.isShutdown();
 	}
 
 	@Override
 	public boolean isTerminated() {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.isTerminated();
 	}
 
 	@Override
 	public boolean awaitTermination(long timeout, TimeUnit unit)
 			throws InterruptedException {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.awaitTermination(timeout, unit);
 	}
 
 	@Override
 	public <T> Future<T> submit(Callable<T> task) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.submit(task);
 	}
 
 	@Override
 	public <T> Future<T> submit(Runnable task, T result) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.submit(task, result);
 	}
 
 	@Override
 	public Future<?> submit(Runnable task) {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.submit(task);
 	}
 
 	@Override
 	public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
 			throws InterruptedException {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.invokeAll(tasks);
 	}
 
@@ -201,12 +217,14 @@ public class StandardRestartableScheduledExecutorService implements
 	public <T> List<Future<T>> invokeAll(
 			Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
 			throws InterruptedException {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.invokeAll(tasks, timeout, unit);
 	}
 
 	@Override
 	public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
 			throws InterruptedException, ExecutionException {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.invokeAny(tasks);
 	}
 
@@ -214,6 +232,7 @@ public class StandardRestartableScheduledExecutorService implements
 	public <T> T invokeAny(Collection<? extends Callable<T>> tasks,
 			long timeout, TimeUnit unit) throws InterruptedException,
 			ExecutionException, TimeoutException {
+		checkState(isStarted(), "executor is not started");
 		return this.executorService.invokeAny(tasks, timeout, unit);
 	}
 

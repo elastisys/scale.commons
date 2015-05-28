@@ -18,6 +18,10 @@ public interface RestartableScheduledExecutorService extends
 
 	/**
 	 * (Re)starts this {@link RestartableScheduledExecutorService}.
+	 * <p/>
+	 * Note that on a restart, any tasks that were scheduled for execution prior
+	 * to stopping the service have been removed and need to be added again if
+	 * desired.
 	 */
 	public void start();
 
