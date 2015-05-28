@@ -37,7 +37,7 @@ echo "generating server's private key ..."
 openssl genrsa -out ${destdir}/server_private.pem 2048
 # 2. Create the server's self-signed X.509 certificate:
 echo "generating server's certificate ..."
-openssl req -new -x509 -key ${destdir}/server_private.pem \
+openssl req -new -x509 -sha256 -key ${destdir}/server_private.pem \
    -out ${destdir}/server_certificate.pem -days 365 -subj ${server_subject}
 # 3. Create a PKCS12 key store and import the key and certificate. Set password
 #    to ${keystore_password}. This password also becomes the "key password":
