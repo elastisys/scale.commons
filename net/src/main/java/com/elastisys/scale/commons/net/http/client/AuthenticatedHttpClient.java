@@ -4,7 +4,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.String.format;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 
 import org.apache.http.auth.AuthScope;
@@ -170,9 +172,12 @@ public class AuthenticatedHttpClient {
 	 * and/or {@link BasicCredentials}.
 	 *
 	 * @return
-	 * @throws CloudAdapterException
+	 * @throws GeneralSecurityException
+	 * @throws IOException
+	 * @throws FileNotFoundException
 	 */
-	private CloseableHttpClient prepareAuthenticatingClient() throws Exception {
+	private CloseableHttpClient prepareAuthenticatingClient()
+			throws GeneralSecurityException, FileNotFoundException, IOException {
 		// install host name verifier that always approves host names
 		AllowAllHostnameVerifier hostnameVerifier = new AllowAllHostnameVerifier();
 		// for SSL requests we should accept self-signed host certificates
@@ -223,17 +228,19 @@ public class AuthenticatedHttpClient {
 	/**
 	 * Sends a HTTP request to a remote endpoint and returns a
 	 * {@link HttpRequestResponse} object holding the response message status,
-	 * body, and headers. If the response code is not a 2XX one, a
-	 * {@link HttpResponseException} is raised.
+	 * body, and headers. On failure to send the request, an {@link IOException}
+	 * is thr own. If a HTTP response is received but the response code is not a
+	 * {@code 2XX} one, a {@link HttpResponseException} is raised.
 	 *
 	 *
 	 * @param request
 	 *            The request to send.
 	 * @return The received response.
 	 * @throws HttpResponseException
-	 *             If a non-2XX response was received.
+	 *             If a HTTP response was received with non-{@code 2XX} status
+	 *             code.
 	 * @throws IOException
-	 *             If anything went wrong.
+	 *             On failure to send the request.
 	 */
 	public HttpRequestResponse execute(HttpRequestBase request)
 			throws HttpResponseException, IOException {
