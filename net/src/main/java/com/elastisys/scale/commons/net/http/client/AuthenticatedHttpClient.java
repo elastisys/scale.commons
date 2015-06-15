@@ -37,6 +37,8 @@ import com.google.common.collect.Range;
 /**
  * Performs HTTP requests that may optionally authenticate using Basic
  * authentication, client certificate authentication or both.
+ * <p/>
+ * This class is thread-safe.
  */
 public class AuthenticatedHttpClient {
 	private static Logger LOG = LoggerFactory
