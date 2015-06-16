@@ -47,8 +47,8 @@ public class SmtpSender implements Callable<Boolean> {
 		return true;
 	}
 
-	private void sendMessage(SmtpMessage smtpMessage,
-			SmtpClientConfig settings) throws EmailException {
+	private void sendMessage(SmtpMessage smtpMessage, SmtpClientConfig settings)
+			throws EmailException {
 		checkNotNull(this.message, "alert message cannot be null");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("sending email to {} with server settings {}",
@@ -79,6 +79,8 @@ public class SmtpSender implements Callable<Boolean> {
 			// typically the case for most modern mail servers.
 			email.setStartTLSEnabled(true);
 		}
+		// trust all mail server host certificates
+		System.setProperty("mail.smtp.ssl.trust", "*");
 		email.setSocketConnectionTimeout(settings.getConnectionTimeout());
 		email.setSocketTimeout(settings.getSocketTimeout());
 		email.send();
