@@ -61,6 +61,7 @@ public class HttpPostRequester implements Callable<HttpRequestResponse> {
 	public HttpPostRequester(HttpPost httpPost, RequestConfig requestConfig) {
 		checkNotNull(httpPost, "POST request cannot be null");
 		checkNotNull(requestConfig, "request configuration cannot be null");
+
 		this.httpPost = httpPost;
 		this.requestConfig = requestConfig;
 		limitDnsCacheTtl(30);

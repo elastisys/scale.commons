@@ -1,5 +1,6 @@
 package com.elastisys.scale.commons.net.http;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -19,6 +20,8 @@ import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+
+import com.elastisys.scale.commons.net.validate.ValidHttpUrl;
 
 /**
  * A {@link Callable} that performs a HTTP GET against a certain URL.
@@ -59,6 +62,8 @@ public class HttpGetRequester implements Callable<HttpRequestResponse> {
 	public HttpGetRequester(String url, RequestConfig requestConfig) {
 		checkNotNull(url, "URL cannot be null");
 		checkNotNull(requestConfig, "Request configuration cannot be null");
+		checkArgument(ValidHttpUrl.isValid(url), "malformed URL '%s'", url);
+
 		this.url = url;
 		this.requestConfig = requestConfig;
 		limitDnsCacheTtl(30);
