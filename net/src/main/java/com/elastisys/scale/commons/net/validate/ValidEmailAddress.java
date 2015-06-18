@@ -14,9 +14,11 @@ public class ValidEmailAddress implements Predicate<String> {
 	 * Validates a given email address for correctness.
 	 *
 	 * @param emailAddress
-	 * @return
+	 *            An email address.
+	 * @return <code>true</code> if the email address is correct,
+	 *         <code>false</code> otherwise.
 	 */
-	public static boolean validate(String emailAddress) {
+	public static boolean isValid(String emailAddress) {
 		return new ValidEmailAddress().apply(emailAddress);
 	}
 

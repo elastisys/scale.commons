@@ -20,9 +20,11 @@ public class ValidHttpUrl implements Predicate<String> {
 	 * Validates a given URL for correctness.
 	 *
 	 * @param url
-	 * @return
+	 *            A URL.
+	 * @return <code>true</code> if the URL is correct, <code>false</code>
+	 *         otherwise.
 	 */
-	public static boolean validate(String url) {
+	public static boolean isValid(String url) {
 		return new ValidHttpUrl().apply(url);
 	}
 

@@ -32,7 +32,7 @@ public class TestValidEmailAddress {
 	private boolean applyTo(String emailAddress) {
 		// make sure that same result is obtained no matter if static function
 		// or object is called on
-		boolean functionResult = ValidEmailAddress.validate(emailAddress);
+		boolean functionResult = ValidEmailAddress.isValid(emailAddress);
 		boolean objectResult = new ValidEmailAddress().apply(emailAddress);
 		assertEquals("calls on function and object gave different results!",
 				functionResult, objectResult);
