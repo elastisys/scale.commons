@@ -4,13 +4,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
+import com.elastisys.scale.commons.net.validate.ValidEmailAddress;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
@@ -152,21 +150,14 @@ public class SmtpAlerterConfig {
 		checkArgument(this.recipients != null, "missing recipients list");
 		for (String recipient : this.recipients) {
 			checkArgument(recipient != null, "recipient cannot be null");
-			verifyEmailAddress(recipient);
+			checkArgument(ValidEmailAddress.isValid(recipient),
+					"illegal email address '%s'", recipient);
 		}
 		checkArgument(this.sender != null, "missing sender");
-		verifyEmailAddress(this.sender);
+		checkArgument(ValidEmailAddress.isValid(this.sender),
+				"illegal sender address '%s'", this.sender);
 		getSeverityFilter();
 		checkArgument(this.smtpClientConfig != null, "missing smtpClientConfig");
 		this.smtpClientConfig.validate();
-	}
-
-	private void verifyEmailAddress(String address) {
-		try {
-			new InternetAddress(address, true);
-		} catch (AddressException e) {
-			throw new IllegalArgumentException(String.format(
-					"illegal email address '%s'", address));
-		}
 	}
 }

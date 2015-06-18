@@ -2,13 +2,12 @@ package com.elastisys.scale.commons.net.alerter.http;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
+import com.elastisys.scale.commons.net.validate.ValidHttpUrl;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -226,18 +225,9 @@ public class HttpAlerterConfig {
 				"http alerter: missing destinationUrls");
 		for (String url : this.destinationUrls) {
 			checkArgument(url != null, "http alerter: URL cannot be null");
-			verifyUrl(url);
+			checkArgument(ValidHttpUrl.isValid(url), "illegal URL '%s'", url);
 		}
 		this.getAuth().validate();
 		this.getSeverityFilter();
-	}
-
-	private void verifyUrl(String url) {
-		try {
-			new URL(url);
-		} catch (MalformedURLException e) {
-			throw new IllegalArgumentException(String.format(
-					"illegal URL '%s'", url));
-		}
 	}
 }
