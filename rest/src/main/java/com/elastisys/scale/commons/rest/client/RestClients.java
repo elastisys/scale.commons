@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.rest.client;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -8,6 +10,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
+import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.net.ssl.SslContextBuilder;
 import com.elastisys.scale.commons.net.ssl.SslUtils;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
@@ -99,6 +102,37 @@ public class RestClients {
 					.hostnameVerifier(SslUtils.allowAllHostNames())
 					.register(GsonMessageBodyReader.class)
 					.register(GsonMessageBodyWriter.class).build();
+			return client;
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
+	}
+
+	/**
+	 * Creates a HTTPS Jersey REST {@link Client} configured to authenticate
+	 * with a certificate.
+	 * <p/>
+	 * The created {@link Client} is configured to trust all server certificates
+	 * and approve all host names. (This is similar to using the
+	 * <code>--insecure</code> flag in <code>curl</code>.)
+	 *
+	 * @param keyStorePath
+	 *            The file system path to the client key store.
+	 * @param keyStorePassword
+	 *            The password used to protect the client key.
+	 * @param keystoreType
+	 *            The type of the keystore.
+	 * @return The created {@link Client}.
+	 *
+	 * @throws RuntimeException
+	 */
+	public static Client httpsCertAuth(String keyStorePath,
+			String keyStorePassword, KeyStoreType keystoreType)
+			throws RuntimeException {
+		try (InputStream keyStoreStream = new FileInputStream(keyStorePath)) {
+			KeyStore keystore = KeyStore.getInstance(keystoreType.name());
+			keystore.load(keyStoreStream, keyStorePassword.toCharArray());
+			Client client = httpsCertAuth(keystore, keyStorePassword);
 			return client;
 		} catch (Exception e) {
 			throw Throwables.propagate(e);
