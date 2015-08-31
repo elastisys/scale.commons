@@ -178,16 +178,6 @@
         <version>${jetty.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.jclouds.provider</groupId>
-        <artifactId>aws-ec2</artifactId>
-        <version>${jclouds.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jclouds.provider</groupId>
-        <artifactId>aws-cloudwatch</artifactId>
-        <version>${jclouds.version}</version>
-      </dependency>
       <!-- command-line parsing -->
       <dependency>
         <groupId>args4j</groupId>
