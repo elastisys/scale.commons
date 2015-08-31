@@ -60,7 +60,6 @@
     <jetty.version>9.2.6.v20141205</jetty.version>
     <jaxrs.version>2.0.1</jaxrs.version>
     <jersey.version>2.14</jersey.version>
-    <jclouds.version>1.8.1</jclouds.version>
     <commons.mail.version>1.4</commons.mail.version>
     <gson.version>2.3.1</gson.version>
     <slf4j.version>1.7.7</slf4j.version>
@@ -180,11 +179,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.jclouds</groupId>
-        <artifactId>jclouds-compute</artifactId>
-        <version>${jclouds.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.jclouds.provider</groupId>
         <artifactId>aws-ec2</artifactId>
         <version>${jclouds.version}</version>
@@ -192,16 +186,6 @@
       <dependency>
         <groupId>org.apache.jclouds.provider</groupId>
         <artifactId>aws-cloudwatch</artifactId>
-        <version>${jclouds.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jclouds.api</groupId>
-        <artifactId>openstack-nova</artifactId>
-        <version>${jclouds.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jclouds.driver</groupId>
-        <artifactId>jclouds-slf4j</artifactId>
         <version>${jclouds.version}</version>
       </dependency>
       <!-- command-line parsing -->
