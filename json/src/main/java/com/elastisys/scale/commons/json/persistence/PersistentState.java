@@ -30,10 +30,10 @@ import com.google.gson.reflect.TypeToken;
  * <pre>
  * TypeToken&lt;Map&lt;String, DateTime&gt;&gt; stringDateMap = new TypeToken&lt;Map&lt;String, DateTime&gt;&gt;() {
  * };
- * 
+ *
  * PersistentState&lt;Map&lt;String, DateTime&gt;&gt; state = new PersistentState&lt;&gt;(
  * 		STORAGE_LOCATION, stringDateMap);
- * 
+ *
  * // store
  * Map&lt;String, DateTime&gt; timestamps = ImmutableMap.of(&quot;10&quot;,
  * 		UtcTime.parse(&quot;2015-01-01T10:00:00.000Z&quot;), //
@@ -60,8 +60,9 @@ public class PersistentState<T> {
 
 	/**
 	 * Creates a {@link PersistentState} instance with a given storage location.
-	 * An attempt will be made to create the storage file (and any missing
-	 * parent directories) if it does not already exist.
+	 * An attempt will be made to recover the state from the specified storage
+	 * location. The storage file (and any missing parent directories) will be
+	 * created if it does not already exist.
 	 *
 	 * @param storageLocation
 	 *            The storage location of the state.
@@ -74,8 +75,9 @@ public class PersistentState<T> {
 
 	/**
 	 * Creates a {@link PersistentState} instance with a given storage location.
-	 * An attempt will be made to create the storage file (and any missing
-	 * parent directories) if it does not already exist.
+	 * An attempt will be made to recover the state from the specified storage
+	 * location. The storage file (and any missing parent directories) will be
+	 * created if it does not already exist.
 	 *
 	 * @param storageLocation
 	 *            The storage location of the state.
@@ -90,7 +92,8 @@ public class PersistentState<T> {
 	}
 
 	/**
-	 * Sets the current state.
+	 * Sets the current state of this {@link PersistentState} and saves it to
+	 * disk.
 	 *
 	 * @param updatedState
 	 *            The new state value. May be <code>null</code>.
@@ -101,7 +104,8 @@ public class PersistentState<T> {
 	}
 
 	/**
-	 * Returns the current state (if any state has been set/recovered).
+	 * Returns the current state of this {@link PersistentState} (if any state
+	 * has been set/recovered).
 	 *
 	 * @return
 	 */
