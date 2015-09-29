@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.common.io.Files;
+
 /**
  * Convenience file system methods.
  *
@@ -105,5 +107,38 @@ public class FileUtils {
 	 */
 	public static File cwd() {
 		return new File(System.getProperty("user.dir"));
+	}
+
+	/**
+	 * Ensures that a given file path exists by creating the file if it doesn't
+	 * already exist (including missing parent directories). If the path already
+	 * exists and is something different than a file, or if the file neither
+	 * exists nor can be created, an exception will be thrown.
+	 *
+	 * @param filePath
+	 *            A file system path to be created.
+	 * @throws IllegalArgumentException
+	 */
+	public static void ensureFileExists(String filePath)
+			throws IllegalArgumentException {
+		File file = new File(filePath);
+		// try to create file if it doesn't exist (will fail if we don't
+		// have sufficient permissions to write in the directory)
+		if (!file.exists()) {
+			try {
+				Files.createParentDirs(file);
+				Files.touch(file);
+				return;
+			} catch (IOException e) {
+				throw new IllegalArgumentException(String.format(
+						"failed to initialize file %s", filePath), e);
+			}
+		}
+
+		if (!file.isFile()) {
+			throw new IllegalArgumentException(String.format(
+					"the specified file path %s " + "is not a valid file",
+					filePath));
+		}
 	}
 }

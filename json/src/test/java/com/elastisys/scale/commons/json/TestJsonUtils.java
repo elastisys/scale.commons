@@ -3,18 +3,20 @@ package com.elastisys.scale.commons.json;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -145,6 +147,31 @@ public class TestJsonUtils {
 				is(expectedObject));
 	}
 
+	/**
+	 * Conerts JSON into a Java object of a parameterized type.
+	 */
+	@Test
+	public void toObjectWithGenericType() {
+		JsonObject json = new JsonParser()
+				.parse("{\"noon\": \"2015-01-01T12:00:00.000Z\", \"midnight\": \"2015-01-01T00:00:00.000Z\"}")
+				.getAsJsonObject();
+
+		Type genericType = new TypeToken<Map<String, DateTime>>() {
+		}.getType();
+		Map<String, DateTime> result = JsonUtils.toObject(json, genericType);
+		assertTrue(result.containsKey("noon"));
+		assertTrue(result.containsKey("midnight"));
+		assertThat(result.get("noon"),
+				is(UtcTime.parse("2015-01-01T12:00:00.000Z")));
+		assertThat(result.get("midnight"),
+				is(UtcTime.parse("2015-01-01T00:00:00.000Z")));
+
+		// parse empty map
+		json = new JsonParser().parse("{}").getAsJsonObject();
+		Map<String, DateTime> empty = JsonUtils.toObject(json, genericType);
+		assertTrue(empty.isEmpty());
+	}
+
 	@Test
 	public void testToString() {
 		String rawJsonString = "{\"a\":\"value\",\"b\":1}";
@@ -180,123 +207,5 @@ public class TestJsonUtils {
 				JsonUtils.parseJsonString(rawJsonString),
 				SomeClassWithImmutableList.class);
 		assertEquals(expectedObject, actualObject);
-	}
-
-	public static class SomeClass {
-		private final String a;
-		private final int b;
-
-		public SomeClass(String a, int b) {
-			this.a = a;
-			this.b = b;
-		}
-
-		public String getA() {
-			return this.a;
-		}
-
-		public int getB() {
-			return this.b;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof SomeClass) {
-				SomeClass that = (SomeClass) obj;
-				return Objects.equal(this.a, that.a)
-						&& Objects.equal(this.b, that.b);
-			}
-			return false;
-		}
-	}
-
-	public static class SomeClassWithTimestamp {
-		private final String a;
-		private final DateTime time;
-
-		public SomeClassWithTimestamp(String a, DateTime time) {
-			this.a = a;
-			this.time = time;
-		}
-
-		public String getA() {
-			return this.a;
-		}
-
-		public DateTime getTime() {
-			return this.time;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof SomeClassWithTimestamp) {
-				SomeClassWithTimestamp that = (SomeClassWithTimestamp) obj;
-				return Objects.equal(this.a, that.a)
-						&& Objects.equal(this.time, that.time);
-			}
-			return false;
-		}
-
-		@Override
-		public String toString() {
-			return Objects.toStringHelper(this).add("a", this.a)
-					.add("time", this.time).toString();
-		}
-	}
-
-	public static class SomeClassWithImmutableList {
-		private final ImmutableList<String> strings;
-
-		public SomeClassWithImmutableList(List<String> mutableStrings) {
-			this.strings = ImmutableList.copyOf(mutableStrings);
-		}
-
-		/**
-		 * @return the strings
-		 */
-		public ImmutableList<String> getStrings() {
-			return this.strings;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see java.lang.Object#hashCode()
-		 */
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result
-					+ (this.strings == null ? 0 : this.strings.hashCode());
-			return result;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			SomeClassWithImmutableList other = (SomeClassWithImmutableList) obj;
-			if (this.strings == null) {
-				if (other.strings != null) {
-					return false;
-				}
-			} else if (!this.strings.equals(other.strings)) {
-				return false;
-			}
-			return true;
-		}
 	}
 }

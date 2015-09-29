@@ -2,7 +2,9 @@ package com.elastisys.scale.commons.json;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
@@ -150,7 +152,8 @@ public class JsonUtils {
 	public static String toPrettyString(JsonElement jsonElement) {
 		Preconditions.checkArgument(jsonElement != null,
 				"null jsonElement not allowed");
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting()
+				.create();
 		return gson.toJson(jsonElement);
 	}
 
@@ -164,12 +167,13 @@ public class JsonUtils {
 	public static String toString(JsonElement jsonElement) {
 		Preconditions.checkArgument(jsonElement != null,
 				"null jsonElement not allowed");
-		Gson gson = new GsonBuilder().create();
+		Gson gson = new GsonBuilder().serializeNulls().create();
 		return gson.toJson(jsonElement);
 	}
 
 	/**
-	 * Converts a {@link JsonElement} to a Java object.
+	 * Converts a {@link JsonElement} to a Java object of a certain
+	 * {@link Class}.
 	 * <p/>
 	 * This method also handles deserializing time stamp elements into
 	 * {@link DateTime} fields.
@@ -185,12 +189,54 @@ public class JsonUtils {
 		Preconditions.checkArgument(jsonElement != null,
 				"null jsonElement not allowed");
 		Preconditions.checkArgument(type != null, "null type not allowed");
-		Gson gson = new GsonBuilder()
-				.registerTypeAdapter(DateTime.class,
-						new GsonDateTimeDeserializer())
-				.registerTypeAdapter(ImmutableList.class,
-						new ImmutableListDeserializer()).create();
+		Gson gson = prepareGsonBuilder().create();
 		return type.cast(gson.fromJson(jsonElement, type));
 	}
 
+	/**
+	 * Converts a {@link JsonElement} to a Java object of a given {@link Type}.
+	 * <p/>
+	 * This method is useful when it comes to deserializing generic types. For
+	 * instance, to deserialize {@link Map} of {@link String} to
+	 * {@link DateTime} entries, one could use the following code:
+	 *
+	 * <pre>
+	 * Type stringDateMap = new TypeToken&lt;Map&lt;String, DateTime&gt;&gt;() {
+	 * }.getType();
+	 * Map&lt;String, DateTime&gt; map = JsonUtils.toObject(json, stringDateMap);
+	 * </pre>
+	 * <p/>
+	 * This method also handles deserializing time stamp elements into
+	 * {@link DateTime} fields.
+	 *
+	 * @param jsonElement
+	 *            The JSON element to serialize.
+	 * @param type
+	 *            The {@link Type} of the Java object.
+	 * @return An instance of the specified {@code type}, created by
+	 *         deserializing the given {@code jsonElement}.
+	 */
+	public static <T> T toObject(JsonElement jsonElement, Type type) {
+		Preconditions.checkArgument(jsonElement != null,
+				"null jsonElement not allowed");
+		Preconditions.checkArgument(type != null, "null type not allowed");
+		Gson gson = prepareGsonBuilder().create();
+		return gson.fromJson(jsonElement, type);
+	}
+
+	/**
+	 * Prepares a {@link GsonBuilder} instance with registered type adapters for
+	 * {@link DateTime} and {@link ImmutableList}.
+	 *
+	 * @return
+	 */
+	public static GsonBuilder prepareGsonBuilder() {
+		return new GsonBuilder()
+				.registerTypeAdapter(DateTime.class,
+						new GsonDateTimeDeserializer())
+				.registerTypeAdapter(DateTime.class,
+						new GsonDateTimeSerializer())
+				.registerTypeAdapter(ImmutableList.class,
+						new ImmutableListDeserializer());
+	}
 }
