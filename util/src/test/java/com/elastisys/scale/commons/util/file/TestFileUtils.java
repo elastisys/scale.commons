@@ -114,7 +114,55 @@ public class TestFileUtils {
 		FileUtils.deleteRecursively(null);
 	}
 
+	/**
+	 * Try create a file in a pre-existing directory.
+	 */
+	@Test
+	public void ensureFileExists() throws IOException {
+		recreateDir(new File("target/dir"));
+
+		File fileToCreate = new File("target/dir/some.file");
+		assertFalse(fileToCreate.exists());
+		FileUtils.ensureFileExists(fileToCreate.getAbsolutePath());
+		assertTrue(fileToCreate.isFile());
+	}
+
+	/**
+	 * Create a file when parent directories also need to be created.
+	 */
+	@Test
+	public void ensureFileExistsWithMissingParentDirs() throws IOException {
+		recreateDir(new File("target/dir"));
+
+		File fileToCreate = new File("target/dir/deep/down/file.txt");
+		assertFalse(fileToCreate.exists());
+		FileUtils.ensureFileExists(fileToCreate.getAbsolutePath());
+		assertTrue(fileToCreate.isFile());
+	}
+
+	/**
+	 * Should raise an {@link Exception} on failure to create the file.
+	 */
+	@Test(expected = IllegalArgumentException.class)
+	public void ensureFileExistsWithInsufficientPrivileges() {
+		FileUtils.ensureFileExists("/root/some.file");
+	}
+
 	private List<String> dirFiles(File dir) {
 		return asList(dir.list());
 	}
+
+	/**
+	 * Removes a directory and all its content, and recreates an empty directory
+	 * with the same name/path.
+	 * 
+	 * @param dir
+	 * @throws IOException
+	 */
+	private void recreateDir(File dir) throws IOException {
+		FileUtils.deleteRecursively(dir);
+		dir.mkdirs();
+		assertTrue(dir.isDirectory());
+	}
+
 }
