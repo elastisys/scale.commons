@@ -279,7 +279,7 @@ public class Retryable<R> implements Callable<R> {
 	 */
 	private String asString(Object result) {
 		if (result == null) {
-			return "null";
+			return "null/void";
 		}
 		if (Throwable.class.isAssignableFrom(result.getClass())) {
 			return Throwable.class.cast(result).getMessage();
