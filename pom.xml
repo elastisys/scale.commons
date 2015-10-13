@@ -51,7 +51,7 @@
       UTF-8 source file encoding. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Required JDK version -->
-    <java.version>1.7</java.version>
+    <java.version>1.8</java.version>
 
     <!-- Version bump made on 2014-12-18 -->
     <guava.version>18.0</guava.version>
@@ -222,7 +222,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>3.3</version>
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
