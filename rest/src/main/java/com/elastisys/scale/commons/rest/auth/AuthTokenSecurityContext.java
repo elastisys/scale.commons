@@ -5,7 +5,6 @@ import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
 
 import org.jose4j.jwt.JwtClaims;
-import org.jose4j.jwt.MalformedClaimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,8 +12,13 @@ import org.slf4j.LoggerFactory;
  * A {@link SecurityContext} for a request with a valid JSON Web Token
  * authentication. The context holds the {@link JwtClaims} carried in the token
  * that was used to authenticate the client.
+ * <p/>
+ * Server resource classes can access all client claims by casting the
+ * {@link Principal} to an {@link AuthTokenPrincipal} and calling
+ * {@link AuthTokenPrincipal#getTokenClaims()}.
  *
  * @see AuthTokenRequestFilter
+ * @see AuthTokenPrincipal
  */
 public class AuthTokenSecurityContext implements SecurityContext {
 	static Logger LOG = LoggerFactory.getLogger(AuthTokenSecurityContext.class);
@@ -49,19 +53,7 @@ public class AuthTokenSecurityContext implements SecurityContext {
 
 	@Override
 	public Principal getUserPrincipal() {
-		return new Principal() {
-			@Override
-			public String getName() {
-				try {
-					return AuthTokenSecurityContext.this.tokenClaims
-							.getSubject();
-				} catch (MalformedClaimException e) {
-					throw new RuntimeException(String.format(
-							"failed to extract subject from auth token",
-							e.getMessage()), e);
-				}
-			}
-		};
+		return new AuthTokenPrincipal(this.tokenClaims);
 	}
 
 	@Override

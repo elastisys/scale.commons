@@ -8,9 +8,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.server.ResourceConfig;
+import org.jose4j.jwt.MalformedClaimException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +73,16 @@ class SecuredApplication extends ResourceConfig {
 		@GET
 		@Path("/protected")
 		@RequireJwtAuthentication
-		public Response getProtected() {
+		public Response getProtected(@Context SecurityContext securityContext)
+				throws MalformedClaimException {
 			LOG.info("GET {}", this.requestUri.getAbsolutePath());
+
+			AuthTokenPrincipal authToken = AuthTokenPrincipal.class
+					.cast(securityContext.getUserPrincipal());
+			String client = authToken.getName();
+			String issuer = authToken.getTokenClaims().getIssuer();
+			LOG.debug("serving request for client '{}' (token issued by '{}')",
+					client, issuer);
 			JsonElement response = JsonUtils
 					.parseJsonString("{\"value\": \"protected\"}");
 			return Response.ok(response).build();
