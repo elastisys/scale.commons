@@ -20,8 +20,7 @@ public class AsymmetricKeyAuthTokenValidator implements AuthTokenValidator {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AsymmetricKeyAuthTokenValidator.class);
 	/**
-	 * The public/private key pair used to sign and validate a signature,
-	 * respectively.
+	 * The public/private key pair used to sign and validate a signature.
 	 */
 	private final RsaJsonWebKey signatureKeyPair;
 	/**
