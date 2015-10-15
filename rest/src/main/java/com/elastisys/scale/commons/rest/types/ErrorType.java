@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.rest.types;
 
+import com.elastisys.scale.commons.json.JsonUtils;
+import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
 
 /**
@@ -72,5 +74,30 @@ public class ErrorType {
 
 	public void setDetail(String detail) {
 		this.detail = detail;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.message, this.detail);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ErrorType) {
+			ErrorType other = (ErrorType) obj;
+			return Objects.equal(this.message, other.message)
+					&& Objects.equal(this.detail, other.detail);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		try {
+			return JsonUtils.toPrettyString(JsonUtils.toJson(this));
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"failed to convert to string: " + e.getMessage(), e);
+		}
 	}
 }
