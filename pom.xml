@@ -37,6 +37,7 @@
     <module>server</module>
     <module>util</module>
     <module>logreplayer</module>
+    <module>security</module>
   </modules>
 
   <!-- Location of Git repository. Used to tag releases. -->
@@ -70,6 +71,7 @@
     <jsch.version>0.1.51</jsch.version>
     <args4j.version>2.32</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
+    <bouncycastle.version>1.53</bouncycastle.version>
     
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
@@ -193,6 +195,18 @@
         <version>${jose4j.version}</version>
       </dependency>
 
+      <!-- Cryptographic tool libraries -->
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcprov-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk15on</artifactId>
+        <version>${bouncycastle.version}</version>
+      </dependency>    
+      
       <!-- Test dependencies -->
       <dependency>
         <groupId>junit</groupId>
