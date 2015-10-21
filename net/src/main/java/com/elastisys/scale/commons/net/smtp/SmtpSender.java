@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * The task returns <code>true</code> if the message was successfully sent.
  * <p/>
- * For details on JavaMail and security, refer to <a
- * href="https://javamail.java.net/docs/SSLNOTES.txt">these notes</a>.
+ * For details on JavaMail and security, refer to
+ * <a href="https://javamail.java.net/docs/SSLNOTES.txt">these notes</a>.
  */
 public class SmtpSender implements Callable<Boolean> {
 	static final Logger LOG = LoggerFactory.getLogger(SmtpSender.class);
@@ -49,7 +49,7 @@ public class SmtpSender implements Callable<Boolean> {
 
 	private void sendMessage(SmtpMessage smtpMessage, SmtpClientConfig settings)
 			throws EmailException {
-		checkNotNull(this.message, "alert message cannot be null");
+		checkNotNull(this.message, "email message cannot be null");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("sending email to {} with server settings {}",
 					smtpMessage.getTo(), settings);
