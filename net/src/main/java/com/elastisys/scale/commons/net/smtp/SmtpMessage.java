@@ -15,10 +15,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 /**
- * Represents an (SMTP) email message to be sent.
- * 
+ * Represents an simple, text-based, (SMTP) email message to be sent.
+ *
  * @see SmtpSender
- * 
  */
 public class SmtpMessage {
 	/** The email recipient addresses (the {@code To:} header). */
@@ -34,7 +33,7 @@ public class SmtpMessage {
 
 	/**
 	 * Constructs an {@link SmtpMessage} to be sent by a {@link SmtpSender}.
-	 * 
+	 *
 	 * @param recipients
 	 *            The email recipient addresses (the {@code To:} header).
 	 * @param sender
@@ -47,9 +46,9 @@ public class SmtpMessage {
 	 * @param dateSent
 	 *            The date header field (the {@code Date:} header). Can be
 	 *            <code>null</code>, in which case the current time is used.
-	 * 
+	 *
 	 * @throws IllegalArgumentException
-	 *             If incorrect argumetns were given.
+	 *             If incorrect arguments were given.
 	 */
 	public SmtpMessage(List<String> recipients, String sender, String subject,
 			String content, DateTime dateSent) throws IllegalArgumentException {
@@ -79,7 +78,7 @@ public class SmtpMessage {
 	 * Performs basic validation of this object. If the object is valid, the
 	 * method returns. If the object is incorrectly set up an
 	 * {@link IllegalArgumentException} is thrown.
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 */
 	public void validate() throws IllegalArgumentException {
@@ -90,7 +89,7 @@ public class SmtpMessage {
 
 	/**
 	 * Returns the email recipient addresses (the {@code To:} header).
-	 * 
+	 *
 	 * @return the to
 	 */
 	public List<InternetAddress> getTo() {
@@ -99,7 +98,7 @@ public class SmtpMessage {
 
 	/**
 	 * Returns the email sender address (the {@code From:} header).
-	 * 
+	 *
 	 * @return the from
 	 */
 	public InternetAddress getFrom() {
@@ -108,7 +107,7 @@ public class SmtpMessage {
 
 	/**
 	 * Returns the email subject line (the {@code Subject:} header).
-	 * 
+	 *
 	 * @return the subject
 	 */
 	public String getSubject() {
@@ -117,7 +116,7 @@ public class SmtpMessage {
 
 	/**
 	 * Returns the email message content.
-	 * 
+	 *
 	 * @return the content
 	 */
 	public String getContent() {
@@ -126,7 +125,7 @@ public class SmtpMessage {
 
 	/**
 	 * Returns the date header field (the {@code Date:} header).
-	 * 
+	 *
 	 * @return the dateSent
 	 */
 	public DateTime getDateSent() {

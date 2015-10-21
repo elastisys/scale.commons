@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,47 +23,90 @@ import org.slf4j.LoggerFactory;
 public class SmtpSender implements Callable<Boolean> {
 	static final Logger LOG = LoggerFactory.getLogger(SmtpSender.class);
 
-	/** The message to send. */
-	private final SmtpMessage message;
-	/** The SMTP server settings to use. */
-	private final SmtpClientConfig serverSettings;
+	/** The {@link Email} to send. */
+	private final Email email;
+	/** The SMTP send settings to use. */
+	private final SmtpClientConfig sendSettings;
 
 	/**
-	 * Constructs a new {@link SmtpSender} that will send an email message to a
-	 * given SMTP server.
+	 * Constructs a new {@link SmtpSender} that will send a simple text-based
+	 * email message via a given SMTP server.
 	 *
 	 * @param message
 	 *            The email message to send.
-	 * @param serverSettings
-	 *            The SMTP server settings to use.
+	 * @param sendSettings
+	 *            The SMTP send settings to use.
 	 */
-	public SmtpSender(SmtpMessage message, SmtpClientConfig serverSettings) {
-		this.message = message;
-		this.serverSettings = serverSettings;
+	public SmtpSender(SmtpMessage message, SmtpClientConfig sendSettings) {
+		this(toSimpleEmail(message), sendSettings);
+	}
+
+	/**
+	 * Constructs a new {@link SmtpSender} that will send a given {@link Email}.
+	 * The {@link Email} can be either text-based (use {@link SimpleEmail}) or
+	 * HTML-based (use {@link HtmlEmail}). Note that any send settings (such as
+	 * server host name, port, authentication, etc) set on the passed
+	 * {@link Email} will effectively be overridden by the send settings
+	 * specified in {@code sendSettings}.
+	 *
+	 * @param email
+	 *            The email to be sent.
+	 * @param sendSettings
+	 *            The SMTP send settings to use.
+	 */
+	public SmtpSender(Email email, SmtpClientConfig sendSettings) {
+		this.email = email;
+		this.sendSettings = sendSettings;
 	}
 
 	@Override
 	public Boolean call() throws Exception {
-		sendMessage(this.message, this.serverSettings);
+		send(this.email, this.sendSettings);
 		return true;
 	}
 
-	private void sendMessage(SmtpMessage smtpMessage, SmtpClientConfig settings)
-			throws EmailException {
-		checkNotNull(this.message, "email message cannot be null");
+	/**
+	 * Sends the given {@link Email} using the given send settings.
+	 *
+	 * @param email
+	 *            {@link Email} to be sent.
+	 * @param settings
+	 *            SMTP send settings.
+	 * @throws SmtpSenderException
+	 */
+	private void send(Email email, SmtpClientConfig settings)
+			throws SmtpSenderException {
+		checkNotNull(email, "email message cannot be null");
 		if (LOG.isTraceEnabled()) {
 			LOG.trace("sending email to {} with server settings {}",
-					smtpMessage.getTo(), settings);
+					email.getToAddresses(), settings);
 		}
 
-		Email email = new SimpleEmail();
+		applySendSettings(email, settings);
+		try {
+			email.send();
+		} catch (EmailException e) {
+			throw new SmtpSenderException(
+					String.format("failed to send email: %s", e.getMessage()),
+					e);
+		}
+
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("email sent to " + email.getToAddresses());
+		}
+	}
+
+	/**
+	 * Applies {@link SmtpClientConfig} options to the {@link Email} being sent.
+	 *
+	 * @param email
+	 *            Email to be sent.
+	 * @param settings
+	 *            Send settings to apply to the email
+	 */
+	private void applySendSettings(Email email, SmtpClientConfig settings) {
 		email.setHostName(settings.getSmtpHost());
 		email.setSmtpPort(settings.getSmtpPort());
-		email.setFrom(smtpMessage.getFrom().toString());
-		email.setSubject(smtpMessage.getSubject());
-		email.setMsg(smtpMessage.getContent());
-		email.setTo(smtpMessage.getTo());
-		email.setSentDate(smtpMessage.getDateSent().toDate());
 		if (settings.getAuthentication() != null) {
 			email.setAuthentication(settings.getAuthentication().getUsername(),
 					settings.getAuthentication().getPassword());
@@ -83,11 +127,32 @@ public class SmtpSender implements Callable<Boolean> {
 		System.setProperty("mail.smtp.ssl.trust", "*");
 		email.setSocketConnectionTimeout(settings.getConnectionTimeout());
 		email.setSocketTimeout(settings.getSocketTimeout());
-		email.send();
-
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("email sent to " + smtpMessage.getTo());
-		}
 	}
 
+	/**
+	 * Converts an {@link SmtpMessage} to an {@link SimpleEmail} instance.
+	 * <p/>
+	 * Note: that the returned {@link Email} instance need to have additional
+	 * fields populated (such as server host name) before being sent.
+	 *
+	 * @param smtpMessage
+	 * @return
+	 * @throws SmtpSenderException
+	 */
+	private static SimpleEmail toSimpleEmail(SmtpMessage smtpMessage)
+			throws SmtpSenderException {
+		try {
+			SimpleEmail email = new SimpleEmail();
+			email.setFrom(smtpMessage.getFrom().toString());
+			email.setSubject(smtpMessage.getSubject());
+			email.setMsg(smtpMessage.getContent());
+			email.setTo(smtpMessage.getTo());
+			email.setSentDate(smtpMessage.getDateSent().toDate());
+			return email;
+		} catch (EmailException e) {
+			throw new SmtpSenderException(String.format(
+					"failed to convert SmtpMessage to a SimpleEmail: %s",
+					e.getMessage()), e);
+		}
+	}
 }
