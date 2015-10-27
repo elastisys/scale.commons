@@ -16,9 +16,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * The created {@link Server} can be considered a "base server", without any
  * registered request {@link Handler}s. Any request handlers need to be added by
  * the client.
- *
- *
- *
  */
 public class BaseServerBuilder {
 
@@ -38,20 +35,22 @@ public class BaseServerBuilder {
 	/**
 	 * File system path or URI to a SSL key store, which stores the server's SSL
 	 * certificate that it will use to authenticate to clients. <i>Note: this
-	 * option is only relevant for {@link Server}s with an HTTPS port.</i>
+	 * option is only relevant for {@link Server}s with an HTTPS port, in which
+	 * case it is required.</i>
 	 */
 	private String sslKeyStorePath = null;
 
 	/**
 	 * The type of the SSL key store. Defaults to {@link SslKeyStoreType#PKCS12}
 	 * . <i>Note: this option is only relevant for {@link Server}s with an HTTPS
-	 * port.</i>
+	 * port, in which case it is required.</i>
 	 */
 	private SslKeyStoreType sslKeyStoreType = SslKeyStoreType.PKCS12;
 
 	/**
 	 * Password used to protect SSL key store. <i>Note: this option is only
-	 * relevant for HTTPS {@link Server}s with an HTTPS port.</i>
+	 * relevant for HTTPS {@link Server}s with an HTTPS port, in which case it
+	 * is required.</i>
 	 */
 	private String sslKeyStorePassword = null;
 
@@ -65,7 +64,8 @@ public class BaseServerBuilder {
 	/**
 	 * File system path or URI to SSL trust store, which stores trusted client
 	 * certificates. <i>Note: this option is only relevant for {@link Server}s
-	 * with an HTTPS port that require client certificate authentication.</i>
+	 * with an HTTPS port that require client certificate authentication. If no
+	 * trust store is set, the server will use its key store as trust store.</i>
 	 */
 	private String sslTrustStorePath = null;
 	/**
@@ -149,6 +149,11 @@ public class BaseServerBuilder {
 
 			sslContextFactory.addExcludeProtocols("SSLv3"); // kill POODLE
 
+			// if no trust store path is given, the key store will be used as
+			// trust store
+			sslContextFactory.setTrustStoreType(this.sslKeyStoreType.name());
+			sslContextFactory.setTrustStorePath(this.sslKeyStorePath);
+			sslContextFactory.setTrustStorePassword(this.sslKeyStorePassword);
 			if (this.sslTrustStorePath != null) {
 				checkArgument(this.sslTrustStoreType != null,
 						"missing trust store type for trust store");
@@ -220,7 +225,7 @@ public class BaseServerBuilder {
 	 * Set a file system path or URI to a SSL key store, which stores the
 	 * server's SSL certificate that it will use to authenticate to clients.
 	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
-	 * port.</i>
+	 * port, in which case it is required.</i>
 	 *
 	 * @param pathOrUri
 	 * @return
@@ -233,7 +238,7 @@ public class BaseServerBuilder {
 	/**
 	 * Set the type of the SSL key store. Defaults to
 	 * {@link SslKeyStoreType#PKCS12}. <i>Note: this option is only relevant for
-	 * {@link Server}s with an HTTPS port.</i>
+	 * {@link Server}s with an HTTPS port, in which case it is required.</i>
 	 *
 	 * @param type
 	 * @return
@@ -245,7 +250,8 @@ public class BaseServerBuilder {
 
 	/**
 	 * Set the password used to protect SSL key store. <i>Note: this option is
-	 * only relevant for HTTPS {@link Server}s with an HTTPS port.</i>
+	 * only relevant for HTTPS {@link Server}s with an HTTPS port, in which case
+	 * it is required.</i>
 	 *
 	 * @param password
 	 * @return
@@ -272,7 +278,8 @@ public class BaseServerBuilder {
 	 * Set the file system path or URI to the SSL trust store, which stores
 	 * trusted client certificates. <i>Note: this option is only relevant for
 	 * {@link Server}s with an HTTPS port that require client certificate
-	 * authentication.</i>
+	 * authentication. If no trust store is set, the server will use its key
+	 * store as trust store.</i>
 	 *
 	 * @param pathOrUri
 	 * @return

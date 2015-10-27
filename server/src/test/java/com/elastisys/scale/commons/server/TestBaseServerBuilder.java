@@ -57,6 +57,10 @@ public class TestBaseServerBuilder {
 		BaseServerBuilder.create().httpsPort(8443).build();
 	}
 
+	/**
+	 * Creates a HTTPS server with a key store but without explicit trust store.
+	 * In these cases, the key store is used as trust store.
+	 */
 	@Test
 	public void https() throws Exception {
 		Server server = BaseServerBuilder.create().httpsPort(8443)
@@ -84,6 +88,11 @@ public class TestBaseServerBuilder {
 		assertThat(sslContextFactory.getKeyStoreResource().getFile().getPath(),
 				is(ETC_SECURITY + "/server_keystore.p12"));
 
+		// since no trust store was specified, it should fall back to use the
+		// key store as trust store
+		assertThat(sslContextFactory.getTrustStore(),
+				is(sslContextFactory.getKeyStore()));
+
 		// should not require client cert authentication
 		assertThat(sslContextFactory.getNeedClientAuth(), is(false));
 		// should not *want* client cert authentication (if offered)
@@ -98,7 +107,7 @@ public class TestBaseServerBuilder {
 	}
 
 	@Test
-	public void httpsWithTrustStore() throws Exception {
+	public void httpsWithExplicitTrustStore() throws Exception {
 		Server server = BaseServerBuilder.create().httpsPort(8443)
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
