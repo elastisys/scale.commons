@@ -43,8 +43,8 @@ public class BaseServerBuilder {
 	private String sslKeyStorePath = null;
 
 	/**
-	 * The type of the SSL key store. Defaults to {@link SslKeyStoreType#PKCS12}.
-	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
+	 * The type of the SSL key store. Defaults to {@link SslKeyStoreType#PKCS12}
+	 * . <i>Note: this option is only relevant for {@link Server}s with an HTTPS
 	 * port.</i>
 	 */
 	private SslKeyStoreType sslKeyStoreType = SslKeyStoreType.PKCS12;
@@ -155,8 +155,8 @@ public class BaseServerBuilder {
 				checkArgument(this.sslTrustStorePassword != null,
 						"missing password for trust store");
 
-				sslContextFactory.setTrustStoreType(this.sslTrustStoreType
-						.name());
+				sslContextFactory
+						.setTrustStoreType(this.sslTrustStoreType.name());
 				sslContextFactory.setTrustStorePath(this.sslTrustStorePath);
 				sslContextFactory
 						.setTrustStorePassword(this.sslTrustStorePassword);
@@ -283,9 +283,10 @@ public class BaseServerBuilder {
 	}
 
 	/**
-	 * Set the type of the SSL trust store. Defaults to {@link SslKeyStoreType#JKS}
-	 * . <i>Note: this option is only relevant for {@link Server}s with an HTTPS
-	 * port that require client certificate authentication.</i>
+	 * Set the type of the SSL trust store. Defaults to
+	 * {@link SslKeyStoreType#JKS} . <i>Note: this option is only relevant for
+	 * {@link Server}s with an HTTPS port that require client certificate
+	 * authentication.</i>
 	 *
 	 * @param type
 	 * @return

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.elastisys.scale</groupId>
@@ -9,16 +10,26 @@
   <name>elastisys:scale :: commons :: server</name>
   <description>utility classes for embedding HTTP(S) servers</description>
   <packaging>jar</packaging>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-    </dependency>  
+    </dependency>
     <!-- Embedded jetty server -->
     <dependency>
-      <groupId>org.eclipse.jetty.aggregate</groupId>
-      <artifactId>jetty-all</artifactId>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+    </dependency>
+    <!-- Utility Jetty servlets and filters -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
+    </dependency>
+    <!-- URL rewrite handlers -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-rewrite</artifactId>
     </dependency>
 
     <!-- Logging -->
@@ -40,19 +51,19 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <scope>test</scope>      
-    </dependency>         
+      <scope>test</scope>
+    </dependency>
     <!-- Jersey REST client -->
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <!-- to simplify building of SSLContexts -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <scope>test</scope>
-    </dependency>    
-  </dependencies>  
+    </dependency>
+  </dependencies>
 </project>

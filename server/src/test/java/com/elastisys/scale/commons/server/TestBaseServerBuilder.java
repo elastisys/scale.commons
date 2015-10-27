@@ -18,9 +18,9 @@ import org.junit.Test;
 
 /**
  * Exercises the {@link BaseServerBuilder} class.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TestBaseServerBuilder {
 
@@ -48,8 +48,7 @@ public class TestBaseServerBuilder {
 		assertThat(httpConnectionFactory, is(notNullValue()));
 
 		// no https redirect port should be set
-		assertThat(
-				httpConnectionFactory.getHttpConfiguration().getSecurePort(),
+		assertThat(httpConnectionFactory.getHttpConfiguration().getSecurePort(),
 				is(0));
 	}
 
@@ -82,8 +81,8 @@ public class TestBaseServerBuilder {
 		assertThat(sslContextFactory, is(notNullValue()));
 		assertThat(sslContextFactory.getKeyStoreType(),
 				is(SslKeyStoreType.PKCS12.name()));
-		assertThat(sslContextFactory.getKeyStorePath(), is(ETC_SECURITY
-				+ "/server_keystore.p12"));
+		assertThat(sslContextFactory.getKeyStoreResource().getFile().getPath(),
+				is(ETC_SECURITY + "/server_keystore.p12"));
 
 		// should not require client cert authentication
 		assertThat(sslContextFactory.getNeedClientAuth(), is(false));
@@ -125,8 +124,9 @@ public class TestBaseServerBuilder {
 		assertThat(sslContextFactory, is(notNullValue()));
 		assertThat(sslContextFactory.getTrustStoreType(),
 				is(SslKeyStoreType.JKS.name()));
-		assertThat(sslContextFactory.getTrustStore(), is(ETC_SECURITY
-				+ "/server_truststore.jks"));
+		assertThat(
+				sslContextFactory.getTrustStoreResource().getFile().getPath(),
+				is(ETC_SECURITY + "/server_truststore.jks"));
 
 		// should not require client cert authentication
 		assertThat(sslContextFactory.getNeedClientAuth(), is(false));
@@ -140,7 +140,8 @@ public class TestBaseServerBuilder {
 				.sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
+				.sslTrustStoreType(SslKeyStoreType.JKS)
+				.sslRequireClientCert(true)
 				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
 				.sslTrustStorePassword("truststorepassword")
 				.sslRequireClientCert(true).build();
@@ -169,7 +170,8 @@ public class TestBaseServerBuilder {
 				.httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
 				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
 				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
+				.sslTrustStoreType(SslKeyStoreType.JKS)
+				.sslRequireClientCert(true)
 				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
 				.sslTrustStorePassword("truststorepassword")
 				.sslRequireClientCert(true).build();
@@ -187,7 +189,8 @@ public class TestBaseServerBuilder {
 		HttpConnectionFactory httpFactory = httpConnector
 				.getConnectionFactory(HttpConnectionFactory.class);
 		assertThat(httpFactory, is(notNullValue()));
-		assertThat(httpFactory.getHttpConfiguration().getSecurePort(), is(8443));
+		assertThat(httpFactory.getHttpConfiguration().getSecurePort(),
+				is(8443));
 		assertThat(httpFactory.getHttpConfiguration().getSecureScheme(),
 				is("https"));
 	}

@@ -36,12 +36,12 @@ public class TestServletServerBuilder {
 	static Logger logger = LoggerFactory
 			.getLogger(TestServletServerBuilder.class);
 
-	private static final String SERVER_KEYSTORE = Resources.getResource(
-			"security/server/server_keystore.p12").toString();
+	private static final String SERVER_KEYSTORE = Resources
+			.getResource("security/server/server_keystore.p12").toString();
 	private static final String SERVER_KEYSTORE_PASSWORD = "serverpass";
 
-	private static final String SERVER_TRUSTSTORE = Resources.getResource(
-			"security/server/server_truststore.jks").toString();
+	private static final String SERVER_TRUSTSTORE = Resources
+			.getResource("security/server/server_truststore.jks").toString();
 	private static final String SERVER_TRUSTSTORE_PASSWORD = "trustpass";
 
 	private static final String CLIENT_KEYSTORE = "src/test/resources/security/client/client_keystore.p12";
@@ -119,8 +119,8 @@ public class TestServletServerBuilder {
 
 	@Test
 	public void httpNoSecurityServer() throws Exception {
-		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
-				new EchoServlet()).build();
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).build();
 		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
 				.addServlet(servlet).build();
 		this.server.start();
@@ -137,16 +137,16 @@ public class TestServletServerBuilder {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void httpsServerMissingKeystore() throws Exception {
-		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
-				new EchoServlet()).build();
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).build();
 		ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).addServlet(servlet).build();
 	}
 
 	@Test
 	public void httpHttpsNoSecurityServer() throws Exception {
-		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
-				new EchoServlet()).build();
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).build();
 		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).sslKeyStorePath(SERVER_KEYSTORE)
 				.sslKeyStorePassword(SERVER_KEYSTORE_PASSWORD)
@@ -275,8 +275,7 @@ public class TestServletServerBuilder {
 		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).sslKeyStorePath(SERVER_KEYSTORE)
 				.sslKeyStorePassword(SERVER_KEYSTORE_PASSWORD)
-				.sslRequireClientCert(true)
-				.sslTrustStorePath(SERVER_TRUSTSTORE)
+				.sslRequireClientCert(true).sslTrustStorePath(SERVER_TRUSTSTORE)
 				.sslTrustStorePassword(SERVER_TRUSTSTORE_PASSWORD)
 				.addServlet(servlet).build();
 		this.server.start();
@@ -307,8 +306,8 @@ public class TestServletServerBuilder {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void httpsCertAuthServerMissingTruststore() {
-		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
-				new EchoServlet()).build();
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).build();
 		ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).sslKeyStorePath(SERVER_KEYSTORE)
 				.sslKeyStorePassword(SERVER_KEYSTORE_PASSWORD)
@@ -323,9 +322,8 @@ public class TestServletServerBuilder {
 		ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).sslKeyStorePath(SERVER_KEYSTORE)
 				.sslKeyStorePassword(SERVER_KEYSTORE_PASSWORD)
-				.sslRequireClientCert(true)
-				.sslTrustStorePath(SERVER_TRUSTSTORE).addServlet(servlet)
-				.build();
+				.sslRequireClientCert(true).sslTrustStorePath(SERVER_TRUSTSTORE)
+				.addServlet(servlet).build();
 	}
 
 	@Test
@@ -338,8 +336,7 @@ public class TestServletServerBuilder {
 		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
 				.httpsPort(this.httpsPort).sslKeyStorePath(SERVER_KEYSTORE)
 				.sslKeyStorePassword(SERVER_KEYSTORE_PASSWORD)
-				.sslRequireClientCert(true)
-				.sslTrustStorePath(SERVER_TRUSTSTORE)
+				.sslRequireClientCert(true).sslTrustStorePath(SERVER_TRUSTSTORE)
 				.sslTrustStorePassword(SERVER_TRUSTSTORE_PASSWORD)
 				.addServlet(servlet).build();
 		this.server.start();
@@ -348,19 +345,19 @@ public class TestServletServerBuilder {
 
 		// connecting with trusted cert and right username/password: OK
 		assertThat(
-				httpsCertAndBasicAuth(CLIENT_KEYSTORE,
-						CLIENT_KEYSTORE_PASSWORD, "admin", "adminpassword")
-						.getStatus(), is(Status.OK.getStatusCode()));
+				httpsCertAndBasicAuth(CLIENT_KEYSTORE, CLIENT_KEYSTORE_PASSWORD,
+						"admin", "adminpassword").getStatus(),
+				is(Status.OK.getStatusCode()));
 		// connecting with trusted cert and wrong password: UNAUTHORIZED
 		assertThat(
-				httpsCertAndBasicAuth(CLIENT_KEYSTORE,
-						CLIENT_KEYSTORE_PASSWORD, "admin", "wrongpassword")
-						.getStatus(), is(Status.UNAUTHORIZED.getStatusCode()));
+				httpsCertAndBasicAuth(CLIENT_KEYSTORE, CLIENT_KEYSTORE_PASSWORD,
+						"admin", "wrongpassword").getStatus(),
+				is(Status.UNAUTHORIZED.getStatusCode()));
 		// connecting with trusted cert and wrong role: FORBIDDEN
 		assertThat(
-				httpsCertAndBasicAuth(CLIENT_KEYSTORE,
-						CLIENT_KEYSTORE_PASSWORD, "guest", "guestpassword")
-						.getStatus(), is(Status.FORBIDDEN.getStatusCode()));
+				httpsCertAndBasicAuth(CLIENT_KEYSTORE, CLIENT_KEYSTORE_PASSWORD,
+						"guest", "guestpassword").getStatus(),
+				is(Status.FORBIDDEN.getStatusCode()));
 
 		// connecting with untrusted cert: SSL connection should fail
 		try {
@@ -512,9 +509,8 @@ public class TestServletServerBuilder {
 		Response response = request.get();
 		// verify response contains CORS header
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-		assertThat(response.getHeaders()
-				.getFirst("Access-Control-Allow-Origin").toString(),
-				is("http://www.foo.com"));
+		assertThat(response.getHeaders().getFirst("Access-Control-Allow-Origin")
+				.toString(), is("http://www.foo.com"));
 	}
 
 	/**
@@ -524,8 +520,8 @@ public class TestServletServerBuilder {
 	@Test
 	public void testCorsSupportEnabledByDefault() throws Exception {
 		// create a servlet that (by the default value) supports CORS requests.
-		ServletDefinition servlet = new ServletDefinition.Builder().servlet(
-				new EchoServlet()).build();
+		ServletDefinition servlet = new ServletDefinition.Builder()
+				.servlet(new EchoServlet()).build();
 		this.server = ServletServerBuilder.create().httpPort(this.httpPort)
 				.addServlet(servlet).build();
 		this.server.start();
@@ -536,9 +532,8 @@ public class TestServletServerBuilder {
 		Response response = request.get();
 		// verify response contains CORS header
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-		assertThat(response.getHeaders()
-				.getFirst("Access-Control-Allow-Origin").toString(),
-				is("http://www.foo.com"));
+		assertThat(response.getHeaders().getFirst("Access-Control-Allow-Origin")
+				.toString(), is("http://www.foo.com"));
 	}
 
 	/**
@@ -560,9 +555,8 @@ public class TestServletServerBuilder {
 		Response response = request.get();
 		// verify response does not contain CORS headers
 		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-		assertThat(
-				response.getHeaders()
-						.containsKey("Access-Control-Allow-Origin"), is(false));
+		assertThat(response.getHeaders()
+				.containsKey("Access-Control-Allow-Origin"), is(false));
 	}
 
 	/**
@@ -607,7 +601,8 @@ public class TestServletServerBuilder {
 		return client.target(httpsUrl("/")).request().get();
 	}
 
-	private Response httpsCertAuth(String keyStorePath, String keyStorePassword) {
+	private Response httpsCertAuth(String keyStorePath,
+			String keyStorePassword) {
 		Client client = RestClientUtils.httpsCertAuth(keyStorePath,
 				keyStorePassword, SslKeyStoreType.PKCS12);
 		return client.target(httpsUrl("/")).request().get();
