@@ -159,26 +159,36 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 	 * Make sure the untrusted client can <b>not</b> connect with a certificate
 	 * read from a PKCS12 key store.
 	 */
-	@Test(expected = SocketException.class)
+	@Test
 	public void callWithUntrustedClientPkcs12Cert() throws IOException {
 		Optional<BasicCredentials> absent = Optional.absent();
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent,
 				Optional.of(untrustedClientPkcs12Cert));
 
-		client.execute(new HttpGet(url("/")));
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("call with untrusted cert should not succeed");
+		} catch (SocketException | SSLException e) {
+			// expected
+		}
 	}
 
 	/**
 	 * Make sure the untrusted client can <b>not</b> connect with a certificate
 	 * read from a JKS key store.
 	 */
-	@Test(expected = SocketException.class)
+	@Test
 	public void callWithUntrustedClientJksCert() throws IOException {
 		Optional<BasicCredentials> absent = Optional.absent();
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent,
 				Optional.of(untrustedClientJksCert));
 
-		client.execute(new HttpGet(url("/")));
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("call with untrusted cert should not succeed");
+		} catch (SocketException | SSLException e) {
+			// expected
+		}
 	}
 
 	/**
