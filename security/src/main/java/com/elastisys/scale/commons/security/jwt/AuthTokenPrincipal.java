@@ -1,4 +1,4 @@
-package com.elastisys.scale.commons.rest.auth;
+package com.elastisys.scale.commons.security.jwt;
 
 import java.security.Principal;
 

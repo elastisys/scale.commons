@@ -9,6 +9,7 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.security.jwt.AuthTokenValidator;
 import com.elastisys.scale.commons.util.time.UtcTime;
 
 /**

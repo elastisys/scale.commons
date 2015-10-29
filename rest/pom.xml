@@ -24,6 +24,13 @@
       <artifactId>commons.net</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- JWT Auth token functionality -->
+    <dependency>
+      <groupId>com.elastisys.scale</groupId>
+      <artifactId>commons.security</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
 
     <!-- JAX-RS API -->
     <dependency>
@@ -34,12 +41,6 @@
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
-    </dependency>
-
-    <!-- Library for manipulating JSON Web Tokens (JWTs) -->
-    <dependency>
-      <groupId>org.bitbucket.b_c</groupId>
-      <artifactId>jose4j</artifactId>
     </dependency>
 
     <!-- Logging -->

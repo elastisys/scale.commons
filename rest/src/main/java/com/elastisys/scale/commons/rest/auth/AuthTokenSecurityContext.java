@@ -8,6 +8,8 @@ import org.jose4j.jwt.JwtClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.security.jwt.AuthTokenPrincipal;
+
 /**
  * A {@link SecurityContext} for a request with a valid JSON Web Token
  * authentication. The context holds the {@link JwtClaims} carried in the token

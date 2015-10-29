@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyWriter;
+import com.elastisys.scale.commons.security.jwt.AuthTokenPrincipal;
 import com.google.gson.JsonElement;
 
 /**

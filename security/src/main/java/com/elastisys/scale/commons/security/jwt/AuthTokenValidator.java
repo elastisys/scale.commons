@@ -1,13 +1,10 @@
-package com.elastisys.scale.commons.rest.auth;
+package com.elastisys.scale.commons.security.jwt;
 
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.consumer.InvalidJwtException;
 
 /**
- * A validator of JSON Web Token (JWT) authentication tokens used by an
- * {@link AuthTokenRequestFilter}.
- *
- * @see AuthTokenRequestFilter
+ * A validator of JSON Web Token (JWT) authentication tokens.
  */
 public interface AuthTokenValidator {
 
