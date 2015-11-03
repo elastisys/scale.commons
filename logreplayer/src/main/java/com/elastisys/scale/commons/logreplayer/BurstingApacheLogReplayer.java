@@ -28,33 +28,30 @@ import com.google.common.io.Files;
 import com.google.common.util.concurrent.RateLimiter;
 
 /**
- * An Apache log file replayer that replays an aoache log file (in in either <a
- * href="http://httpd.apache.org/docs/1.3/logs.html#combined">combined</a> or <a
- * href="http://httpd.apache.org/docs/1.3/logs.html#common">common</a> log
+ * An Apache log file replayer that replays an aoache log file (in in either
+ * <a href="http://httpd.apache.org/docs/1.3/logs.html#combined">combined</a> or
+ * <a href="http://httpd.apache.org/docs/1.3/logs.html#common">common</a> log
  * format) against a target URL in bursts of a given duration.
  * <p/>
  * The log replayer accepts a burst duration (in seconds) and will, for every
  * burst frame time window, apply the average request rate found in the log file
  * over that time frame.
- * 
- * 
- * 
  */
 public class BurstingApacheLogReplayer implements Runnable {
 
-	private static final int CONNECTION_REQUEST_TIMEOUT = 3000;
-
-	private static final int CONNECT_TIMEOUT = 3000;
-
-	private static final int SOCKET_TIMEOUT = 3000;
+	/**
+	 * Time to wait for a connection in http client pool. Zero is infinite wait.
+	 */
+	private static final int CONNECTION_REQUEST_TIMEOUT = 0;
 
 	static Logger LOG = LoggerFactory
 			.getLogger(BurstingApacheLogReplayer.class);
 
 	/**
-	 * Path to an apache log file in either <a
-	 * href="http://httpd.apache.org/docs/1.3/logs.html#combined">combined</a>
-	 * or <a href="http://httpd.apache.org/docs/1.3/logs.html#common">common</a>
+	 * Path to an apache log file in either
+	 * <a href="http://httpd.apache.org/docs/1.3/logs.html#combined">combined
+	 * </a> or
+	 * <a href="http://httpd.apache.org/docs/1.3/logs.html#common">common</a>
 	 * log format
 	 */
 	private final String logFile;
@@ -69,15 +66,21 @@ public class BurstingApacheLogReplayer implements Runnable {
 	 */
 	private final int burstDuration;
 
+	/** Connection timeout (in seconds). */
+	private final int connectTimeout;
+
+	/** Socket read timeout (in seconds). */
+	private final int socketReadTimeout;
+
 	/**
 	 * Creates a new {@link BurstingApacheLogReplayer}.
-	 * 
+	 *
 	 * @param logFile
-	 *            Path to an apache log file in either <a
-	 *            href="http://httpd.apache.org/docs/1.3/logs.html#combined"
-	 *            >combined</a> or <a
-	 *            href="http://httpd.apache.org/docs/1.3/logs.html#common"
-	 *            >common</a> log format
+	 *            Path to an apache log file in either
+	 *            <a href="http://httpd.apache.org/docs/1.3/logs.html#combined"
+	 *            >combined</a> or
+	 *            <a href="http://httpd.apache.org/docs/1.3/logs.html#common" >
+	 *            common</a> log format
 	 * @param targetUrl
 	 *            The application URL to subject to load.
 	 * @param burstDuration
@@ -85,9 +88,13 @@ public class BurstingApacheLogReplayer implements Runnable {
 	 *            will be split into burst frames of this duration, during which
 	 *            the average request rate of the frame is applied to the target
 	 *            URL.
+	 * @param connectTimeout
+	 *            Connection timeout (in seconds).
+	 * @param socketReadTimeout
+	 *            Socket read timeout (in seconds).
 	 */
 	public BurstingApacheLogReplayer(String logFile, String targetUrl,
-			int burstDuration) {
+			int burstDuration, int connectTimeout, int socketReadTimeout) {
 		checkNotNull(logFile, "missing logFile");
 		checkArgument(new File(logFile).isFile(), "%s is not a valid file",
 				logFile);
@@ -97,6 +104,10 @@ public class BurstingApacheLogReplayer implements Runnable {
 		this.logFile = logFile;
 		this.targetUrl = targetUrl;
 		this.burstDuration = burstDuration;
+		this.connectTimeout = (int) TimeUnit.MILLISECONDS
+				.convert(connectTimeout, TimeUnit.SECONDS);
+		this.socketReadTimeout = (int) TimeUnit.MILLISECONDS
+				.convert(socketReadTimeout, TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -114,14 +125,16 @@ public class BurstingApacheLogReplayer implements Runnable {
 
 		DateTime burstStart = getLogStart(apacheLog);
 		LOG.info("Log starts at {}", burstStart);
-		try (BufferedReader reader = new BufferedReader(new FileReader(
-				apacheLog))) {
+		try (BufferedReader reader = new BufferedReader(
+				new FileReader(apacheLog))) {
 			while (reader.ready()) {
 				DateTime burstEnd = burstStart.plusSeconds(this.burstDuration);
 				double burstRate = getNextBurstRate(reader, burstStart,
 						burstEnd);
-				LOG.info("applying a burst with request rate {} "
-						+ "for {} second(s)", burstRate, this.burstDuration);
+				LOG.info(
+						"applying a burst with request rate {} "
+								+ "for {} second(s)",
+						burstRate, this.burstDuration);
 				applyBurst(httpClient, burstRate, this.burstDuration);
 				burstStart = burstEnd;
 			}
@@ -140,14 +153,14 @@ public class BurstingApacheLogReplayer implements Runnable {
 	}
 
 	private DateTime getLogStart(File apacheLog) throws IOException {
-		CommonFormatLogRecord logRecord = CommonFormatLogRecord.parse(Files
-				.readFirstLine(apacheLog, Charsets.UTF_8));
+		CommonFormatLogRecord logRecord = CommonFormatLogRecord
+				.parse(Files.readFirstLine(apacheLog, Charsets.UTF_8));
 		return logRecord.getFinishedProcessingTimestamp();
 	}
 
 	/**
 	 * Get the request rate in the apache log file for the given burst frame.
-	 * 
+	 *
 	 * @param reader
 	 *            A reader for the apache log file.
 	 * @param burstStart
@@ -169,10 +182,11 @@ public class BurstingApacheLogReplayer implements Runnable {
 			DateTime requestTimestamp = request
 					.getFinishedProcessingTimestamp();
 			if (requestTimestamp.isBefore(burstStart)) {
-				LOG.warn(String.format("ignoring out-of-order request: "
-						+ "request timestamp %s is before "
-						+ "burst start %s. log line: '%s'", requestTimestamp,
-						burstStart, line));
+				LOG.warn(String.format(
+						"ignoring out-of-order request: "
+								+ "request timestamp %s is before "
+								+ "burst start %s. log line: '%s'",
+						requestTimestamp, burstStart, line));
 				continue;
 			}
 			if (requestTimestamp.isEqual(burstEnd)
@@ -191,11 +205,12 @@ public class BurstingApacheLogReplayer implements Runnable {
 		return (double) requestCount / this.burstDuration;
 	}
 
-	private CloseableHttpAsyncClient createHttpClient() throws RuntimeException {
+	private CloseableHttpAsyncClient createHttpClient()
+			throws RuntimeException {
 		RequestConfig requestConfig = RequestConfig.custom()
 				.setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-				.setSocketTimeout(SOCKET_TIMEOUT)
-				.setConnectTimeout(CONNECT_TIMEOUT).build();
+				.setSocketTimeout(this.socketReadTimeout)
+				.setConnectTimeout(this.connectTimeout).build();
 		// don't reuse connections
 		NoConnectionReuseStrategy reuseStrategy = new NoConnectionReuseStrategy();
 
@@ -206,12 +221,13 @@ public class BurstingApacheLogReplayer implements Runnable {
 		return asyncClient;
 	}
 
-	public static class ResponseCallback implements
-			FutureCallback<HttpResponse> {
+	public static class ResponseCallback
+			implements FutureCallback<HttpResponse> {
 
 		@Override
-		public void failed(final Exception ex) {
-			LOG.error(" ! <- " + ex.getMessage());
+		public void failed(final Exception e) {
+			LOG.error(" ! <- {}: {}", e.getClass().getName(), e.getMessage(),
+					e);
 		}
 
 		@Override

@@ -20,8 +20,6 @@ import com.google.common.collect.Range;
 
 /**
  * Represents a response to a HTTP request.
- *
- *
  */
 public class HttpRequestResponse {
 	/**
@@ -105,8 +103,8 @@ public class HttpRequestResponse {
 		if (entity != null) {
 			Header contentType = entity.getContentType();
 			if (contentType != null) {
-				Matcher matcher = CHARSET_PATTERN.matcher(contentType
-						.getValue());
+				Matcher matcher = CHARSET_PATTERN
+						.matcher(contentType.getValue());
 				if (matcher.matches()) {
 					String charset = matcher.group(1);
 					try {
@@ -153,8 +151,8 @@ public class HttpRequestResponse {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
-				.add("statusCode", this.statusCode)
-				.add("headers", this.headers).toString();
+				.add("statusCode", this.statusCode).add("headers", this.headers)
+				.toString();
 	}
 
 	/**
@@ -164,12 +162,7 @@ public class HttpRequestResponse {
 	 * @return
 	 */
 	public static Predicate<HttpRequestResponse> isOkResponse() {
-		return new Predicate<HttpRequestResponse>() {
-			@Override
-			public boolean apply(HttpRequestResponse response) {
-				return Range.closed(200, 299)
-						.contains(response.getStatusCode());
-			}
-		};
+		return response -> Range.closed(200, 299)
+				.contains(response.getStatusCode());
 	}
 }

@@ -22,8 +22,8 @@ public class LogReplayerMain {
 			}
 		} catch (CmdLineException e) {
 			System.err.println("error: " + e.getMessage());
-			System.err
-					.println("usage: java LogReplayer [options] <logfile> <target-url>");
+			System.err.println(
+					"usage: java LogReplayer [options] <logfile> <target-url>");
 			parser.printUsage(System.err);
 			System.exit(-1);
 		}
@@ -33,7 +33,8 @@ public class LogReplayerMain {
 		int burstDuration = options.burstDuration;
 
 		BurstingApacheLogReplayer replayer = new BurstingApacheLogReplayer(
-				logFile, targetUrl, burstDuration);
+				logFile, targetUrl, burstDuration, options.connectionTimeout,
+				options.socketReadTimeout);
 		replayer.run();
 	}
 }
