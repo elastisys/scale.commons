@@ -8,7 +8,7 @@ public class LogReplayerMain {
 	public static void main(String[] args) {
 		LogReplayerOptions options = new LogReplayerOptions();
 		CmdLineParser parser = new CmdLineParser(options);
-		parser.setUsageWidth(80);
+		parser.getProperties().withUsageWidth(80);
 
 		try {
 			parser.parseArgument(args);

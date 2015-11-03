@@ -9,15 +9,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.concurrent.FutureCallback;
-import org.apache.http.impl.NoConnectionReuseStrategy;
-import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
-import org.apache.http.impl.nio.client.HttpAsyncClients;
-import org.apache.http.nio.client.HttpAsyncClient;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +17,10 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 import com.google.common.io.Files;
 import com.google.common.util.concurrent.RateLimiter;
+import com.ning.http.client.AsyncCompletionHandler;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.AsyncHttpClientConfig;
+import com.ning.http.client.Response;
 
 /**
  * An Apache log file replayer that replays an aoache log file (in in either
@@ -112,15 +107,18 @@ public class BurstingApacheLogReplayer implements Runnable {
 
 	@Override
 	public void run() {
-		try (CloseableHttpAsyncClient httpClient = createHttpClient()) {
+		AsyncHttpClient httpClient = createHttpClient();
+		try {
 			replayLog(httpClient);
 		} catch (Exception e) {
 			LOG.error(String.format("log replayer failed: %s", e.getMessage()),
 					e);
+		} finally {
+			httpClient.close();
 		}
 	}
 
-	private void replayLog(HttpAsyncClient httpClient) throws IOException {
+	private void replayLog(AsyncHttpClient httpClient) throws IOException {
 		File apacheLog = new File(this.logFile);
 
 		DateTime burstStart = getLogStart(apacheLog);
@@ -141,14 +139,14 @@ public class BurstingApacheLogReplayer implements Runnable {
 		}
 	}
 
-	private void applyBurst(HttpAsyncClient httpClient, double burstRate,
+	private void applyBurst(AsyncHttpClient httpClient, double burstRate,
 			int burstDuration) {
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		RateLimiter rateLimiter = RateLimiter.create(burstRate);
 		while (stopwatch.elapsed(TimeUnit.SECONDS) < burstDuration) {
 			rateLimiter.acquire();
-			ResponseCallback responseCallback = new ResponseCallback();
-			httpClient.execute(new HttpGet(this.targetUrl), responseCallback);
+			httpClient.prepareGet(this.targetUrl)
+					.execute(new ResponseHandler());
 		}
 	}
 
@@ -205,41 +203,31 @@ public class BurstingApacheLogReplayer implements Runnable {
 		return (double) requestCount / this.burstDuration;
 	}
 
-	private CloseableHttpAsyncClient createHttpClient()
-			throws RuntimeException {
-		RequestConfig requestConfig = RequestConfig.custom()
-				.setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-				.setSocketTimeout(this.socketReadTimeout)
-				.setConnectTimeout(this.connectTimeout).build();
-		// don't reuse connections
-		NoConnectionReuseStrategy reuseStrategy = new NoConnectionReuseStrategy();
+	private AsyncHttpClient createHttpClient() throws RuntimeException {
+		AsyncHttpClientConfig httpConfig = new AsyncHttpClientConfig.Builder()
+				.setAcceptAnyCertificate(true)
+				.setConnectTimeout(this.connectTimeout)
+				.setReadTimeout(this.socketReadTimeout).build();
 
-		CloseableHttpAsyncClient asyncClient = HttpAsyncClients.custom()
-				.setConnectionReuseStrategy(reuseStrategy)
-				.setDefaultRequestConfig(requestConfig).build();
-		asyncClient.start();
-		return asyncClient;
+		return new AsyncHttpClient(httpConfig);
 	}
 
-	public static class ResponseCallback
-			implements FutureCallback<HttpResponse> {
+	public static class ResponseHandler
+			extends AsyncCompletionHandler<Response> {
 
 		@Override
-		public void failed(final Exception e) {
-			LOG.error(" ! <- {}: {}", e.getClass().getName(), e.getMessage(),
-					e);
-		}
-
-		@Override
-		public void cancelled() {
-			LOG.error(" ! <- cancelled");
-		}
-
-		@Override
-		public void completed(HttpResponse result) {
-			if (result.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-				LOG.info(" <- '{}'", result.getStatusLine());
+		public Response onCompleted(Response response) throws Exception {
+			if (response.getStatusCode() != 200) {
+				LOG.info(" <- '{}'", response.getStatusCode());
 			}
+			return response;
+		}
+
+		@Override
+		public void onThrowable(Throwable t) {
+			LOG.error(" ! <- {}: {}", t.getClass().getName(), t.getMessage(),
+					t);
+			super.onThrowable(t);
 		}
 	}
 

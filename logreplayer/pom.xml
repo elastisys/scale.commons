@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.elastisys.scale</groupId>
@@ -13,9 +14,14 @@
   <dependencies>
     <!-- Asynchronous HTTP client -->
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpasyncclient</artifactId>
-      <version>4.0.1</version>
+      <groupId>com.ning</groupId>
+      <artifactId>async-http-client</artifactId>
+      <version>1.9.31</version>
+    </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.10.4.Final</version>
     </dependency>
 
     <dependency>
@@ -55,8 +61,7 @@
   <build>
     <plugins>
 
-      <!-- Build a standalone executable jar file that embeds all classpath 
-        dependencies. -->
+      <!-- Build a standalone executable jar file that embeds all classpath dependencies. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -64,7 +69,8 @@
         <configuration>
           <transformers>
             <!-- Make jar file executable (add Main-Class header to jar manifest) -->
-            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+            <transformer
+              implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
               <mainClass>com.elastisys.scale.commons.logreplayer.LogReplayerMain</mainClass>
             </transformer>
           </transformers>
