@@ -8,12 +8,8 @@ import java.util.regex.Pattern;
 
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
-import org.jose4j.jwt.NumericDate;
-import org.jose4j.jwt.ReservedClaimNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.elastisys.scale.commons.util.time.UtcTime;
 
 /**
  * Validates Authorization headers carrying JSON Web Token (JWT) authentication
@@ -29,8 +25,6 @@ import com.elastisys.scale.commons.util.time.UtcTime;
  * form: {@code Bearer <token>}.</li>
  * <li>It uses a wrapped {@link AuthTokenValidator} to deserialize the token,
  * validate its signature and also verify the claims of the token.</li>
- * <li>Verifies that the token hasn't expired, in case an expiration time is
- * set.</li>
  * </ul>
  */
 public class AuthTokenHeaderValidator {
@@ -72,8 +66,6 @@ public class AuthTokenHeaderValidator {
 	 * the form: {@code Bearer <token>}.</li>
 	 * <li>Using a wrapped {@link AuthTokenValidator} to deserialize the token,
 	 * validate its signature and also verify the claims of the token.</li>
-	 * <li>Verifying that the token hasn't expired, in case an expiration time
-	 * is set.</li>
 	 * </ul>
 	 *
 	 * @param authorizationHeader
@@ -111,15 +103,6 @@ public class AuthTokenHeaderValidator {
 					e);
 		}
 
-		// make sure that token hasn't expired
-		if (tokenClaims.hasClaim(ReservedClaimNames.EXPIRATION_TIME)) {
-			checkForExpiration(tokenClaims);
-		} else {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("token missing expiration time");
-			}
-		}
-
 		try {
 			LOG.debug("validated auth token for client '{}'",
 					tokenClaims.getSubject());
@@ -130,24 +113,5 @@ public class AuthTokenHeaderValidator {
 			throw new AuthTokenValidationException(message, detail, e);
 		}
 		return tokenClaims;
-	}
-
-	private void checkForExpiration(JwtClaims tokenClaims)
-			throws AuthTokenValidationException {
-		NumericDate now = NumericDate
-				.fromMilliseconds(UtcTime.now().getMillis());
-		try {
-			if (now.isOnOrAfter(tokenClaims.getExpirationTime())) {
-				String message = "failed to validate Authorization token";
-				String detail = "access token has expired";
-				throw new AuthTokenValidationException(message, detail);
-			}
-		} catch (MalformedClaimException e) {
-			String message = "failed to validate Authorization token";
-			String detail = format(
-					"failed to check access token expiration time: %s",
-					e.getMessage());
-			throw new AuthTokenValidationException(message, detail);
-		}
 	}
 }

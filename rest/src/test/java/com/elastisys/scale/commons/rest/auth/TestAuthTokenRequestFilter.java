@@ -261,25 +261,6 @@ public class TestAuthTokenRequestFilter {
 	}
 
 	/**
-	 * The {@link AuthTokenRequestFilter} will only check for token expiration
-	 * if an {@code exp} claim is present. It does not require an expiration
-	 * claim, it is up to the {@link AuthTokenValidator} to enforce any such
-	 * requirements.
-	 */
-	@Test
-	public void accessProtectedResourceWithAuthTokenWithoutExpirationClaim()
-			throws Exception {
-		startServer(new AsymmetricKeyAuthTokenValidator(this.signatureKeyPair)
-				.withExpectedIssuer(TOKEN_ISSUER));
-
-		String tokenWithoutExpiration = signToken(TOKEN_ISSUER,
-				this.signatureKeyPair, null);
-		Response response = getWithToken("/api/protected",
-				tokenWithoutExpiration);
-		assertThat(response.getStatus(), is(Status.OK.getStatusCode()));
-	}
-
-	/**
 	 * A failing auth token validator implementation should cause a
 	 * {@code 401 (Unauthorized)} response that includes the exception message
 	 * in the response {@link ErrorType}.

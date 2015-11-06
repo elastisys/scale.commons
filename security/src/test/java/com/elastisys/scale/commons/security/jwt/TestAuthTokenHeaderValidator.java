@@ -2,6 +2,7 @@ package com.elastisys.scale.commons.security.jwt;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -121,7 +122,7 @@ public class TestAuthTokenHeaderValidator {
 		} catch (AuthTokenValidationException e) {
 			assertValidationException(e,
 					"failed to validate Authorization token",
-					"invalid auth token signature");
+					"signature is invalid");
 		}
 	}
 
@@ -159,7 +160,7 @@ public class TestAuthTokenHeaderValidator {
 		} catch (AuthTokenValidationException e) {
 			assertValidationException(e,
 					"failed to validate Authorization token",
-					"invalid auth token signature");
+					"signature is invalid");
 		}
 	}
 
@@ -184,22 +185,8 @@ public class TestAuthTokenHeaderValidator {
 		} catch (AuthTokenValidationException e) {
 			assertValidationException(e,
 					"failed to validate Authorization token",
-					"access token has expired");
+					"no longer valid");
 		}
-	}
-
-	/**
-	 * The {@link AuthTokenHeaderValidator} will only check for token expiration
-	 * if an {@code exp} claim is present. It does not require an expiration
-	 * claim, it is up to the {@link AuthTokenValidator} to enforce any such
-	 * requirements.
-	 */
-	@Test
-	public void validateWithAuthTokenWithoutExpirationClaim() throws Exception {
-		String tokenWithoutExpiration = signToken(TOKEN_ISSUER,
-				this.signatureKeyPair, null);
-
-		validator.validate("Bearer " + tokenWithoutExpiration);
 	}
 
 	/**
@@ -266,9 +253,12 @@ public class TestAuthTokenHeaderValidator {
 	}
 
 	private void assertValidationException(AuthTokenValidationException e,
-			String expectedMessage, String expectedDetail) {
+			String expectedMessage, String detailContains) {
 		assertThat(e.getMessage(), is(expectedMessage));
-		assertThat(e.getDetail(), is(expectedDetail));
+		assertTrue(
+				"error detail '" + e.getDetail() + "' did not contain '"
+						+ detailContains + "'",
+				e.getDetail().contains(detailContains));
 	}
 
 }

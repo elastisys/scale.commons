@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.security.jwt;
 
 import org.jose4j.jwt.JwtClaims;
+import org.jose4j.jwt.consumer.InvalidJwtException;
 
 /**
  * A validator of JSON Web Token (JWT) authentication tokens. Validation
@@ -20,8 +21,8 @@ public interface AuthTokenValidator {
 	 * @param signedToken
 	 *            A signed and base 64-encoded JSON Web Token.
 	 * @return The token claims, if the token could be validated.
-	 * @throws AuthTokenValidationException
+	 * @throws InvalidJwtException
 	 *             on failure to validate the authentication token
 	 */
-	JwtClaims validate(String signedToken) throws AuthTokenValidationException;
+	JwtClaims validate(String signedToken) throws InvalidJwtException;
 }
