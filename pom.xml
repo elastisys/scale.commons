@@ -57,7 +57,7 @@
     <!-- Version bump made on 2014-12-18 -->
     <guava.version>18.0</guava.version>
     <guice.version>3.0</guice.version>
-    <apache.httpclient.version>4.3.6</apache.httpclient.version>
+    <apache.httpclient.version>4.5.1</apache.httpclient.version>
     <jetty.version>9.3.5.v20151012</jetty.version>
     <jaxrs.version>2.0.1</jaxrs.version>
     <jersey.version>2.14</jersey.version>

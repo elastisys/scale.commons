@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
@@ -38,7 +39,8 @@ public class HttpRequestResponse {
 
 	/**
 	 * Constructs a {@link HttpRequestResponse} from a {@link HttpResponse} by
-	 * consuming the {@link HttpResponse}'s {@link InputStream}.
+	 * consuming the {@link HttpResponse}'s {@link InputStream} and closing the
+	 * original {@link HttpResponse}.
 	 * <p/>
 	 * If the character encoding is specified in the response, it will be used
 	 * to interpret the {@link InputStream}. Lacking an explicit encoding, the
@@ -50,16 +52,17 @@ public class HttpRequestResponse {
 	 *            and closed when the method returns.
 	 * @throws IOException
 	 */
-	public HttpRequestResponse(HttpResponse httpResponse) throws IOException {
+	public HttpRequestResponse(CloseableHttpResponse httpResponse)
+			throws IOException {
 		this(httpResponse, Charsets.UTF_8);
 	}
 
 	/**
 	 * Constructs a {@link HttpRequestResponse} from a {@link HttpResponse} by
-	 * consuming the {@link HttpResponse}'s {@link InputStream}, using a
-	 * particular fall-back character encoding to interpret the content with
-	 * should the character encoding not be possible to determine from the
-	 * response itself.
+	 * consuming the {@link HttpResponse}'s {@link InputStream} and closing the
+	 * original {@link HttpResponse}. This constructor uses a particular
+	 * fall-back character encoding to interpret the content with should the
+	 * character encoding not be possible to determine from the response itself.
 	 *
 	 * @param httpResponse
 	 *            A {@link HttpResponse} that will be consumed. That is, the
@@ -71,7 +74,7 @@ public class HttpRequestResponse {
 	 *            itself.
 	 * @throws IOException
 	 */
-	public HttpRequestResponse(HttpResponse httpResponse,
+	public HttpRequestResponse(CloseableHttpResponse httpResponse,
 			Charset fallbackCharset) throws IOException {
 		this.statusCode = httpResponse.getStatusLine().getStatusCode();
 		this.headers = Lists.newArrayList(httpResponse.getAllHeaders());
@@ -87,6 +90,7 @@ public class HttpRequestResponse {
 		} else {
 			this.responseBody = null;
 		}
+		httpResponse.close();
 	}
 
 	/**

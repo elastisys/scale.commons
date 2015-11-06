@@ -87,8 +87,8 @@ public class HttpGetRequester implements Callable<HttpRequestResponse> {
 	 * >the AWS developer guide</a> for more details.
 	 */
 	private void limitDnsCacheTtl(int ttlInSeconds) {
-		java.security.Security.setProperty("networkaddress.cache.ttl", ""
-				+ ttlInSeconds);
+		java.security.Security.setProperty("networkaddress.cache.ttl",
+				"" + ttlInSeconds);
 	}
 
 	@Override
@@ -120,8 +120,8 @@ public class HttpGetRequester implements Callable<HttpRequestResponse> {
 				.build();
 		CloseableHttpClient httpclient = HttpClients.custom()
 				.setDefaultRequestConfig(this.requestConfig)
-				.setSslcontext(sslContext)
-				.setHostnameVerifier(hostnameVerifier).build();
+				.setSslcontext(sslContext).setHostnameVerifier(hostnameVerifier)
+				.build();
 		return httpclient;
 	}
 
@@ -133,8 +133,8 @@ public class HttpGetRequester implements Callable<HttpRequestResponse> {
 	 * @return
 	 * @throws IOException
 	 */
-	private HttpRequestResponse toHttpGetResponse(HttpResponse response)
-			throws IOException {
+	private HttpRequestResponse toHttpGetResponse(
+			CloseableHttpResponse response) throws IOException {
 		return new HttpRequestResponse(response);
 	}
 

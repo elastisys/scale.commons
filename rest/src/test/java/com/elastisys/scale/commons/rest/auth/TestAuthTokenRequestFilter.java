@@ -97,8 +97,9 @@ public class TestAuthTokenRequestFilter {
 		Response response = getWithoutToken("/api/protected");
 		assertThat(response.getStatus(),
 				is(Status.UNAUTHORIZED.getStatusCode()));
-		assertThat(response.readEntity(ErrorType.class), is(new ErrorType(
-				"request missing Authorization Bearer token header")));
+		assertThat(response.readEntity(ErrorType.class),
+				is(new ErrorType("faile to validate Authorization token",
+						"request missing Authorization Bearer token header")));
 		// verify that error header is present
 		assertThat(response.getHeaderString("WWW-Authenticate"),
 				is(notNullValue()));
@@ -142,7 +143,8 @@ public class TestAuthTokenRequestFilter {
 		assertThat(response.getStatus(),
 				is(Status.UNAUTHORIZED.getStatusCode()));
 		assertThat(response.readEntity(ErrorType.class),
-				is(new ErrorType("malformed Authorization Bearer token")));
+				is(new ErrorType("failed to validate Authorization token",
+						"malformed Authorization Bearer token")));
 		// verify that error header is present
 		assertThat(response.getHeaderString("WWW-Authenticate"),
 				is(notNullValue()));

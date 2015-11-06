@@ -12,8 +12,9 @@
   
   <dependencies>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>com.elastisys.scale</groupId>
+      <artifactId>commons.util</artifactId>
+      <version>${project.version}</version>
     </dependency>
   
     <!-- For signing/validating JSON Web Tokens -->
