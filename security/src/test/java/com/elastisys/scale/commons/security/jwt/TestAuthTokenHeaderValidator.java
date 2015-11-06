@@ -16,6 +16,7 @@ import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.NumericDate;
 import org.jose4j.lang.JoseException;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -31,25 +32,30 @@ import com.google.common.io.BaseEncoding;
  * Verifies the behavior of the {@link AuthTokenHeaderValidator}.
  */
 public class TestAuthTokenHeaderValidator {
+	private static final String TOKEN_ROLE = "user";
+	private static final String TOKEN_SUBJECT = "client@elastisys.com";
 	private static final String TOKEN_ISSUER = "Elastisys";
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(TestAuthTokenHeaderValidator.class);
 
 	/** The signature key pair used to sign and verify auth tokens. */
-	private RsaJsonWebKey signatureKeyPair;
+	private static RsaJsonWebKey signatureKeyPair;
 
 	/** Object under test. */
 	private static AuthTokenHeaderValidator validator;
 
+	@BeforeClass
+	public static void beforeClass() throws JoseException {
+		signatureKeyPair = RsaJwkGenerator.generateJwk(2048);
+		signatureKeyPair.setKeyId(TOKEN_ISSUER + "-signkey");
+	}
+
 	@Before
 	public void beforeTestMethod() throws Exception {
 		FrozenTime.setFixed(UtcTime.parse("2015-01-01T12:00:00.000Z"));
-		this.signatureKeyPair = RsaJwkGenerator.generateJwk(2048);
-		this.signatureKeyPair.setKeyId(TOKEN_ISSUER + "-signkey");
-
 		AsymmetricKeyAuthTokenValidator tokenValidator = new AsymmetricKeyAuthTokenValidator(
-				this.signatureKeyPair).withExpectedIssuer(TOKEN_ISSUER);
+				signatureKeyPair).withExpectedIssuer(TOKEN_ISSUER);
 		validator = new AuthTokenHeaderValidator(tokenValidator);
 	}
 
@@ -62,7 +68,7 @@ public class TestAuthTokenHeaderValidator {
 		new AuthTokenHeaderValidator(null);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = AuthTokenValidationException.class)
 	public void validateNullHeader() throws AuthTokenValidationException {
 		validator.validate(null);
 	}
@@ -98,11 +104,17 @@ public class TestAuthTokenHeaderValidator {
 	@Test
 	public void validateValidAuthToken() throws Exception {
 		DateTime expirationTime = UtcTime.now().plusMinutes(10);
-		String signedToken = signToken(TOKEN_ISSUER, this.signatureKeyPair,
+		String signedToken = signToken(TOKEN_ISSUER, signatureKeyPair,
 				expirationTime);
 		String authzHeader = "Bearer " + signedToken;
 		JwtClaims claims = validator.validate(authzHeader);
-		// TODO: check claims
+
+		assertThat(claims.getIssuer(), is(TOKEN_ISSUER));
+		assertThat(claims.getSubject(), is(TOKEN_SUBJECT));
+		assertThat(claims.getClaimValue("role"), is(TOKEN_ROLE));
+		assertThat(claims.getIssuedAt(),
+				is(NumericDate.fromMilliseconds(UtcTime.now().getMillis())));
+
 	}
 
 	/**
@@ -134,7 +146,7 @@ public class TestAuthTokenHeaderValidator {
 	public void validateTamperedAuthToken() throws Exception {
 
 		DateTime expirationTime = UtcTime.now().plusMinutes(10);
-		String legitToken = signToken(TOKEN_ISSUER, this.signatureKeyPair,
+		String legitToken = signToken(TOKEN_ISSUER, signatureKeyPair,
 				expirationTime);
 		// modify the claims part in an attempt to try and reuse a token but
 		// issue it for a different client subject
@@ -170,8 +182,8 @@ public class TestAuthTokenHeaderValidator {
 	@Test
 	public void validateExpiredAuthToken() throws Exception {
 		DateTime expirationTime = UtcTime.now().plusMinutes(10);
-		String tokenWithExpiration = signToken(TOKEN_ISSUER,
-				this.signatureKeyPair, expirationTime);
+		String tokenWithExpiration = signToken(TOKEN_ISSUER, signatureKeyPair,
+				expirationTime);
 
 		// validate before expiry should be okay
 		String authzHeader = "Bearer " + tokenWithExpiration;
@@ -202,7 +214,7 @@ public class TestAuthTokenHeaderValidator {
 
 		validator = new AuthTokenHeaderValidator(failingValidator);
 
-		String signedToken = signToken(TOKEN_ISSUER, this.signatureKeyPair,
+		String signedToken = signToken(TOKEN_ISSUER, signatureKeyPair,
 				UtcTime.now().plusMinutes(10));
 
 		try {
@@ -240,9 +252,9 @@ public class TestAuthTokenHeaderValidator {
 				.fromMilliseconds(UtcTime.now().getMillis());
 		claims.setIssuedAt(now);
 		// the subject/principal is whom the token is about
-		claims.setSubject("client@elastisys.com");
+		claims.setSubject(TOKEN_SUBJECT);
 		// additional claims
-		claims.setClaim("role", "user");
+		claims.setClaim("role", TOKEN_ROLE);
 
 		JsonWebSignature jws = new JsonWebSignature();
 		jws.setPayload(claims.toJson());

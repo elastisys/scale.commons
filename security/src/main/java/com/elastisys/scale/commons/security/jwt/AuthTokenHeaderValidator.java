@@ -32,7 +32,8 @@ public class AuthTokenHeaderValidator {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(AuthTokenHeaderValidator.class);
 
-	private static final String AUTHORIZATION_HEADER = "Authorization";
+	/** The name of the {@code Authorization} header. */
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 
 	/**
 	 * A correct authentication token has three dot-separated segments of
@@ -79,8 +80,11 @@ public class AuthTokenHeaderValidator {
 	 */
 	public JwtClaims validate(String authorizationHeader)
 			throws AuthTokenValidationException {
-		checkArgument(authorizationHeader != null,
-				"authorizationHeader was null");
+		if (authorizationHeader == null) {
+			throw new AuthTokenValidationException(
+					"failed to validate Authorization token",
+					"null header value");
+		}
 
 		Matcher matcher = AUTH_TOKEN_PATTERN.matcher(authorizationHeader);
 		if (!matcher.matches()) {
