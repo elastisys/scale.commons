@@ -1,5 +1,6 @@
 package com.elastisys.scale.commons.security.jwt;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
 
 import java.util.regex.Matcher;
@@ -60,6 +61,7 @@ public class AuthTokenHeaderValidator {
 	 *            deserialize and validate auth token signature and claims.
 	 */
 	public AuthTokenHeaderValidator(AuthTokenValidator tokenValidator) {
+		checkArgument(tokenValidator != null, "no tokenValidator given");
 		this.tokenValidator = tokenValidator;
 	}
 
@@ -85,12 +87,15 @@ public class AuthTokenHeaderValidator {
 	 */
 	public JwtClaims validate(String authorizationHeader)
 			throws AuthTokenValidationException {
+		checkArgument(authorizationHeader != null,
+				"authorizationHeader was null");
+
 		Matcher matcher = AUTH_TOKEN_PATTERN.matcher(authorizationHeader);
 		if (!matcher.matches()) {
 			String message = "failed to validate Authorization token";
 			String detail = format("malformed %s Bearer token",
 					AUTHORIZATION_HEADER);
-			LOG.debug("%s: %s", message, detail);
+			LOG.debug("{}: {}", message, detail);
 			throw new AuthTokenValidationException(message, detail);
 		}
 		String signedToken = matcher.group(1);
@@ -102,7 +107,8 @@ public class AuthTokenHeaderValidator {
 			LOG.debug("failed to validate Authorization token: {}",
 					e.getMessage());
 			throw new AuthTokenValidationException(
-					"failed to validate Authorization token", e.getMessage());
+					"failed to validate Authorization token", e.getMessage(),
+					e);
 		}
 
 		// make sure that token hasn't expired
@@ -131,7 +137,7 @@ public class AuthTokenHeaderValidator {
 		NumericDate now = NumericDate
 				.fromMilliseconds(UtcTime.now().getMillis());
 		try {
-			if (now.isAfter(tokenClaims.getExpirationTime())) {
+			if (now.isOnOrAfter(tokenClaims.getExpirationTime())) {
 				String message = "failed to validate Authorization token";
 				String detail = "access token has expired";
 				throw new AuthTokenValidationException(message, detail);

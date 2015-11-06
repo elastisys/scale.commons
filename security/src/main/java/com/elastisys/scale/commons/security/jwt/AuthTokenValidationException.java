@@ -1,13 +1,14 @@
 package com.elastisys.scale.commons.security.jwt;
 
+import com.google.common.base.Objects;
+
 /**
- * Thrown by an {@link AuthTokenHeaderValidator} to indicate that an
- * {@code Authorization} header authentication token could not be validated.
+ * Thrown on failure to validate an authentication token.
  * <p/>
  * The error {@code message} gives a high-level description of the problem (such
- * as 'failed to validate Authorization token') and, in some cases, the detail
- * fields may contain additional information on what went wrong (for example,
- * 'token has expired').
+ * as 'failed to validate Authorization token') and, in some cases, the
+ * {@code detail} fields may contain additional information on what went wrong
+ * (for example, 'token has expired').
  *
  * @see AuthTokenHeaderValidator
  */
@@ -40,5 +41,22 @@ public class AuthTokenValidationException extends Exception {
 	 */
 	public String getDetail() {
 		return this.detail;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof AuthTokenValidationException) {
+			AuthTokenValidationException that = (AuthTokenValidationException) obj;
+			return Objects.equal(this.getMessage(), that.getMessage())
+					&& Objects.equal(this.getCause(), that.getCause())
+					&& Objects.equal(this.detail, that.detail);
+
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ": " + this.detail;
 	}
 }

@@ -1,4 +1,4 @@
-package com.elastisys.scale.commons.rest.auth;
+package com.elastisys.scale.commons.security.jwt;
 
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jwt.JwtClaims;
@@ -9,13 +9,12 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.elastisys.scale.commons.security.jwt.AuthTokenValidationException;
-import com.elastisys.scale.commons.security.jwt.AuthTokenValidator;
 import com.elastisys.scale.commons.util.time.UtcTime;
 
 /**
  * A simple {@link AuthTokenRequestFilter} that uses the public key of a
  * public/private key pair to validate the signature of an authentication token.
+ *
  */
 public class AsymmetricKeyAuthTokenValidator implements AuthTokenValidator {
 	private static final Logger LOG = LoggerFactory
