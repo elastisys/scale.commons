@@ -98,7 +98,7 @@ public class TestAuthTokenRequestFilter {
 		assertThat(response.getStatus(),
 				is(Status.UNAUTHORIZED.getStatusCode()));
 		assertThat(response.readEntity(ErrorType.class),
-				is(new ErrorType("faile to validate Authorization token",
+				is(new ErrorType("failed to validate Authorization token",
 						"request missing Authorization Bearer token header")));
 		// verify that error header is present
 		assertThat(response.getHeaderString("WWW-Authenticate"),
