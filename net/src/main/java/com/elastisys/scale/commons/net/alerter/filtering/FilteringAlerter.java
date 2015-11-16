@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.util.time.UtcTime;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -28,8 +29,9 @@ public class FilteringAlerter implements Alerter {
 			.getLogger(FilteringAlerter.class);
 
 	/** The default {@link Alert} identity function. */
-	public static final Function<Alert, String> DEFAULT_IDENTITY_FUNCTION = (alert -> alert
-			.getTopic() + "," + alert.getMessage());
+	public static final Function<Alert, String> DEFAULT_IDENTITY_FUNCTION = (alert -> String
+			.valueOf(Objects.hashCode(alert.getTopic(), alert.getMessage(),
+					alert.getMetadata())));
 
 	/**
 	 * The number of calls between every call to

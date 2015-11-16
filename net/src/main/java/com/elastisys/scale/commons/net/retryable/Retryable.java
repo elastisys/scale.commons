@@ -221,7 +221,8 @@ public class Retryable<R> implements Callable<R> {
 					logResult(this.attempts, lastResult);
 				}
 				long elapsedTimeMillis = this.timer.elapsed(MILLISECONDS);
-				if (this.stopStrategy.giveUp(this.attempts, elapsedTimeMillis)) {
+				if (this.stopStrategy.giveUp(this.attempts,
+						elapsedTimeMillis)) {
 					giveUp(this.attempts, elapsedTimeMillis, lastResult);
 				}
 				this.delayStrategy.introduceDelay(this.attempts,
@@ -247,16 +248,16 @@ public class Retryable<R> implements Callable<R> {
 	private void giveUp(int attempts, long elapsedTimeMillis, Object lastResult)
 			throws GaveUpException {
 		String message = String.format(
-				"gave up waiting for '%s' after %d attempt(s) (%d ms): "
-						+ "result from last attempt: %s", this.name, attempts,
-				elapsedTimeMillis, asString(lastResult));
+				"gave up waiting for %s: " + "result from last attempt: %s",
+				this.name, asString(lastResult));
 
 		// include source exception if last result was an error
 		if (Throwable.class.isAssignableFrom(lastResult.getClass())) {
-			throw new GaveUpException(message, Throwable.class.cast(lastResult));
+			throw new GaveUpException(attempts, elapsedTimeMillis, message,
+					Throwable.class.cast(lastResult));
 		}
 
-		throw new GaveUpException(message);
+		throw new GaveUpException(attempts, elapsedTimeMillis, message);
 	}
 
 	private void logResult(int attempts, Object lastResult) {
@@ -266,7 +267,8 @@ public class Retryable<R> implements Callable<R> {
 				resultString = resultString.substring(0,
 						MAX_LOGGED_RESULT_STRING) + " ... (truncated)";
 			}
-			LOG.debug("{}: attempt {}: '{}'", this.name, attempts, resultString);
+			LOG.debug("{}: attempt {}: '{}'", this.name, attempts,
+					resultString);
 		}
 	}
 

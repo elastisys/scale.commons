@@ -1,6 +1,8 @@
 package com.elastisys.scale.commons.net.alerter.filtering;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -114,15 +116,70 @@ public class TestFilteringAlerter {
 	}
 
 	/**
-	 * Default identity function is based on topic and message.
+	 * Default identity function is based on topic, message and metadata tags.
 	 */
 	@Test
 	public void defaultIdentityFunction() {
-		Alert alert = AlertBuilder.create().topic("topic")
-				.severity(AlertSeverity.INFO).message("message").build();
+		Alert alert1 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		Alert alert1Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1").build();
 
-		assertThat(FilteringAlerter.DEFAULT_IDENTITY_FUNCTION.apply(alert),
-				is(alert.getTopic() + "," + alert.getMessage()));
+		assertEquals(identity(alert1), identity(alert1Copy));
+
+		Alert alert2 = AlertBuilder.create().topic("topic2")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		Alert alert2Copy = AlertBuilder.create().topic("topic2")
+				.severity(AlertSeverity.INFO).message("message1").build();
+
+		assertEquals(identity(alert2), identity(alert2Copy));
+		assertNotEquals(identity(alert1), identity(alert2));
+
+		Alert alert3 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message2").build();
+		Alert alert3Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message2").build();
+
+		assertEquals(identity(alert3), identity(alert3Copy));
+		assertNotEquals(identity(alert1), identity(alert3));
+		assertNotEquals(identity(alert2), identity(alert3));
+
+		Alert alert4 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("key1", "value1").build();
+		Alert alert4Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("key1", "value1").build();
+
+		assertEquals(identity(alert4), identity(alert4Copy));
+		assertNotEquals(identity(alert1), identity(alert3));
+		assertNotEquals(identity(alert2), identity(alert3));
+		assertNotEquals(identity(alert3), identity(alert4));
+
+		Alert alert5 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("key1", "value1").addMetadata("key2", "value2")
+				.build();
+		Alert alert5Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("key1", "value1").addMetadata("key2", "value2")
+				.build();
+
+		assertEquals(identity(alert5), identity(alert5Copy));
+		assertNotEquals(identity(alert1), identity(alert3));
+		assertNotEquals(identity(alert2), identity(alert3));
+		assertNotEquals(identity(alert3), identity(alert4));
+		assertNotEquals(identity(alert4), identity(alert5));
+	}
+
+	/**
+	 * Returns the default identity of an {@link Alert}.
+	 *
+	 * @param alert
+	 * @return
+	 */
+	private String identity(Alert alert) {
+		return FilteringAlerter.DEFAULT_IDENTITY_FUNCTION.apply(alert);
 	}
 
 	@Test

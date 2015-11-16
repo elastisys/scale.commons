@@ -54,7 +54,8 @@ public class TestRetryable {
 	@Test
 	public void testWithDefaultsOnError() throws Exception {
 		Exception fault = new RuntimeException("task failed!");
-		Callable<String> task = new FailNTimesAndReturn(5, fault, "hello world");
+		Callable<String> task = new FailNTimesAndReturn(5, fault,
+				"hello world");
 
 		Retryable<String> retryable = new Retryable<>(task);
 		try {
@@ -72,7 +73,8 @@ public class TestRetryable {
 	@Test
 	public void testWithErrorSuppression() throws Exception {
 		Exception fault = new RuntimeException("task failure!");
-		Callable<String> task = new FailNTimesAndReturn(5, fault, "hello world");
+		Callable<String> task = new FailNTimesAndReturn(5, fault,
+				"hello world");
 
 		// suppress Exception and sub-classes of it
 		Retryable<String> retryable = new Retryable<>(task)
@@ -104,7 +106,8 @@ public class TestRetryable {
 	public void testWithErrorSuppressionThatDoesNotMatchException()
 			throws Exception {
 		Exception fault = new RuntimeException("task failed!");
-		Callable<String> task = new FailNTimesAndReturn(5, fault, "hello world");
+		Callable<String> task = new FailNTimesAndReturn(5, fault,
+				"hello world");
 
 		// no IllegalArgumentException will be thrown
 		Retryable<String> retryable = new Retryable<>(task)
@@ -130,7 +133,8 @@ public class TestRetryable {
 	}
 
 	@Test
-	public void testWithResponsePredicateAndErrorSuppression() throws Exception {
+	public void testWithResponsePredicateAndErrorSuppression()
+			throws Exception {
 		IllegalStateException fault = new IllegalStateException(
 				"cannot handle low numbers!");
 
@@ -163,6 +167,8 @@ public class TestRetryable {
 		} catch (GaveUpException e) {
 			// expected
 			assertEquals(e.getCause(), fault);
+			assertThat(e.getAttempts(), is(1));
+			assertTrue(e.getElapsedTimeMillis() >= 0);
 		}
 		assertThat(retryable.getAttempts(), is(1));
 
@@ -177,6 +183,8 @@ public class TestRetryable {
 			// last result was an exception so it should be included in the
 			// exception
 			assertEquals(e.getCause(), fault);
+			assertThat(e.getAttempts(), is(10));
+			assertTrue(e.getElapsedTimeMillis() >= 0);
 		}
 		assertThat(retryable.getAttempts(), is(10));
 
@@ -190,6 +198,8 @@ public class TestRetryable {
 			// expected
 			// last attempt returned a value so cause should be empty
 			assertThat(e.getCause(), is(nullValue()));
+			assertThat(e.getAttempts(), is(10));
+			assertTrue(e.getElapsedTimeMillis() >= 0);
 		}
 		assertThat(retryable.getAttempts(), is(10));
 	}
@@ -208,24 +218,24 @@ public class TestRetryable {
 		// delay 20 ms between each new attempt, 2 attempts needed so a 20 ms
 		// delay should have been introduced
 		task = new Counter();
-		retryable = new Retryable<>(task).retryUntilResponse(equalTo(2)).delay(
-				fixed(20, MILLISECONDS));
+		retryable = new Retryable<>(task).retryUntilResponse(equalTo(2))
+				.delay(fixed(20, MILLISECONDS));
 		assertThat(retryable.call(), is(2));
 		assertThat(retryable.getAttempts(), is(2));
 		// delay should be at least 20 ms, but not too much higher
-		assertTrue(Range.closed(20L, 30L).contains(
-				retryable.getTimer().elapsed(MILLISECONDS)));
+		assertTrue(Range.closed(20L, 30L)
+				.contains(retryable.getTimer().elapsed(MILLISECONDS)));
 
 		// delay 20 ms between each new attempt, 4 attempts needed so a 60 ms
 		// delay should have been introduced
 		task = new Counter();
-		retryable = new Retryable<>(task).retryUntilResponse(equalTo(4)).delay(
-				fixed(20, MILLISECONDS));
+		retryable = new Retryable<>(task).retryUntilResponse(equalTo(4))
+				.delay(fixed(20, MILLISECONDS));
 		assertThat(retryable.call(), is(4));
 		assertThat(retryable.getAttempts(), is(4));
 		// delay should be at least 20 ms, but not too much higher
-		assertTrue(Range.closed(60L, 70L).contains(
-				retryable.getTimer().elapsed(MILLISECONDS)));
+		assertTrue(Range.closed(60L, 70L)
+				.contains(retryable.getTimer().elapsed(MILLISECONDS)));
 	}
 
 	/**
