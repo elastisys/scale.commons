@@ -58,6 +58,9 @@ public class PersistentState<T> {
 	/** The type of state being persisted. */
 	private TypeToken<T> stateType;
 
+	/** Write lock to protect from concurrent writes to storage. */
+	private final Object lock = new Object();
+
 	/**
 	 * Creates a {@link PersistentState} instance with a given storage location.
 	 * An attempt will be made to recover the state from the specified storage
@@ -137,16 +140,21 @@ public class PersistentState<T> {
 	 * location. The {@link #state} object is allowed to be <code>null</code>.
 	 */
 	public void save() {
-		try {
-			Gson gson = prepareGson();
-			JsonElement stateAsJson = gson.toJsonTree(this.state);
-			String prettifiedJson = gson.toJson(stateAsJson);
-			Files.write(prettifiedJson, this.storageLocation, Charsets.UTF_8);
-		} catch (Exception e) {
-			throw new PersistentStateException(String.format(
-					"failed to write state of type %s to %s: %s",
-					this.stateType, this.storageLocation.getAbsolutePath(),
-					e.getMessage()), e);
+		// prevent multiple threads from concurrently writing to the same file
+		// (possibly overwriting each others writes)
+		synchronized (this.lock) {
+			try {
+				Gson gson = prepareGson();
+				JsonElement stateAsJson = gson.toJsonTree(this.state);
+				String prettifiedJson = gson.toJson(stateAsJson);
+				Files.write(prettifiedJson, this.storageLocation,
+						Charsets.UTF_8);
+			} catch (Exception e) {
+				throw new PersistentStateException(String.format(
+						"failed to write state of type %s to %s: %s",
+						this.stateType, this.storageLocation.getAbsolutePath(),
+						e.getMessage()), e);
+			}
 		}
 	}
 
