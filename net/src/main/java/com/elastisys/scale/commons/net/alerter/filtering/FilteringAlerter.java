@@ -195,4 +195,20 @@ public class FilteringAlerter implements Alerter {
 	int size() {
 		return this.alertObservations.size();
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.alerter, this.suppressionTime);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FilteringAlerter) {
+			FilteringAlerter that = (FilteringAlerter) obj;
+			return Objects.equal(this.alerter, that.alerter) && Objects
+					.equal(this.suppressionTime, that.suppressionTime);
+
+		}
+		return false;
+	}
 }

@@ -17,6 +17,7 @@ import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerter;
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
+import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
@@ -30,7 +31,8 @@ import com.google.gson.JsonElement;
  * forwarded to the specified list of recipients.
  * <p/>
  * Note that it is the responsibility of the {@link SmtpAlerter} creator to
- * register the alerter to (and unregister the alerter from) an {@link EventBus}.
+ * register the alerter to (and unregister the alerter from) an {@link EventBus}
+ * .
  */
 public class HttpAlerter implements Alerter {
 
@@ -46,8 +48,8 @@ public class HttpAlerter implements Alerter {
 	private final Map<String, JsonElement> standardMetadata;
 
 	/**
-	 * Constructs an {@link SmtpAlerter} configured to send {@link Alert}
-	 * events through a given mail server to a given list of recipients.
+	 * Constructs an {@link SmtpAlerter} configured to send {@link Alert} events
+	 * through a given mail server to a given list of recipients.
 	 *
 	 * @param smtpServerSettings
 	 *            SMTP server settings.
@@ -70,8 +72,9 @@ public class HttpAlerter implements Alerter {
 		SeverityFilter severityFilter = this.config.getSeverityFilter();
 		if (severityFilter.shouldSuppress(alert)) {
 			if (LOG.isTraceEnabled()) {
-				LOG.trace("suppressing alert message with severity {}, "
-						+ "as it doesn't match the severity filter '{}'.",
+				LOG.trace(
+						"suppressing alert message with severity {}, "
+								+ "as it doesn't match the severity filter '{}'.",
 						alert.getSeverity().name(),
 						severityFilter.getFilterExpression());
 			}
@@ -96,9 +99,26 @@ public class HttpAlerter implements Alerter {
 			} catch (Exception e) {
 				LOG.warn(
 						format("failed to send alert to %s: %s\nAlert message was: %s",
-								destinationUrl, e.getMessage(), message), e);
+								destinationUrl, e.getMessage(), message),
+						e);
 			}
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.config, this.standardMetadata);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof HttpAlerter) {
+			HttpAlerter that = (HttpAlerter) obj;
+			return Objects.equal(this.config, that.config) && Objects
+					.equal(this.standardMetadata, that.standardMetadata);
+
+		}
+		return false;
 	}
 
 	private Alert appendStandardTags(Alert alert) {

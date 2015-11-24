@@ -110,8 +110,8 @@ public class SteadyLoadReplayer implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		String targetUrl = "http://localhost:8000";
-		int requestRate = 10;
+		String targetUrl = "http://91.106.199.29";
+		int requestRate = 50;
 		Optional<Integer> duration = Optional.empty();
 		int connectionTimeout = 10;
 		int readTimeout = 10;
