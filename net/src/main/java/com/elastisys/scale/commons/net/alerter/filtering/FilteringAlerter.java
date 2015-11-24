@@ -161,8 +161,8 @@ public class FilteringAlerter implements Alerter {
 		boolean shouldSuppress = timeSinceLastOccurrence
 				.isShorterThan(this.suppressionTime);
 
-		if (shouldSuppress && LOG.isTraceEnabled()) {
-			LOG.trace(
+		if (shouldSuppress && LOG.isDebugEnabled()) {
+			LOG.debug(
 					"suppressing alert since a similar alert was observed "
 							+ "at {} and {} second(s) have not passed: {}",
 					lastOccurrence, this.suppressionTime.getStandardSeconds(),
