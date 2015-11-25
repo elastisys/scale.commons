@@ -110,12 +110,13 @@ public class SteadyLoadReplayer implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		String targetUrl = "http://91.106.199.29";
+		String targetUrl = "http://localhost";
 		int requestRate = 50;
 		Optional<Integer> duration = Optional.empty();
 		int connectionTimeout = 10;
 		int readTimeout = 10;
 
+		LOG.info("applying load to {} ...", targetUrl);
 		SteadyLoadReplayer steadyLoad = new SteadyLoadReplayer(targetUrl,
 				requestRate, duration, connectionTimeout, readTimeout);
 		steadyLoad.run();
