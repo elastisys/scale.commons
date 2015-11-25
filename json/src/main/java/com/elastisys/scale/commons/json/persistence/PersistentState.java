@@ -141,7 +141,7 @@ public class PersistentState<T> {
 	 */
 	public void save() {
 		// prevent multiple threads from concurrently writing to the same file
-		// (possibly overwriting each others writes)
+		// (possibly overwriting each others writes and corrupting the file)
 		synchronized (this.lock) {
 			try {
 				Gson gson = prepareGson();

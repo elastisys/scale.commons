@@ -74,10 +74,7 @@ public class FileUtils {
 				}
 			}
 		}
-		if (!dirEntry.delete()) {
-			throw new IOException("Failed to delete file: "
-					+ dirEntry.getAbsolutePath());
-		}
+		java.nio.file.Files.delete(dirEntry.toPath());
 	}
 
 	/**
@@ -91,12 +88,8 @@ public class FileUtils {
 		checkNotNull(directory, "directory argument is null");
 		checkArgument(directory.isDirectory(), "%s is not a directory",
 				directory);
-		File[] directories = directory.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return file.isDirectory();
-			}
-		});
+		File[] directories = directory
+				.listFiles((FileFilter) file -> file.isDirectory());
 		return Arrays.asList(directories);
 	}
 
@@ -130,8 +123,9 @@ public class FileUtils {
 				Files.touch(file);
 				return;
 			} catch (IOException e) {
-				throw new IllegalArgumentException(String.format(
-						"failed to initialize file %s", filePath), e);
+				throw new IllegalArgumentException(
+						String.format("failed to initialize file %s", filePath),
+						e);
 			}
 		}
 
