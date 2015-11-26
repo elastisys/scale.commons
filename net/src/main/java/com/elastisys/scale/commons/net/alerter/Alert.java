@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -146,8 +147,20 @@ public class Alert {
 	 * @return A field-by-field copy with an additional tag.
 	 */
 	public Alert withMetadata(String tag, JsonElement value) {
+		return withMetadata(ImmutableMap.of(tag, value));
+	}
+
+	/**
+	 * Builds a copy of this {@link Alert} with additional metadata tags. The
+	 * original object (this) remains unchanged.
+	 *
+	 * @param additionalTags
+	 *            The additional metadata tags.
+	 * @return A field-by-field copy with additional metadata tags.
+	 */
+	public Alert withMetadata(Map<String, JsonElement> additionalTags) {
 		Map<String, JsonElement> extendedTags = Maps.newHashMap(getMetadata());
-		extendedTags.put(tag, value);
+		extendedTags.putAll(additionalTags);
 
 		return new Alert(this.topic, this.severity, this.timestamp,
 				this.message, extendedTags);
@@ -156,9 +169,9 @@ public class Alert {
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("topic", this.topic)
-				.add("severity", this.severity)
-				.add("timestamp", this.timestamp).add("message", this.message)
-				.add("metadata", this.metadata).toString();
+				.add("severity", this.severity).add("timestamp", this.timestamp)
+				.add("message", this.message).add("metadata", this.metadata)
+				.toString();
 	}
 
 	@Override

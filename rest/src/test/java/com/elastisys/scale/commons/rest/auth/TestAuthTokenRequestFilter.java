@@ -28,9 +28,9 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.json.types.ErrorType;
 import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.rest.client.RestClients;
-import com.elastisys.scale.commons.rest.types.ErrorType;
 import com.elastisys.scale.commons.security.jwt.AuthTokenValidator;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;

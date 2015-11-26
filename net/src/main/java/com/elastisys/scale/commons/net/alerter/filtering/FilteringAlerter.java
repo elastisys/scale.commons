@@ -19,6 +19,7 @@ import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.Subscribe;
 
 /**
  * An {@link Alerter} decorator that wraps an {@link Alerter} to suppress
@@ -122,6 +123,7 @@ public class FilteringAlerter implements Alerter {
 		this.alertObservations = new ConcurrentHashMap<>();
 	}
 
+	@Subscribe
 	@Override
 	public void handleAlert(Alert alert) throws RuntimeException {
 		checkEvictionNeed();

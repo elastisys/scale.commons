@@ -5,7 +5,7 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
-import com.elastisys.scale.commons.rest.types.ErrorType;
+import com.elastisys.scale.commons.json.types.ErrorType;
 import com.google.common.base.Objects;
 
 public class IsError extends TypeSafeMatcher<ErrorType> {

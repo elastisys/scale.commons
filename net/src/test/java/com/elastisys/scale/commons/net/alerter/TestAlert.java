@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.elastisys.scale.commons.net.alerter.Alert;
-import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.collect.ImmutableMap;
@@ -42,8 +40,8 @@ public class TestAlert {
 				UtcTime.now(), "message", metadata);
 		Alert differentSeverity = new Alert("topic", AlertSeverity.WARN,
 				UtcTime.now(), "message", metadata);
-		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime
-				.now().plus(1), "message", metadata);
+		Alert differentTime = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now().plus(1), "message", metadata);
 		Alert differentMessage = new Alert("topic", AlertSeverity.INFO,
 				UtcTime.now(), "othermessage", metadata);
 
@@ -83,8 +81,8 @@ public class TestAlert {
 				UtcTime.now(), "message", metadata);
 		Alert differentSeverity = new Alert("topic", AlertSeverity.WARN,
 				UtcTime.now(), "message", metadata);
-		Alert differentTime = new Alert("topic", AlertSeverity.INFO, UtcTime
-				.now().plus(1), "message", metadata);
+		Alert differentTime = new Alert("topic", AlertSeverity.INFO,
+				UtcTime.now().plus(1), "message", metadata);
 		Alert differentMessage = new Alert("topic", AlertSeverity.INFO,
 				UtcTime.now(), "othermessage", metadata);
 
@@ -115,7 +113,7 @@ public class TestAlert {
 	 * Verifies the {@link Alert#withTag(String, String)} method.
 	 */
 	@Test
-	public void testWithTagsCopyBuilder() {
+	public void testWithSingleMetadataTagsCopyBuilder() {
 
 		Alert original = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
 				"message");
@@ -141,5 +139,37 @@ public class TestAlert {
 		expectedTags = ImmutableMap.of("tag1", JsonUtils.toJson("value1"),
 				"tag2", JsonUtils.toJson("value2"));
 		assertThat(copy.getMetadata(), is(expectedTags));
+	}
+
+	/**
+	 * Verifies the {@link Alert#withMetadata(Map)} method.
+	 */
+	@Test
+	public void testWithMultipleMetadataTagsCopyBuilder() {
+		Map<String, JsonElement> originalTags = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"));
+		Alert original = new Alert("topic", AlertSeverity.INFO, UtcTime.now(),
+				"message", originalTags);
+		int originalHash = original.hashCode();
+
+		// create a copy with additional tags
+		Map<String, JsonElement> additionalTags = ImmutableMap.of("tag2",
+				JsonUtils.toJson("value2"), //
+				"tag3", JsonUtils.toJson("value3"));
+		Alert copy = original.withMetadata(additionalTags);
+		assertNotSame(original, copy);
+		// original should be unmodified
+		assertThat(original.hashCode(), is(originalHash));
+
+		assertThat(copy.getTopic(), is(original.getTopic()));
+		assertThat(copy.getMessage(), is(original.getMessage()));
+		assertThat(copy.getSeverity(), is(original.getSeverity()));
+		assertThat(copy.getTimestamp(), is(original.getTimestamp()));
+
+		Map<String, JsonElement> expectedTags = ImmutableMap.of("tag1",
+				JsonUtils.toJson("value1"), "tag2", JsonUtils.toJson("value2"),
+				"tag3", JsonUtils.toJson("value3"));
+		assertThat(copy.getMetadata(), is(expectedTags));
+
 	}
 }

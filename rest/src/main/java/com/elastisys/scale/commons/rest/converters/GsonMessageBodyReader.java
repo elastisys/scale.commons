@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.elastisys.scale.commons.rest.types.ErrorType;
+import com.elastisys.scale.commons.json.types.ErrorType;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import com.google.gson.JsonParseException;
