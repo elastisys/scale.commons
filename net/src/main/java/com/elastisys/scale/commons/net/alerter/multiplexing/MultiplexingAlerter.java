@@ -61,6 +61,14 @@ public class MultiplexingAlerter implements Alerter {
 		this.alerters = new CopyOnWriteArrayList<>();
 	}
 
+	/**
+	 * Dispatches the {@link Alert} to all registered {@link Alerter}s (given
+	 * that the {@link Alert} is not identified as a duplicate). Any
+	 * {@link Exception}s raised by {@link Alerter}s are logged but otherwise
+	 * suppressed.
+	 *
+	 * @see com.elastisys.scale.commons.net.alerter.Alerter#handleAlert(com.elastisys.scale.commons.net.alerter.Alert)
+	 */
 	@Subscribe
 	@Override
 	public void handleAlert(Alert alert) throws RuntimeException {
