@@ -1,7 +1,5 @@
 package com.elastisys.scale.commons.net.alerter.multiplexing;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,9 +24,12 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
 
 /**
- * An {@link Alerter} that listens for incoming {@link Alert}s on an
- * {@link EventBus} and forwards them to a collection of registered SMTP and
- * HTTP {@link Alerter}s.
+ * An {@link Alerter} that listens for incoming {@link Alert}s forwards them to
+ * a collection of registered SMTP and HTTP {@link Alerter}s.
+ * <p/>
+ * The {@link MultiplexingAlerter} can be registered with an {@link EventBus} to
+ * listen for incoming {@link Alert}s to dispatch to all registered
+ * {@link Alerter}s.
  * <p/>
  * New {@link Alerter}s are registered with a {@link AlertersConfig}, which
  * describes a number of SMTP and HTTP {@link Alerter}s as well as for how long
@@ -48,16 +49,11 @@ public class MultiplexingAlerter implements Alerter {
 	private List<Alerter> alerters;
 
 	/**
-	 * Creates an {@link MultiplexingAlerter} that listens to {@link Alert}s on
-	 * the given {@link EventBus} and dispatches them to any registered
-	 * {@link Alerter}s.
+	 * Creates an {@link MultiplexingAlerter} that dispatches any received
+	 * {@link Alert}s to all registered {@link Alerter}s.
 	 *
-	 * @param eventBus
-	 *            The {@link EventBus} on which to listen for {@link Alert}s.
 	 */
-	public MultiplexingAlerter(EventBus eventBus) {
-		checkArgument(eventBus != null, "no eventBus given");
-		eventBus.register(this);
+	public MultiplexingAlerter() {
 		this.alerters = new CopyOnWriteArrayList<>();
 	}
 

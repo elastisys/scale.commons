@@ -43,7 +43,7 @@ public class TestMultiplexingAlerter {
 	private EventBus eventBus = new EventBus();
 
 	/** Object under test. */
-	private MultiplexingAlerter alertHandler;
+	private MultiplexingAlerter multiplexingAlerter;
 
 	@Before
 	public void beforeTestMethod() {
@@ -51,12 +51,8 @@ public class TestMultiplexingAlerter {
 		// freeze current time in tests
 		FrozenTime.setFixed(UtcTime.parse("2015-01-01T12:00:00Z"));
 
-		this.alertHandler = new MultiplexingAlerter(this.eventBus);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithoutEventbus() {
-		new MultiplexingAlerter(null);
+		this.multiplexingAlerter = new MultiplexingAlerter();
+		this.eventBus.register(this.multiplexingAlerter);
 	}
 
 	/**
@@ -64,14 +60,14 @@ public class TestMultiplexingAlerter {
 	 */
 	@Test
 	public void registerNullAlertConfig() {
-		this.alertHandler.registerAlerters(null, null);
-		assertThat(this.alertHandler.alerters(), is(alerters()));
+		this.multiplexingAlerter.registerAlerters(null, null);
+		assertThat(this.multiplexingAlerter.alerters(), is(alerters()));
 	}
 
 	@Test
 	public void registerEmptyAlerterConfig() {
-		this.alertHandler.registerAlerters(alertConfig(null, null, null), null);
-		assertThat(this.alertHandler.alerters(), is(alerters()));
+		this.multiplexingAlerter.registerAlerters(alertConfig(null, null, null), null);
+		assertThat(this.multiplexingAlerter.alerters(), is(alerters()));
 	}
 
 	@Test
@@ -84,8 +80,8 @@ public class TestMultiplexingAlerter {
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
 
-		this.alertHandler.registerAlerters(alertConfig, standardTags);
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags);
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(filtered(http(http1Config, standardTags),
 						alertConfig.getDuplicateSuppression()))));
 	}
@@ -98,8 +94,8 @@ public class TestMultiplexingAlerter {
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
 
-		this.alertHandler.registerAlerters(alertConfig, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(filtered(http(http1Config, standardTags()),
 						alertConfig.getDuplicateSuppression()))));
 	}
@@ -113,8 +109,8 @@ public class TestMultiplexingAlerter {
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
 
-		this.alertHandler.registerAlerters(alertConfig, standardTags);
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags);
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(filtered(smtp(smtp1Conf, standardTags),
 						alertConfig.getDuplicateSuppression()))));
 	}
@@ -127,8 +123,8 @@ public class TestMultiplexingAlerter {
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
 
-		this.alertHandler.registerAlerters(alertConfig, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(filtered(smtp(smtp1Conf, standardTags()),
 						alertConfig.getDuplicateSuppression()))));
 	}
@@ -142,8 +138,8 @@ public class TestMultiplexingAlerter {
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
 
-		this.alertHandler.registerAlerters(alertConfig, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(
 						filtered(smtp(smtp1Conf, standardTags()),
 								alertConfig.getDuplicateSuppression()),
@@ -162,8 +158,8 @@ public class TestMultiplexingAlerter {
 		List<SmtpAlerterConfig> smtpAlerters = Arrays.asList(smtp1Conf);
 		AlertersConfig alert1Config = alertConfig(smtpAlerters, null,
 				new TimeInterval(10L, TimeUnit.MINUTES));
-		this.alertHandler.registerAlerters(alert1Config, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alert1Config, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(filtered(smtp(smtp1Conf, standardTags()),
 						alert1Config.getDuplicateSuppression()))));
 
@@ -172,8 +168,8 @@ public class TestMultiplexingAlerter {
 		List<HttpAlerterConfig> httpAlerters = Arrays.asList(http1Conf);
 		AlertersConfig alert2Config = alertConfig(null, httpAlerters,
 				new TimeInterval(18L, TimeUnit.MINUTES));
-		this.alertHandler.registerAlerters(alert2Config, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alert2Config, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(
 						filtered(smtp(smtp1Conf, standardTags()),
 								alert1Config.getDuplicateSuppression()),
@@ -190,8 +186,8 @@ public class TestMultiplexingAlerter {
 		List<HttpAlerterConfig> httpAlerters = Arrays.asList(http1Conf);
 		AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters,
 				null);
-		this.alertHandler.registerAlerters(alertConfig, standardTags());
-		assertThat(this.alertHandler.alerters(),
+		this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+		assertThat(this.multiplexingAlerter.alerters(),
 				is(alerters(
 						filtered(smtp(smtp1Conf, standardTags()),
 								alertConfig.getDuplicateSuppression()),
@@ -199,8 +195,8 @@ public class TestMultiplexingAlerter {
 								alertConfig.getDuplicateSuppression()))));
 
 		// unregister
-		this.alertHandler.unregisterAlerters();
-		assertThat(this.alertHandler.alerters(), is(alerters()));
+		this.multiplexingAlerter.unregisterAlerters();
+		assertThat(this.multiplexingAlerter.alerters(), is(alerters()));
 	}
 
 	/**
@@ -221,7 +217,7 @@ public class TestMultiplexingAlerter {
 					"http://localhost:" + webServer.getHttpPort(), ".*");
 			AlertersConfig alertConfig = alertConfig(asList(smtpAlerter),
 					asList(httpAlerter), null);
-			this.alertHandler.registerAlerters(alertConfig, standardTags());
+			this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
 
 			assertThat(webServer.getPostedMessages().size(), is(0));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(0));
@@ -232,7 +228,7 @@ public class TestMultiplexingAlerter {
 			String expectedMessage = JsonUtils.toPrettyString(
 					JsonUtils.toJson(alert.withMetadata(standardTags())));
 
-			this.alertHandler.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert);
 			// verify that alert (with the set standardTags) was dispatched to
 			// http and smtp alerters
 			assertThat(webServer.getPostedMessages().size(), is(1));
@@ -267,7 +263,7 @@ public class TestMultiplexingAlerter {
 					"http://localhost:" + webServer.getHttpPort(), ".*");
 			AlertersConfig alertConfig = alertConfig(asList(smtpAlerter),
 					asList(httpAlerter), duplicateSuppression);
-			this.alertHandler.registerAlerters(alertConfig, standardTags());
+			this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
 
 			assertThat(webServer.getPostedMessages().size(), is(0));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(0));
@@ -276,27 +272,27 @@ public class TestMultiplexingAlerter {
 			Alert alert = AlertBuilder.create().topic("topic")
 					.severity(AlertSeverity.ERROR).message("error!").build();
 
-			this.alertHandler.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert);
 			// verify that alert was dispatched to http and smtp alerters
 			assertThat(webServer.getPostedMessages().size(), is(1));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
 
 			FrozenTime.tick(60);
 			// dispatch a duplicate alert, should be filtered out
-			this.alertHandler.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(1));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
 
 			FrozenTime.tick(60);
 			// dispatch another duplicate alert, should be filtered out
-			this.alertHandler.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(1));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
 
 			FrozenTime.tick(61);
 			// duplicate suppression has passed, alert should no longer be
 			// filtered
-			this.alertHandler.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(2));
 			assertThat(Mailbox.get("recipient@company.com").size(), is(2));
 		} finally {
