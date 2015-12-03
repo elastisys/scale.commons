@@ -48,16 +48,19 @@ public class BaseServerBuilder {
 	private SslKeyStoreType sslKeyStoreType = SslKeyStoreType.PKCS12;
 
 	/**
-	 * Password used to protect SSL key store. <i>Note: this option is only
-	 * relevant for HTTPS {@link Server}s with an HTTPS port, in which case it
-	 * is required.</i>
+	 * Password used to protect the integrity of the SSL key store. <i>Note:
+	 * this option is only relevant for HTTPS {@link Server}s with an HTTPS
+	 * port, in which case it is required.</i>
 	 */
 	private String sslKeyStorePassword = null;
 
 	/**
-	 * The password (if any) used to protect the specific server key within the
-	 * key store. <i>Note: this option is only relevant for {@link Server}s with
-	 * an HTTPS port.</i>
+	 * The password used to recover the server key within the key store. It is
+	 * not uncommon for the {@code sslKeyPassword} to be the same as the
+	 * {@code sslKeystorePassword} so in case <code>null</code> is given for
+	 * this field, the {@link #sslKeyStorePassword} will be used instead.
+	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
+	 * port.</i>
 	 */
 	private String sslKeyPassword = null;
 
@@ -75,9 +78,9 @@ public class BaseServerBuilder {
 	 */
 	private SslKeyStoreType sslTrustStoreType = SslKeyStoreType.JKS;
 	/**
-	 * Password used to protect the SSL trust store. <i>Note: this option is
-	 * only relevant for {@link Server}s with an HTTPS port that require client
-	 * certificate authentication.</i>
+	 * Password used to protect the integrity of the SSL trust store. <i>Note:
+	 * this option is only relevant for {@link Server}s with an HTTPS port that
+	 * require client certificate authentication.</i>
 	 */
 	private String sslTrustStorePassword = null;
 	/**
@@ -249,9 +252,9 @@ public class BaseServerBuilder {
 	}
 
 	/**
-	 * Set the password used to protect SSL key store. <i>Note: this option is
-	 * only relevant for HTTPS {@link Server}s with an HTTPS port, in which case
-	 * it is required.</i>
+	 * Sets the password used to protect the integrity of the SSL key store.
+	 * <i>Note: this option is only relevant for HTTPS {@link Server}s with an
+	 * HTTPS port, in which case it is required.</i>
 	 *
 	 * @param password
 	 * @return
@@ -262,9 +265,12 @@ public class BaseServerBuilder {
 	}
 
 	/**
-	 * Set the password (if any) used to protect the specific server key within
-	 * the key store. <i>Note: this option is only relevant for {@link Server}s
-	 * with an HTTPS port.</i>
+	 * Set the password used to recover the server key within the key store. It
+	 * is not uncommon for the {@code sslKeyPassword} to be the same as the
+	 * {@code sslKeystorePassword} so in case <code>null</code> is given for
+	 * this field, the {@link #sslKeyStorePassword} will be used instead.
+	 * <i>Note: this option is only relevant for {@link Server}s with an HTTPS
+	 * port.</i>
 	 *
 	 * @param password
 	 * @return

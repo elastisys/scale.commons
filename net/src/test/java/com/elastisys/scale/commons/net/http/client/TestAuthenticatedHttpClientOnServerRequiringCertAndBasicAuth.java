@@ -48,7 +48,8 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 	private static final String UNTRUSTED_CLIENT_PKCS12_KEYSTORE = "src/test/resources/security/untrusted/client_keystore.p12";
 	private static final String UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD = "untrustedpass";
 	private static final CertificateCredentials untrustedClientPkcs12Cert = new CertificateCredentials(
-			KeyStoreType.PKCS12, UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+			UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+			UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
 			UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD);
 
 	/** Correct password credentials. */

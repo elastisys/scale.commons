@@ -5,7 +5,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
-import java.util.List;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
@@ -15,7 +14,6 @@ import javax.net.ssl.TrustManagerFactory;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 
 /**
  * A builder class that can be used to construct {@link SSLContext}s for SSL
@@ -25,9 +23,6 @@ import com.google.common.collect.Lists;
  * The builder allows for optional client authentication, with a certificate
  * from a {@link KeyStore}, as well as optional authentication of the server
  * certificate against a trust store.
- * 
- * 
- * 
  */
 public class SslContextBuilder {
 
@@ -36,11 +31,21 @@ public class SslContextBuilder {
 	 * case client certificate authentication is requested.
 	 */
 	private Optional<KeyManagerFactory> keyManagerFactory = Optional.absent();
+
 	/**
-	 * {@link TrustManager}s acting as the sources of peer authentication trust
-	 * decisions when server authentication is requested.
+	 * <code>true</code> if server authentication is requested,
+	 * <code>false</code> otherwise.
 	 */
-	private Optional<List<TrustManager>> trustManagers = Optional.absent();
+	private boolean verifyHostCert = false;
+	/**
+	 * A custom trust store to use when server authentication is requested (via
+	 * {@link #verifyHostCert}). If none is specified and server authentication
+	 * is requested, the server certificate according to the default trust store
+	 * configured with the JVM (see the guide on <a href=
+	 * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
+	 * JSSE</a>).
+	 */
+	private Optional<KeyStore> trustStore = Optional.absent();
 
 	private SslContextBuilder() {
 	}
@@ -48,7 +53,7 @@ public class SslContextBuilder {
 	/**
 	 * Create a new {@link SslContextBuilder} with initially neither client
 	 * authentication nor server certificate authentication.
-	 * 
+	 *
 	 * @return
 	 */
 	public static SslContextBuilder newBuilder() {
@@ -58,7 +63,7 @@ public class SslContextBuilder {
 	/**
 	 * Build an {@link SSLContext} from the options provided to the
 	 * {@link SslContextBuilder}.
-	 * 
+	 *
 	 * @return The created {@link SSLContext}.
 	 * @throws RuntimeException
 	 */
@@ -72,13 +77,21 @@ public class SslContextBuilder {
 				keyManagers = this.keyManagerFactory.get().getKeyManagers();
 			}
 
-			// add server certificate authentication if specified, otherwise
-			// all server certificates are trusted
-			TrustManager[] trustManagers = new TrustManager[] { SslUtils
-					.insecureTrustManager() };
-			if (this.trustManagers.isPresent()) {
-				trustManagers = this.trustManagers.get().toArray(
-						new TrustManager[0]);
+			// add server certificate authentication (null means rely on default
+			// server certificate verification)
+			TrustManager[] trustManagers = null;
+			if (!this.verifyHostCert) {
+				trustManagers = new TrustManager[] {
+						SslUtils.insecureTrustManager() };
+			} else {
+				if (this.trustStore.isPresent()) {
+					// custom trust store configured: use it
+					trustManagers = trustManagerFromTrustStore(
+							this.trustStore.get());
+				} else {
+					// rely on default trust store
+					trustManagers = null;
+				}
 			}
 
 			sslContext.init(keyManagers, trustManagers, new SecureRandom());
@@ -91,7 +104,7 @@ public class SslContextBuilder {
 	/**
 	 * The {@link SSLContext} should not authenticate the client with a client
 	 * certificate.
-	 * 
+	 *
 	 * @return
 	 */
 	public SslContextBuilder noClientAuthentication() {
@@ -102,65 +115,81 @@ public class SslContextBuilder {
 	/**
 	 * The {@link SSLContext} should authenticate the client with a client
 	 * certificate, provided in a {@link KeyStore}.
-	 * 
+	 *
 	 * @param keyStore
 	 *            The client's {@link KeyStore}, containing the client's private
 	 *            keys, and the certificates with their corresponding public
 	 *            keys.
-	 * @param password
-	 *            The client key password.
+	 * @param keyPassword
+	 *            The password for recovering keys in the key store. Note: this
+	 *            password differs from the <i>keystore password</i>, which is
+	 *            only used to verify the integrity of the {@link KeyStore} when
+	 *            it is loaded.
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws UnrecoverableKeyException
 	 * @throws KeyStoreException
 	 */
 	public SslContextBuilder clientAuthentication(KeyStore keyStore,
-			String password) throws NoSuchAlgorithmException,
-			UnrecoverableKeyException, KeyStoreException {
+			String keyPassword) throws NoSuchAlgorithmException,
+					UnrecoverableKeyException, KeyStoreException {
 		KeyManagerFactory keyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-		keyManagerFactory.init(keyStore, password.toCharArray());
+		keyManagerFactory.init(keyStore, keyPassword.toCharArray());
 		this.keyManagerFactory = Optional.of(keyManagerFactory);
 		return this;
 	}
 
 	/**
-	 * The {@link SSLContext} should not perform server certificate
-	 * authentication (trust all server certificates and don't perform host name
-	 * verification).
+	 * Enables/disables server authentication. Set to <code>true</code> if host
+	 * certificate verification is requested, <code>false</code> otherwise. If
+	 * disabled, the server peer will not be verified, which is similar to using
+	 * the {@code --insecure} flag in {@code curl}.
 	 * <p/>
-	 * This is similar to using the {@code --insecure} flag in {@code curl}.
-	 * 
+	 * If enabled, the host certificate is verified against either the
+	 * configured trust store (if one has been set via
+	 * {@link #serverAuthTrustStore(KeyStore)}) or a against a default trust
+	 * store configured with the JVM (see the guide on <a href=
+	 * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
+	 * JSSE</a>) in case no trust store has been explicitly set.
+	 *
+	 * @param shouldVerifyHostCert
 	 * @return
 	 */
-	public SslContextBuilder noServerAuthentication() {
-		List<TrustManager> insecureTrustManager = Lists.newArrayList(SslUtils
-				.insecureTrustManager());
-		this.trustManagers = Optional.of(insecureTrustManager);
+	public SslContextBuilder setVerifyHostCert(boolean shouldVerifyHostCert) {
+		this.verifyHostCert = shouldVerifyHostCert;
 		return this;
 	}
 
 	/**
-	 * The {@link SSLContext} should authenticate the server certificate against
-	 * the certificates in a trust store.
-	 * 
+	 * Sets the trust store to use when server authentication is requested (via
+	 * {@link #setVerifyHostCert(boolean)}). If <code>null</code> is specified
+	 * and server authentication is requested, the server certificate according
+	 * to the default trust store configured with the JVM (see the guide on
+	 * <a href=
+	 * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
+	 * JSSE</a>).
+	 *
 	 * @param trustStore
-	 *            The client's trust store, which contains certificates from
-	 *            other parties that the client trusts, or from Certificate
-	 *            Authorities that are trusted to identify other parties.
+	 *            The trust store to use for server cert verification. May be
+	 *            <code>null</code>, which means rely on default trust store.
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyStoreException
 	 */
-	public SslContextBuilder serverAuthentication(KeyStore trustStore)
+	public SslContextBuilder serverAuthTrustStore(KeyStore trustStore)
 			throws NoSuchAlgorithmException, KeyStoreException {
+		this.trustStore = Optional.fromNullable(trustStore);
+		return this;
+	}
+
+	private static TrustManager[] trustManagerFromTrustStore(
+			KeyStore trustStore)
+					throws NoSuchAlgorithmException, KeyStoreException {
 		TrustManagerFactory trustManagerFactory = TrustManagerFactory
 				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		trustManagerFactory.init(trustStore);
-		TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-		List<TrustManager> trustManagerList = Lists.newArrayList(trustManagers);
-		this.trustManagers = Optional.of(trustManagerList);
-		return this;
+		return trustManagerFactory.getTrustManagers();
 	}
 
 }

@@ -12,6 +12,7 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
  * seeded with a signature validation key (for example, a public key from the
  * key pair whose private key was used to sign the token).
  */
+@FunctionalInterface
 public interface AuthTokenValidator {
 
 	/**

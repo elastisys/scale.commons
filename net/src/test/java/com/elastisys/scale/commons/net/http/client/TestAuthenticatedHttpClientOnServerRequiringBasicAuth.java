@@ -17,7 +17,6 @@ import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.http.HttpRequestResponse;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
@@ -34,7 +33,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
 	private static final String CLIENT_PKCS12_KEYSTORE = "src/test/resources/security/untrusted/client_keystore.p12";
 	private static final String CLIENT_PKCS12_KEYSTORE_PASSWORD = "untrustedpass";
 	private static final CertificateCredentials certCredentials = new CertificateCredentials(
-			KeyStoreType.PKCS12, CLIENT_PKCS12_KEYSTORE,
+			CLIENT_PKCS12_KEYSTORE, CLIENT_PKCS12_KEYSTORE_PASSWORD,
 			CLIENT_PKCS12_KEYSTORE_PASSWORD);
 
 	private static final BasicCredentials trustedPasswordCredentials = new BasicCredentials(

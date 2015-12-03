@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
-import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.google.common.base.Optional;
 
 /**
@@ -15,7 +14,8 @@ public class TestAuthenticatedHttpClientConstruction {
 	private final BasicCredentials correctBasicCredentials = new BasicCredentials(
 			"admin", "adminpassword");
 	private final CertificateCredentials correctCertificateCredentials = new CertificateCredentials(
-			KeyStoreType.PKCS12, "/proc/cpuinfo", "somepassword");
+			"src/test/resources/security/client/client_keystore.p12",
+			"clientpass", "clientpass");
 
 	@Test
 	public void basicAndCertCredentials() {

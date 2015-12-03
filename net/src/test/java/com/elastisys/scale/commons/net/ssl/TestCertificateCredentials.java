@@ -37,38 +37,48 @@ public class TestCertificateCredentials {
 	public void testBasicSanity() {
 		// field access check
 		CertificateCredentials credentials = new CertificateCredentials(
-				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD);
+				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD,
+				PKCS12_KEYSTORE_PASSWORD);
 		assertThat(credentials.getKeystoreType().name(), is("PKCS12"));
 		assertThat(credentials.getKeystorePath(), is(PKCS12_KEYSTORE));
 		assertThat(credentials.getKeystorePassword(),
 				is(PKCS12_KEYSTORE_PASSWORD));
+		assertThat(credentials.getKeyPassword(), is(PKCS12_KEYSTORE_PASSWORD));
 		credentials.validate();
 
 		// comparison of equivalent credentials
 		CertificateCredentials copy = new CertificateCredentials(
-				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD);
+				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD,
+				PKCS12_KEYSTORE_PASSWORD);
 		assertTrue(credentials.equals(copy));
 		assertTrue(credentials.hashCode() == copy.hashCode());
 
 		// comparison of non-equivalent credentials
 		CertificateCredentials other = new CertificateCredentials(
 				KeyStoreType.PKCS12, UNTRUSTED_PKCS12_KEYSTORE,
+				UNTRUSTED_JKS_KEYSTORE_PASSWORD,
 				UNTRUSTED_JKS_KEYSTORE_PASSWORD);
 		assertFalse(credentials.equals(other));
 		assertFalse(credentials.hashCode() == other.hashCode());
 	}
 
 	/**
-	 * Verify that minimal constructor works as expected.
+	 * Verify default values.
 	 */
 	@Test
 	public void testDefaults() {
+		// leave out keystore type (should default to PKCS12)
 		CertificateCredentials credentials = new CertificateCredentials(
-				PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD);
+				PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD,
+				PKCS12_KEYSTORE_PASSWORD);
 		assertThat(credentials.getKeystoreType().name(), is("PKCS12"));
-		assertThat(credentials.getKeystorePath(), is(PKCS12_KEYSTORE));
-		assertThat(credentials.getKeystorePassword(),
-				is(PKCS12_KEYSTORE_PASSWORD));
+		credentials.validate();
+
+		// leave out key password (should default to keystore password)
+		credentials = new CertificateCredentials(PKCS12_KEYSTORE,
+				PKCS12_KEYSTORE_PASSWORD);
+		assertThat(credentials.getKeyPassword(),
+				is(credentials.getKeystorePassword()));
 		credentials.validate();
 	}
 
@@ -83,11 +93,13 @@ public class TestCertificateCredentials {
 	@Test
 	public void loadKeyFromPkcs12Keystore() throws Exception {
 		CertificateCredentials credentials = new CertificateCredentials(
-				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD);
+				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD,
+				PKCS12_KEYSTORE_PASSWORD);
 
-		// open the keystore with the keystore password
-		KeyStore keyStore = KeyStore.getInstance(credentials.getKeystoreType()
-				.name());
+		// open the keystore with the keystore password to verify the integrity
+		// of the store
+		KeyStore keyStore = KeyStore
+				.getInstance(credentials.getKeystoreType().name());
 		keyStore.load(new FileInputStream(credentials.getKeystorePath()),
 				credentials.getKeystorePassword().toCharArray());
 
@@ -101,8 +113,7 @@ public class TestCertificateCredentials {
 				is("CN=Client, O=Elastisys, C=SE"));
 
 		// get private key from keystore
-		// NOTE: uses keystore password also as key password
-		String keyPassword = credentials.getKeystorePassword();
+		String keyPassword = credentials.getKeyPassword();
 		Key key = keyStore.getKey(entries.get(0), keyPassword.toCharArray());
 		assertThat(key.getAlgorithm(), is("RSA"));
 		assertThat(key.getFormat(), is("PKCS#8"));
@@ -126,8 +137,8 @@ public class TestCertificateCredentials {
 				PKCS12_KEYSTORE_PASSWORD);
 
 		// open the keystore with the keystore password
-		KeyStore keyStore = KeyStore.getInstance(credentials.getKeystoreType()
-				.name());
+		KeyStore keyStore = KeyStore
+				.getInstance(credentials.getKeystoreType().name());
 		keyStore.load(new FileInputStream(credentials.getKeystorePath()),
 				credentials.getKeystorePassword().toCharArray());
 
@@ -141,7 +152,7 @@ public class TestCertificateCredentials {
 				is("CN=Client, O=Elastisys, C=SE"));
 
 		// get private key from JKS keystore (needs the key password)
-		String keyPassword = credentials.getKeyPassword().get();
+		String keyPassword = credentials.getKeyPassword();
 		Key key = keyStore.getKey(entries.get(0), keyPassword.toCharArray());
 		assertThat(key.getAlgorithm(), is("RSA"));
 		assertThat(key.getFormat(), is("PKCS#8"));
@@ -150,13 +161,13 @@ public class TestCertificateCredentials {
 	@Test(expected = IllegalArgumentException.class)
 	public void withNullKeystoreType() {
 		new CertificateCredentials(null, PKCS12_KEYSTORE,
-				PKCS12_KEYSTORE_PASSWORD);
+				PKCS12_KEYSTORE_PASSWORD, PKCS12_KEYSTORE_PASSWORD);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void withNullKeystorePath() {
 		new CertificateCredentials(KeyStoreType.PKCS12, null,
-				PKCS12_KEYSTORE_PASSWORD);
+				PKCS12_KEYSTORE_PASSWORD, PKCS12_KEYSTORE_PASSWORD);
 	}
 
 	/**
@@ -165,12 +176,27 @@ public class TestCertificateCredentials {
 	@Test(expected = IllegalArgumentException.class)
 	public void withNonExistantKeystoreFile() {
 		new CertificateCredentials(KeyStoreType.PKCS12,
-				"/some/path/keystore.p12", PKCS12_KEYSTORE_PASSWORD);
+				"/some/path/keystore.p12", PKCS12_KEYSTORE_PASSWORD,
+				PKCS12_KEYSTORE_PASSWORD);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void withNullKeystorePassword() {
-		new CertificateCredentials(KeyStoreType.PKCS12, PKCS12_KEYSTORE, null);
+		new CertificateCredentials(KeyStoreType.PKCS12, PKCS12_KEYSTORE, null,
+				PKCS12_KEYSTORE_PASSWORD);
+	}
+
+	/**
+	 * Should be allowed to set a <code>null</code> key password. In this case,
+	 * the keystore password is used as key password.
+	 */
+	@Test
+	public void withNullKeyPassword() {
+		CertificateCredentials credentials = new CertificateCredentials(
+				KeyStoreType.PKCS12, PKCS12_KEYSTORE, PKCS12_KEYSTORE_PASSWORD,
+				null);
+		credentials.validate();
+		assertThat(credentials.getKeyPassword(), is(PKCS12_KEYSTORE_PASSWORD));
 	}
 
 }

@@ -50,8 +50,8 @@ public class RestClients {
 
 	/**
 	 * Creates a HTTPS Jersey REST {@link Client} configured to authenticate
-	 * (via <a
-	 * href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic
+	 * (via
+	 * <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">Basic
 	 * authentication<a/>) with a given user name and password.
 	 * <p/>
 	 * The created {@link Client} is configured to trust all server certificates
@@ -96,7 +96,7 @@ public class RestClients {
 		try {
 			SSLContext clientCertSslContext = SslContextBuilder.newBuilder()
 					.clientAuthentication(keystore, password)
-					.noServerAuthentication().build();
+					.setVerifyHostCert(false).build();
 			Client client = ClientBuilder.newBuilder()
 					.sslContext(clientCertSslContext)
 					.hostnameVerifier(SslUtils.allowAllHostNames())
@@ -128,7 +128,7 @@ public class RestClients {
 	 */
 	public static Client httpsCertAuth(String keyStorePath,
 			String keyStorePassword, KeyStoreType keystoreType)
-			throws RuntimeException {
+					throws RuntimeException {
 		try (InputStream keyStoreStream = new FileInputStream(keyStorePath)) {
 			KeyStore keystore = KeyStore.getInstance(keystoreType.name());
 			keystore.load(keyStoreStream, keyStorePassword.toCharArray());

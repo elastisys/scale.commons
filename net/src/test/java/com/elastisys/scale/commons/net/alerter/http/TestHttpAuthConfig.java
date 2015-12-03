@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
+import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 
 /**
  * Tests the {@link HttpAuthConfig} class.
@@ -21,7 +22,8 @@ public class TestHttpAuthConfig {
 				"secret");
 
 		CertificateCredentials certificateCredentials = new CertificateCredentials(
-				KEYSTORE, KEYSTORE_PASSWORD);
+				KeyStoreType.PKCS12, KEYSTORE, KEYSTORE_PASSWORD,
+				KEYSTORE_PASSWORD);
 
 		// no auth
 		HttpAuthConfig noAuth = new HttpAuthConfig(null, null);
@@ -31,11 +33,13 @@ public class TestHttpAuthConfig {
 		// basic auth
 		HttpAuthConfig basicAuth = new HttpAuthConfig(basicCredentials, null);
 		assertThat(basicAuth.getBasicCredentials().isPresent(), is(true));
-		assertThat(basicAuth.getCertificateCredentials().isPresent(), is(false));
+		assertThat(basicAuth.getCertificateCredentials().isPresent(),
+				is(false));
 		assertThat(basicAuth.getBasicCredentials().get(), is(basicCredentials));
 
 		// cert auth
-		HttpAuthConfig certAuth = new HttpAuthConfig(null, certificateCredentials);
+		HttpAuthConfig certAuth = new HttpAuthConfig(null,
+				certificateCredentials);
 		assertThat(certAuth.getBasicCredentials().isPresent(), is(false));
 		assertThat(certAuth.getCertificateCredentials().isPresent(), is(true));
 		assertThat(certAuth.getCertificateCredentials().get(),
@@ -44,7 +48,8 @@ public class TestHttpAuthConfig {
 		// basic + cert auth
 		HttpAuthConfig basicAndCertAuth = new HttpAuthConfig(basicCredentials,
 				certificateCredentials);
-		assertThat(basicAndCertAuth.getBasicCredentials().isPresent(), is(true));
+		assertThat(basicAndCertAuth.getBasicCredentials().isPresent(),
+				is(true));
 		assertThat(basicAndCertAuth.getCertificateCredentials().isPresent(),
 				is(true));
 		assertThat(basicAndCertAuth.getBasicCredentials().get(),

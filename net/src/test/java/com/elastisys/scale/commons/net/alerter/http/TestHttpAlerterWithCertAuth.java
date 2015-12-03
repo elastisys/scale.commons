@@ -16,6 +16,7 @@ import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
+import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
@@ -92,22 +93,26 @@ public class TestHttpAlerterWithCertAuth {
 
 		// first make sure that we cannot deliver unauthenticated
 		HttpAuthConfig noAuth = new HttpAuthConfig(null, null);
-		HttpAlerter noAuthAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", noAuth), null);
+		HttpAlerter noAuthAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", noAuth),
+				null);
 		noAuthAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... also verify that we cannot deliver with basic auth credentials
-		HttpAuthConfig basicAuth = new HttpAuthConfig(new BasicCredentials("user",
-				"secret"), null);
-		HttpAlerter basicAuthAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", basicAuth), null);
+		HttpAuthConfig basicAuth = new HttpAuthConfig(
+				new BasicCredentials("user", "secret"), null);
+		HttpAlerter basicAuthAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", basicAuth),
+				null);
 		basicAuthAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... also verify that we cannot deliver with wrong cert credentials
 		HttpAuthConfig wrongCertAuth = new HttpAuthConfig(null,
-				new CertificateCredentials(UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+				new CertificateCredentials(KeyStoreType.PKCS12,
+						UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+						UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
 						UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
 		HttpAlerter wrongCertAlerter = new HttpAlerter(new HttpAlerterConfig(
 				asList(webhookUrl()), ".*", wrongCertAuth), null);
@@ -116,7 +121,9 @@ public class TestHttpAlerterWithCertAuth {
 
 		// ... then verify that we can deliver with proper credentials
 		HttpAuthConfig rightCertAuth = new HttpAuthConfig(null,
-				new CertificateCredentials(TRUSTED_CLIENT_PKCS12_KEYSTORE,
+				new CertificateCredentials(KeyStoreType.PKCS12,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
 						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
 		HttpAlerter rightCertAlerter = new HttpAlerter(new HttpAlerterConfig(
 				asList(webhookUrl()), ".*", rightCertAuth), null);

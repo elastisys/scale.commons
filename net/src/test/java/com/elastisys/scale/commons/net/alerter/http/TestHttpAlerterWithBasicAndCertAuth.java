@@ -16,6 +16,7 @@ import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
+import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
@@ -92,38 +93,44 @@ public class TestHttpAlerterWithBasicAndCertAuth {
 
 		// first make sure that we cannot deliver unauthenticated
 		HttpAuthConfig noAuth = new HttpAuthConfig(null, null);
-		HttpAlerter noAuthAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", noAuth), null);
+		HttpAlerter noAuthAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", noAuth),
+				null);
 		noAuthAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... also verify that we cannot deliver with only basic auth
 		// credentials
-		HttpAuthConfig basicAuth = new HttpAuthConfig(new BasicCredentials("user",
-				"secret"), null);
-		HttpAlerter basicAuthAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", basicAuth), null);
+		HttpAuthConfig basicAuth = new HttpAuthConfig(
+				new BasicCredentials("user", "secret"), null);
+		HttpAlerter basicAuthAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", basicAuth),
+				null);
 		basicAuthAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... also verify that we cannot deliver with only cert credentials
-		HttpAuthConfig certAuth = new HttpAuthConfig(null, new CertificateCredentials(
-				TRUSTED_CLIENT_PKCS12_KEYSTORE,
-				TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
-		HttpAlerter certAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", certAuth), null);
+		HttpAuthConfig certAuth = new HttpAuthConfig(null,
+				new CertificateCredentials(KeyStoreType.PKCS12,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
+		HttpAlerter certAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", certAuth),
+				null);
 		certAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... then verify that we can deliver with both basic and cert
 		// credentials
-		HttpAuthConfig basicAndCertAuth = new HttpAuthConfig(new BasicCredentials(
-				"user", "secret"), new CertificateCredentials(
-				TRUSTED_CLIENT_PKCS12_KEYSTORE,
-				TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
-		HttpAlerter basicAndCertAlerter = new HttpAlerter(
-				new HttpAlerterConfig(asList(webhookUrl()), ".*",
-						basicAndCertAuth), null);
+		HttpAuthConfig basicAndCertAuth = new HttpAuthConfig(
+				new BasicCredentials("user", "secret"),
+				new CertificateCredentials(KeyStoreType.PKCS12,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
+						TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD));
+		HttpAlerter basicAndCertAlerter = new HttpAlerter(new HttpAlerterConfig(
+				asList(webhookUrl()), ".*", basicAndCertAuth), null);
 		basicAndCertAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().size(), is(1));
 		assertThat(webhook.getReceivedMessages().get(0), is(alert));

@@ -6,25 +6,21 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import org.apache.http.ssl.TrustStrategy;
 
 public class SslUtils {
 	/**
 	 * Creates a promiscuous {@link HostnameVerifier} that accepts all host
 	 * names without further verification.
-	 * 
+	 *
 	 * @return
 	 */
 	public static HostnameVerifier allowAllHostNames() {
 		// Install host name verifier that always approves host names
-		HostnameVerifier alwaysAllowHostVerifier = new HostnameVerifier() {
-			@Override
-			public boolean verify(String hostname, SSLSession session) {
-				return true;
-			}
-		};
+		HostnameVerifier alwaysAllowHostVerifier = (hostname, session) -> true;
 		return alwaysAllowHostVerifier;
 	}
 
@@ -35,7 +31,7 @@ public class SslUtils {
 	 * <p/>
 	 * The resulting {@link SSLContext} is similar to to using the
 	 * <code>--insecure</code> flag in <code>curl</code>.
-	 * 
+	 *
 	 * @see SslContextBuilder
 	 * @return
 	 */
@@ -63,7 +59,7 @@ public class SslUtils {
 	 * <p/>
 	 * This is similar to using the <code>--insecure</code> flag in
 	 * <code>curl</code>.
-	 * 
+	 *
 	 * @return
 	 */
 	public static TrustManager insecureTrustManager() {
@@ -86,4 +82,14 @@ public class SslUtils {
 		return trustAllCerts;
 	}
 
+	/**
+	 * Returns a {@link TrustStrategy} that trusts <i>any</i> server
+	 * certificate. That is, the server peer will not be verified, which is
+	 * similar to using the {@code --insecure} flag in {@code curl}.
+	 *
+	 * @return
+	 */
+	public static TrustStrategy insecureTrustStrategy() {
+		return (chain, authType) -> true;
+	}
 }

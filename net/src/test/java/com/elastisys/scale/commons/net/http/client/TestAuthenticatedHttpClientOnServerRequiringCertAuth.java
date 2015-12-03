@@ -39,7 +39,8 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 	private static final String TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD = "clientpass";
 	private static final String TRUSTED_CLIENT_JKS_KEYSTORE_PASSWORD = "jksclientpass";
 	private static final CertificateCredentials trustedClientPkcs12Cert = new CertificateCredentials(
-			KeyStoreType.PKCS12, TRUSTED_CLIENT_PKCS12_KEYSTORE,
+			TRUSTED_CLIENT_PKCS12_KEYSTORE,
+			TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
 			TRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD);
 	private static final CertificateCredentials trustedClientJksCert = new CertificateCredentials(
 			KeyStoreType.JKS, TRUSTED_CLIENT_JKS_KEYSTORE,
@@ -52,7 +53,8 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
 	private static final String UNTRUSTED_CLIENT_JKS_KEYSTORE = "src/test/resources/security/untrusted/client_keystore.jks";
 	private static final String UNTRUSTED_CLIENT_JKS_KEYSTORE_PASSWORD = "untrustedjkspass";
 	private static final CertificateCredentials untrustedClientPkcs12Cert = new CertificateCredentials(
-			KeyStoreType.PKCS12, UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+			UNTRUSTED_CLIENT_PKCS12_KEYSTORE,
+			UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD,
 			UNTRUSTED_CLIENT_PKCS12_KEYSTORE_PASSWORD);
 	private static final CertificateCredentials untrustedClientJksCert = new CertificateCredentials(
 			KeyStoreType.JKS, UNTRUSTED_CLIENT_JKS_KEYSTORE,
