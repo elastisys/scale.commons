@@ -148,13 +148,18 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 	 * Connect with an untrusted client certificate and correct
 	 * username/password. Should fail to establish an SSL connection.
 	 */
-	@Test(expected = SocketException.class)
+	@Test
 	public void badCertAndCorrectPassword() throws IOException {
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(
 				Optional.of(trustedPasswordCredentials),
 				Optional.of(untrustedClientPkcs12Cert));
 
-		client.execute(new HttpGet(url("/")));
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("untrusted client should not have access");
+		} catch (SocketException | SSLException e) {
+			// expected
+		}
 	}
 
 	/**
@@ -178,13 +183,18 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAndBasicAuth {
 	 * Connect with an untrusted client certificate and incorrect
 	 * username/password. Should fail to establish an SSL connection.
 	 */
-	@Test(expected = SocketException.class)
+	@Test
 	public void badCertAndBadPassword() throws IOException {
 		AuthenticatedHttpClient client = new AuthenticatedHttpClient(
 				Optional.of(untrustedPasswordCredentials),
 				Optional.of(untrustedClientPkcs12Cert));
 
-		client.execute(new HttpGet(url("/")));
+		try {
+			client.execute(new HttpGet(url("/")));
+			fail("unauthenticated client should not have access");
+		} catch (SocketException | SSLException e) {
+			// expected
+		}
 	}
 
 	private String url(String path) {
