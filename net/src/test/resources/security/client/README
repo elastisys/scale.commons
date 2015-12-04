@@ -4,3 +4,11 @@ scale.commons/scripts/security.
 The passwords are as follows:
  - client_keystore.p12: clientpass
  - client_keystore.jks: jksclientpass
+
+
+The client trust store, which contains the server certificate
+`../server/server_certificate.pem` was created using
+scale.commons/scripts/security/generate-trust-store.sh and has
+the following password:
+
+ - client_truststore.jks: clienttrust

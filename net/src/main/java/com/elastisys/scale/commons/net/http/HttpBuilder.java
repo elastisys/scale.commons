@@ -1,6 +1,5 @@
 package com.elastisys.scale.commons.net.http;
 
-import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -29,7 +28,9 @@ import org.slf4j.Logger;
 
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
+import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.net.ssl.SslContextBuilder;
+import com.elastisys.scale.commons.net.ssl.SslUtils;
 
 /**
  * A builder of HTTP(S) clients.
@@ -97,7 +98,6 @@ public class HttpBuilder {
 		this.requestConfigBuilder.setSocketTimeout(DEFAULT_SOCKET_TIMEOUT);
 
 		this.sslContextBuilder = SslContextBuilder.newBuilder();
-		serverAuthTrustStore(null);
 		verifyHostCert(false);
 		verifyHostname(false);
 
@@ -252,10 +252,10 @@ public class HttpBuilder {
 		String keystorePassword = clientCertCredentials.getKeystorePassword();
 		String keyPassword = clientCertCredentials.getKeyPassword();
 		try {
-			KeyStore keyStore = KeyStore.getInstance(
-					clientCertCredentials.getKeystoreType().name());
-			char[] storePassword = keystorePassword.toCharArray();
-			keyStore.load(new FileInputStream(keystorePath), storePassword);
+
+			KeyStore keyStore = SslUtils.loadKeyStore(
+					clientCertCredentials.getKeystoreType(), keystorePath,
+					keystorePassword);
 			this.sslContextBuilder.clientAuthentication(keyStore, keyPassword);
 		} catch (Exception e) {
 			throw new HttpBuilderException(
@@ -316,23 +316,30 @@ public class HttpBuilder {
 	}
 
 	/**
-	 * Sets the trust store to use when server authentication is requested (via
-	 * {@link #verifyHostCert}). If <code>null</code> is specified and server
-	 * authentication is requested, the server certificate according to the
+	 * Sets a custom trust store to use when server authentication is requested
+	 * (via {@link #verifyHostCert}). If no custom trust store has been
+	 * specified and server authentication is requested via
+	 * {@link #verifyHostCert(boolean)}, the server certificate according to the
 	 * default trust store configured with the JVM (see the guide on <a href=
 	 * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
 	 * JSSE</a>).
 	 *
-	 * @param trustStore
-	 *            The trust store to use for server cert verification. May be
-	 *            <code>null</code>, which means rely on default trust store.
+	 * @param type
+	 *            The type of the trust store.
+	 * @param trustStorePath
+	 *            The file system path to the trust store.
+	 * @param storePassword
+	 *            The password used to protect the integrity of the trust store.
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyStoreException
 	 */
-	public HttpBuilder serverAuthTrustStore(KeyStore trustStore)
-			throws HttpBuilderException {
+	public HttpBuilder serverAuthTrustStore(KeyStoreType type,
+			String trustStorePath, String storePassword)
+					throws HttpBuilderException {
 		try {
+			KeyStore trustStore = SslUtils.loadKeyStore(type, trustStorePath,
+					storePassword);
 			this.sslContextBuilder.serverAuthTrustStore(trustStore);
 		} catch (Exception e) {
 			throw new HttpBuilderException(

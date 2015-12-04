@@ -1,6 +1,14 @@
 package com.elastisys.scale.commons.net.ssl;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HostnameVerifier;
@@ -9,7 +17,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.http.ssl.TrustStrategy;
+import com.google.common.base.Throwables;
 
 public class SslUtils {
 	/**
@@ -83,13 +91,31 @@ public class SslUtils {
 	}
 
 	/**
-	 * Returns a {@link TrustStrategy} that trusts <i>any</i> server
-	 * certificate. That is, the server peer will not be verified, which is
-	 * similar to using the {@code --insecure} flag in {@code curl}.
+	 * Loads a {@link KeyStore} from disk.
 	 *
+	 * @param type
+	 *            The type of the key store.
+	 * @param keyStorePath
+	 *            The file system path of the key store.
+	 * @param keyStorePassword
+	 *            The password used to protect the integrity of the key store.
+	 *            May be <code>null</code>, in which case the integrity of the
+	 *            key store cannot be verified.
 	 * @return
+	 * @throws KeyStoreException
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
 	 */
-	public static TrustStrategy insecureTrustStrategy() {
-		return (chain, authType) -> true;
+	public static KeyStore loadKeyStore(KeyStoreType type, String keyStorePath,
+			String keyStorePassword) throws RuntimeException {
+		try (InputStream keyStoreStream = new FileInputStream(keyStorePath)) {
+			KeyStore keyStore = KeyStore.getInstance(type.name());
+			keyStore.load(keyStoreStream, keyStorePassword.toCharArray());
+			return keyStore;
+		} catch (Exception e) {
+			throw Throwables.propagate(e);
+		}
 	}
 }

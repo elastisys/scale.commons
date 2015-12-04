@@ -1,0 +1,6 @@
+Contains certificate for the untrusted server used in the tests (/O=Elastisys/CN=UntrustedServer).
+
+These files were generated with generate-client-cert.sh script in 
+scale.commons/scripts/security.
+
+The password for server_keystore.p12 is 'untrustedpass'.

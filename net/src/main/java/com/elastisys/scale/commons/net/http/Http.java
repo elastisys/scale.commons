@@ -17,6 +17,8 @@ import com.google.common.collect.Range;
 
 /**
  * A HTTP(S) client. Use {@link Http#builder()} to construct a new instance.
+ * <p/>
+ * This class is thread-safe.
  *
  * @see HttpBuilder
  */
@@ -29,7 +31,7 @@ public class Http {
 	 * {@link CloseableHttpClient} for every call to
 	 * {@link #execute(HttpRequestBase)}.
 	 */
-	private HttpClientBuilder clientBuilder;
+	private final HttpClientBuilder clientBuilder;
 	/** Logger instance to log to. */
 	private final Logger logger;
 

@@ -1,7 +1,5 @@
 package com.elastisys.scale.commons.rest.client;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -129,14 +127,9 @@ public class RestClients {
 	public static Client httpsCertAuth(String keyStorePath,
 			String keyStorePassword, KeyStoreType keystoreType)
 					throws RuntimeException {
-		try (InputStream keyStoreStream = new FileInputStream(keyStorePath)) {
-			KeyStore keystore = KeyStore.getInstance(keystoreType.name());
-			keystore.load(keyStoreStream, keyStorePassword.toCharArray());
-			Client client = httpsCertAuth(keystore, keyStorePassword);
-			return client;
-		} catch (Exception e) {
-			throw Throwables.propagate(e);
-		}
+		KeyStore keystore = SslUtils.loadKeyStore(keystoreType, keyStorePath,
+				keyStorePassword);
+		return httpsCertAuth(keystore, keyStorePassword);
 	}
 
 	/**
