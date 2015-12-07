@@ -68,6 +68,18 @@ public class Docker {
 	}
 
 	/**
+	 * Shows the log for a given container.
+	 *
+	 * @param containerId
+	 *            A container name or id.
+	 * @throws DockerException
+	 */
+	public static String logs(String containerId) throws DockerException {
+		List<String> cmdArgs = asList("docker", "logs", containerId);
+		return execute(cmdArgs);
+	}
+
+	/**
 	 * Checks if an image exists locally on this host.
 	 *
 	 * @param image
