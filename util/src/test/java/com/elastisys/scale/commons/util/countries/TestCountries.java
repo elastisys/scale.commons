@@ -12,10 +12,13 @@ public class TestCountries {
 
 	@Test
 	public void countryExistsRecognizesAllExistingCountries() {
+		System.out.print("[");
 		for (Countries country : Countries.values()) {
 			assertThat(Countries.countryExists(country.getCountryName()),
 					is(true));
+			System.out.print("\"" + country.getCountryName() + "\", ");
 		}
+		System.out.println("]");
 	}
 
 	@Test
