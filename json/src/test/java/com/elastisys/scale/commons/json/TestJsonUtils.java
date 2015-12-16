@@ -104,7 +104,8 @@ public class TestJsonUtils {
 	public void toJsonExcludeNullFields() {
 		SomeClass object = new SomeClass(null, 1);
 		String expectedJson = "{\"b\":1}";
-		assertThat(JsonUtils.toJson(object, false).toString(), is(expectedJson));
+		assertThat(JsonUtils.toJson(object, false).toString(),
+				is(expectedJson));
 		// default is exclude null fields
 		assertThat(JsonUtils.toJson(object).toString(), is(expectedJson));
 	}
@@ -127,6 +128,17 @@ public class TestJsonUtils {
 		assertThat(JsonUtils.toJson(object).toString(), is(expectedJson));
 	}
 
+	/**
+	 * Verify that {@link Date} instances are converted to an UTC timestamp.
+	 */
+	@Test
+	public void toJsonWithDate() {
+		SomeClassWithDate object = new SomeClassWithDate("value",
+				UtcTime.parse("2013-07-01T12:00:00.000+02:00").toDate());
+		String expectedJson = "{\"a\":\"value\",\"date\":\"2013-07-01T12:00:00.000+0200\"}";
+		assertThat(JsonUtils.toJson(object).toString(), is(expectedJson));
+	}
+
 	@Test
 	public void toObject() {
 		JsonObject json = new JsonParser().parse("{\"a\":\"value\",\"b\":1}")
@@ -138,8 +150,8 @@ public class TestJsonUtils {
 
 	@Test
 	public void toObjectWithTimestamp() {
-		JsonObject json = new JsonParser().parse(
-				"{\"a\":\"value\",\"time\":\"2013-07-01T10:00:00.000Z\"}")
+		JsonObject json = new JsonParser()
+				.parse("{\"a\":\"value\",\"time\":\"2013-07-01T10:00:00.000Z\"}")
 				.getAsJsonObject();
 		SomeClassWithTimestamp expectedObject = new SomeClassWithTimestamp(
 				"value", UtcTime.parse("2013-07-01T10:00:00.000Z"));

@@ -31,8 +31,8 @@ import com.google.gson.JsonParser;
 public class JsonUtils {
 
 	private JsonUtils() {
-		throw new UnsupportedOperationException(JsonUtils.class.getName()
-				+ " is not instantiable.");
+		throw new UnsupportedOperationException(
+				JsonUtils.class.getName() + " is not instantiable.");
 	}
 
 	/**
@@ -68,11 +68,13 @@ public class JsonUtils {
 				"null resource not allowed");
 		URL resource = Resources.getResource(resourceName);
 		try {
-			return parseJsonString(Resources.toString(resource, Charsets.UTF_8));
+			return parseJsonString(
+					Resources.toString(resource, Charsets.UTF_8));
 		} catch (IOException e) {
-			throw new JsonParseException(String.format(
-					"failed to parse JSON resource %s: %s", resourceName,
-					e.getMessage()), e);
+			throw new JsonParseException(
+					String.format("failed to parse JSON resource %s: %s",
+							resourceName, e.getMessage()),
+					e);
 		}
 	}
 
@@ -91,9 +93,10 @@ public class JsonUtils {
 		try {
 			return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
 		} catch (IOException e) {
-			throw new JsonParseException(String.format(
-					"failed to parse JSON file %s: %s",
-					jsonFile.getAbsolutePath(), e.getMessage()), e);
+			throw new JsonParseException(
+					String.format("failed to parse JSON file %s: %s",
+							jsonFile.getAbsolutePath(), e.getMessage()),
+					e);
 		}
 	}
 
@@ -130,10 +133,10 @@ public class JsonUtils {
 	 *
 	 * @return The JSON-serialized representation of the object.
 	 */
-	public static JsonElement toJson(Object object, boolean serializeNullFields) {
+	public static JsonElement toJson(Object object,
+			boolean serializeNullFields) {
 		Preconditions.checkArgument(object != null, "null object not allowed");
-		GsonBuilder gsonBuilder = new GsonBuilder().registerTypeAdapter(
-				DateTime.class, new GsonDateTimeSerializer());
+		GsonBuilder gsonBuilder = prepareGsonBuilder();
 		if (serializeNullFields) {
 			gsonBuilder.serializeNulls();
 		}
@@ -237,6 +240,8 @@ public class JsonUtils {
 				.registerTypeAdapter(DateTime.class,
 						new GsonDateTimeSerializer())
 				.registerTypeAdapter(ImmutableList.class,
-						new ImmutableListDeserializer());
+						new ImmutableListDeserializer())
+				.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
 	}
 }
