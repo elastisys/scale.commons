@@ -72,6 +72,15 @@ public class TimeInterval {
 		return TimeUnit.valueOf(this.unit.toUpperCase());
 	}
 
+	/**
+	 * Returns the {@link TimeInterval} length in milliseconds.
+	 * 
+	 * @return
+	 */
+	public long getMillis() {
+		return TimeUnit.MILLISECONDS.convert(this.time, this.getUnit());
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.time, this.unit);

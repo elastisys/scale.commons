@@ -7,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import com.elastisys.scale.commons.json.types.TimeInterval;
-
 /**
  * Exercises the {@link TimeInterval} class.
  */
@@ -52,6 +50,22 @@ public class TestTimeInterval {
 		assertThat(new TimeInterval(10L, "hours").getUnit(),
 				is(TimeUnit.HOURS));
 		assertThat(new TimeInterval(10L, "days").getUnit(), is(TimeUnit.DAYS));
+	}
+
+	@Test
+	public void getMillis() {
+		assertThat(new TimeInterval(10L, "nanoseconds").getMillis(), is(0L));
+
+		assertThat(new TimeInterval(10L, "microseconds").getMillis(), is(0L));
+		assertThat(new TimeInterval(10L, "milliseconds").getMillis(), is(10L));
+		assertThat(new TimeInterval(10L, "seconds").getMillis(),
+				is(10 * 1000L));
+		assertThat(new TimeInterval(10L, "minutes").getMillis(),
+				is(10 * 60 * 1000L));
+		assertThat(new TimeInterval(10L, "hours").getMillis(),
+				is(10 * 60 * 60 * 1000L));
+		assertThat(new TimeInterval(10L, "days").getMillis(),
+				is(10 * 24 * 3600 * 1000L));
 	}
 
 	/**
