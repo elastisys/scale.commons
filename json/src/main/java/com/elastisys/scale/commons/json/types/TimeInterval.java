@@ -74,7 +74,7 @@ public class TimeInterval {
 
 	/**
 	 * Returns the {@link TimeInterval} length in milliseconds.
-	 * 
+	 *
 	 * @return
 	 */
 	public long getMillis() {
@@ -102,6 +102,7 @@ public class TimeInterval {
 	}
 
 	public void validate() {
+		checkArgument(this.time != null, "no time set");
 		checkArgument(this.time >= 0, "time interval must be non-negative");
 		// make sure the specified unit is permitted
 		getUnit();
