@@ -77,6 +77,7 @@
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
+    <greenmail.version>1.4.1</greenmail.version>
 
   </properties>
 
@@ -240,6 +241,13 @@
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>com.icegreen</groupId>
+        <artifactId>greenmail</artifactId>
+        <version>${greenmail.version}</version>
+        <scope>test</scope>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
