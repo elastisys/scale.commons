@@ -19,10 +19,6 @@ import com.elastisys.scale.commons.net.smtp.SmtpSender;
  */
 public class HtmlWithEmbeddedRemoteImageSmtpSenderLab {
 
-	// TODO: NOTE: in order for this program to work, the dependency on
-	// org.jvnet.mock-javamail needs to be disabled, or else the email library
-	// will make use of a mock javax.mail provider.
-
 	// TODO: make sure ${EMAIL_ADDRESS} is set
 	private static final List<String> RECIPIENTS = Arrays
 			.asList(System.getenv("EMAIL_ADDRESS"));

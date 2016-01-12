@@ -22,13 +22,9 @@ import com.google.common.eventbus.EventBus;
  * Some parameters need to be set as environment variables.
  */
 public class SmtpAlerterLab {
-	// TODO: NOTE: in order for this program to work, the dependency on
-	// org.jvnet.mock-javamail needs to be disabled, or else the email library
-	// will make use of a mock javax.mail provider.
-
 	// TODO: make sure ${EMAIL_ADDRESS} is set
-	private static final List<String> RECIPIENTS = Arrays.asList(System
-			.getenv("EMAIL_ADDRESS"));
+	private static final List<String> RECIPIENTS = Arrays
+			.asList(System.getenv("EMAIL_ADDRESS"));
 	// TODO: make sure ${EMAIL_SERVER} is set
 	private static final String MAIL_SERVER = System.getenv("EMAIL_SERVER");
 	private static final int MAIL_PORT = 25;
@@ -39,11 +35,11 @@ public class SmtpAlerterLab {
 		ExecutorService executor = Executors.newFixedThreadPool(5);
 		EventBus eventBus = new AsyncEventBus("alert-bus", executor);
 
-		SmtpClientConfig smtpClientconfig = new SmtpClientConfig(
-				MAIL_SERVER, MAIL_PORT, AUTH, USE_SSL);
-		Alerter alerter = new SmtpAlerter(new SmtpAlerterConfig(RECIPIENTS,
-				"noreply@elastisys.com", "alert message", "WARN|ERROR",
-				smtpClientconfig));
+		SmtpClientConfig smtpClientconfig = new SmtpClientConfig(MAIL_SERVER,
+				MAIL_PORT, AUTH, USE_SSL);
+		Alerter alerter = new SmtpAlerter(
+				new SmtpAlerterConfig(RECIPIENTS, "noreply@elastisys.com",
+						"alert message", "WARN|ERROR", smtpClientconfig));
 
 		eventBus.register(alerter);
 		// should NOT be sent (doesn't match severity filter)

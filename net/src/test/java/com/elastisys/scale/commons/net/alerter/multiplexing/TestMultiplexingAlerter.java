@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.mail.internet.MimeMessage;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.jvnet.mock_javamail.Mailbox;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.json.types.TimeInterval;
@@ -26,7 +28,9 @@ import com.elastisys.scale.commons.net.alerter.http.HttpAuthConfig;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerter;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerterConfig;
 import com.elastisys.scale.commons.net.host.HostUtils;
+import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
+import com.elastisys.scale.commons.net.smtp.SmtpTestServerUtil;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
@@ -34,11 +38,28 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonElement;
+import com.icegreen.greenmail.util.GreenMail;
 
 /**
  * Exercise the {@link MultiplexingAlerter} class.
  */
 public class TestMultiplexingAlerter {
+
+	/** Trusted user on SSL server. */
+	private static final String USERNAME = "user";
+	/** Trusted user's password on SSL server. */
+	private static final String PASSWORD = "password";
+
+	/** Port where fake SMTP server is listening for SSL */
+	private static int SMTP_SSL_PORT;
+
+	static {
+		List<Integer> freePorts = HostUtils.findFreePorts(2);
+		SMTP_SSL_PORT = freePorts.get(1);
+	}
+
+	/** Fake email SMTP server with SSL. */
+	private GreenMail sslMailServer;
 
 	private EventBus eventBus = new EventBus();
 
@@ -47,12 +68,32 @@ public class TestMultiplexingAlerter {
 
 	@Before
 	public void beforeTestMethod() {
+		startSmtpServer();
 
 		// freeze current time in tests
 		FrozenTime.setFixed(UtcTime.parse("2015-01-01T12:00:00Z"));
 
 		this.multiplexingAlerter = new MultiplexingAlerter();
 		this.eventBus.register(this.multiplexingAlerter);
+	}
+
+	@After
+	public void onTearDown() {
+		stopSmtpServer();
+	}
+
+	private void stopSmtpServer() {
+		if (this.sslMailServer != null) {
+			this.sslMailServer.stop();
+		}
+	}
+
+	/**
+	 * Start the mail servers used in the test.
+	 */
+	private void startSmtpServer() {
+		this.sslMailServer = SmtpTestServerUtil
+				.startSslStmpServer(SMTP_SSL_PORT, USERNAME, PASSWORD);
 	}
 
 	/**
@@ -66,7 +107,8 @@ public class TestMultiplexingAlerter {
 
 	@Test
 	public void registerEmptyAlerterConfig() {
-		this.multiplexingAlerter.registerAlerters(alertConfig(null, null, null), null);
+		this.multiplexingAlerter.registerAlerters(alertConfig(null, null, null),
+				null);
 		assertThat(this.multiplexingAlerter.alerters(), is(alerters()));
 	}
 
@@ -204,8 +246,7 @@ public class TestMultiplexingAlerter {
 	 */
 	@Test
 	public void dispatch() throws Exception {
-		// set up a mock JavaMail box
-		Mailbox.clearAll();
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 		// set up a http server
 		RequestLoggingHttpServer webServer = startHttpServer();
 
@@ -217,10 +258,11 @@ public class TestMultiplexingAlerter {
 					"http://localhost:" + webServer.getHttpPort(), ".*");
 			AlertersConfig alertConfig = alertConfig(asList(smtpAlerter),
 					asList(httpAlerter), null);
-			this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+			this.multiplexingAlerter.registerAlerters(alertConfig,
+					standardTags());
 
 			assertThat(webServer.getPostedMessages().size(), is(0));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(0));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 			// dispatch alert
 			Alert alert = AlertBuilder.create().topic("topic")
@@ -234,9 +276,11 @@ public class TestMultiplexingAlerter {
 			assertThat(webServer.getPostedMessages().size(), is(1));
 			assertThat(webServer.getPostedMessages().get(0),
 					is(expectedMessage));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
-			assertThat(Mailbox.get("recipient@company.com").get(0).getContent(),
-					is(expectedMessage));
+			MimeMessage[] receivedMessages = this.sslMailServer
+					.getReceivedMessages();
+			assertThat(receivedMessages.length, is(1));
+			SmtpTestServerUtil.assertAlertMail(receivedMessages[0],
+					alert.withMetadata(standardTags()));
 		} finally {
 			webServer.stop();
 		}
@@ -248,8 +292,7 @@ public class TestMultiplexingAlerter {
 	 */
 	@Test
 	public void honorDuplicateSuppression() throws Exception {
-		// set up a mock JavaMail box
-		Mailbox.clearAll();
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 		// set up a http server
 		RequestLoggingHttpServer webServer = startHttpServer();
 
@@ -263,10 +306,11 @@ public class TestMultiplexingAlerter {
 					"http://localhost:" + webServer.getHttpPort(), ".*");
 			AlertersConfig alertConfig = alertConfig(asList(smtpAlerter),
 					asList(httpAlerter), duplicateSuppression);
-			this.multiplexingAlerter.registerAlerters(alertConfig, standardTags());
+			this.multiplexingAlerter.registerAlerters(alertConfig,
+					standardTags());
 
 			assertThat(webServer.getPostedMessages().size(), is(0));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(0));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 			// dispatch alert
 			Alert alert = AlertBuilder.create().topic("topic")
@@ -275,26 +319,26 @@ public class TestMultiplexingAlerter {
 			this.multiplexingAlerter.handleAlert(alert);
 			// verify that alert was dispatched to http and smtp alerters
 			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
 
 			FrozenTime.tick(60);
 			// dispatch a duplicate alert, should be filtered out
 			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
 
 			FrozenTime.tick(60);
 			// dispatch another duplicate alert, should be filtered out
 			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(1));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
 
 			FrozenTime.tick(61);
 			// duplicate suppression has passed, alert should no longer be
 			// filtered
 			this.multiplexingAlerter.handleAlert(alert);
 			assertThat(webServer.getPostedMessages().size(), is(2));
-			assertThat(Mailbox.get("recipient@company.com").size(), is(2));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(2));
 		} finally {
 			webServer.stop();
 		}
@@ -352,7 +396,8 @@ public class TestMultiplexingAlerter {
 	}
 
 	private SmtpClientConfig smtpClientConfig() {
-		return new SmtpClientConfig("some.mail.host", 25, null);
+		return new SmtpClientConfig("localhost", SMTP_SSL_PORT,
+				new SmtpClientAuthentication(USERNAME, PASSWORD), true);
 	}
 
 	private HttpAlerterConfig httpConfig(String url, String severityFilter) {

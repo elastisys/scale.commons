@@ -107,6 +107,7 @@ public class SmtpSender implements Callable<Boolean> {
 	private void applySendSettings(Email email, SmtpClientConfig settings) {
 		email.setHostName(settings.getSmtpHost());
 		email.setSmtpPort(settings.getSmtpPort());
+		email.setSslSmtpPort(String.valueOf(settings.getSmtpPort()));
 		if (settings.getAuthentication() != null) {
 			email.setAuthentication(settings.getAuthentication().getUsername(),
 					settings.getAuthentication().getPassword());

@@ -3,76 +3,137 @@ package com.elastisys.scale.commons.net.smtp;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.List;
 
-import javax.mail.Message;
+import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.SimpleEmail;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.jvnet.mock_javamail.Mailbox;
 
+import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.GreenMailUtil;
 
 /**
- * Exercise the mail sending of the {@link SmtpSender} with a mocked JavaMail
- * implementation, which only sends email messages to an in-memory mail box.
+ * Exercise the mail sending of the {@link SmtpSender} with an embedded SMTP
+ * mail server.
  */
 public class TestSmtpSender {
 
+	/** Trusted user on SSL server. */
+	private static final String USERNAME = "user";
+	/** Trusted user's password on SSL server. */
+	private static final String PASSWORD = "password";
+
+	/** Port where fake SMTP server is listening */
+	private static int SMTP_PORT;
+	/** Port where fake SMTP server is listening for SSL */
+	private static int SMTP_SSL_PORT;
+
+	static {
+		List<Integer> freePorts = HostUtils.findFreePorts(2);
+		SMTP_PORT = freePorts.get(0);
+		SMTP_SSL_PORT = freePorts.get(1);
+	}
+
+	/** Fake email SMTP server without SSL. */
+	private GreenMail insecureMailServer;
+
+	/** Fake email SMTP server with SSL. */
+	private GreenMail sslMailServer;
+
 	@Before
 	public void setUp() {
-		// clear Mock JavaMail box
-		Mailbox.clearAll();
+		startServers();
 
 		// freeze current time in tests
 		FrozenTime.setFixed(UtcTime.parse("2014-03-12T12:00:00Z"));
 	}
 
+	/**
+	 * Start the mail servers used in the test.
+	 */
+	private void startServers() {
+		this.insecureMailServer = SmtpTestServerUtil.startSmtpServer(SMTP_PORT);
+
+		this.sslMailServer = SmtpTestServerUtil
+				.startSslStmpServer(SMTP_SSL_PORT, USERNAME, PASSWORD);
+	}
+
+	@After
+	public void onTearDown() {
+		stopServers();
+	}
+
+	private void stopServers() {
+		if (this.insecureMailServer != null) {
+			this.insecureMailServer.stop();
+		}
+		if (this.sslMailServer != null) {
+			this.sslMailServer.stop();
+		}
+	}
+
 	@Test
 	public void sendUnauthenticatedNoSsl() throws Exception {
-		Mailbox mailbox = Mailbox.get("recipient@elastisys.com");
-		assertTrue(mailbox.isEmpty());
+		assertThat(this.insecureMailServer.getReceivedMessages().length, is(0));
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 		SmtpSender sender = new SmtpSender(
 				new SmtpMessage(Arrays.asList("recipient@elastisys.com"),
 						"sender@elastisys.com", "subject", "content", null),
-				new SmtpClientConfig("some.smtp.host", 25, null, false));
+				new SmtpClientConfig("localhost", SMTP_PORT, null, false));
 		sender.call();
 
 		// check mailbox after sending
-		mailbox = Mailbox.get("recipient@elastisys.com");
-		assertThat(mailbox.size(), is(1));
+		MimeMessage[] receivedMessages = this.insecureMailServer
+				.getReceivedMessages();
+		assertThat(receivedMessages.length, is(1));
+		assertThat(receivedMessages[0].getSubject(), is("subject"));
+		assertThat(receivedMessages[0].getSentDate(),
+				is(FrozenTime.now().toDate()));
 		Object expectedContent = "content";
-		assertThat(mailbox.get(0).getContent(), is(expectedContent));
-		assertThat(mailbox.get(0).getSubject(), is("subject"));
-		assertThat(mailbox.get(0).getSentDate(), is(FrozenTime.now().toDate()));
+		assertThat(GreenMailUtil.getBody(receivedMessages[0]).trim(),
+				is(expectedContent));
+
+		// nothing sent over SSL
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 	}
 
 	@Test
 	public void sendAuthenticatedWithSsl() throws Exception {
-		Mailbox mailbox = Mailbox.get("recipient@elastisys.com");
-		assertTrue(mailbox.isEmpty());
+		assertThat(this.insecureMailServer.getReceivedMessages().length, is(0));
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 		SmtpSender sender = new SmtpSender(
 				new SmtpMessage(Arrays.asList("recipient@elastisys.com"),
 						"sender@elastisys.com", "subject", "content", null),
-				new SmtpClientConfig("some.smtp.host", 25,
-						new SmtpClientAuthentication("user", "pass"), true));
+				new SmtpClientConfig("localhost", SMTP_SSL_PORT,
+						new SmtpClientAuthentication(USERNAME, PASSWORD),
+						true));
 		sender.call();
 
 		// check mailbox after sending
-		mailbox = Mailbox.get("recipient@elastisys.com");
-		assertThat(mailbox.size(), is(1));
+		MimeMessage[] receivedMessages = this.sslMailServer
+				.getReceivedMessages();
+		assertThat(receivedMessages.length, is(1));
+		assertThat(receivedMessages[0].getSubject(), is("subject"));
+		assertThat(receivedMessages[0].getSentDate(),
+				is(FrozenTime.now().toDate()));
 		Object expectedContent = "content";
-		assertThat(mailbox.get(0).getContent(), is(expectedContent));
-		assertThat(mailbox.get(0).getSubject(), is("subject"));
-		assertThat(mailbox.get(0).getSentDate(), is(FrozenTime.now().toDate()));
+		assertThat(GreenMailUtil.getBody(receivedMessages[0]).trim(),
+				is(expectedContent));
+
+		// nothing sent over regular SMTP
+		assertThat(this.insecureMailServer.getReceivedMessages().length, is(0));
 	}
 
 	/**
@@ -80,8 +141,7 @@ public class TestSmtpSender {
 	 */
 	@Test
 	public void sendSimpleEmail() throws Exception {
-		Mailbox mailbox = Mailbox.get("recipient@elastisys.com");
-		assertTrue(mailbox.isEmpty());
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 		SimpleEmail email = new SimpleEmail();
 		email.setFrom("sender@elastisys.com");
@@ -90,17 +150,21 @@ public class TestSmtpSender {
 		email.addTo("recipient@elastisys.com");
 		email.setSentDate(UtcTime.now().toDate());
 		SmtpSender sender = new SmtpSender(email,
-				new SmtpClientConfig("some.smtp.host", 25,
-						new SmtpClientAuthentication("user", "pass"), true));
+				new SmtpClientConfig("localhost", SMTP_SSL_PORT,
+						new SmtpClientAuthentication(USERNAME, PASSWORD),
+						true));
 		sender.call();
 
 		// check mailbox after sending
-		mailbox = Mailbox.get("recipient@elastisys.com");
-		assertThat(mailbox.size(), is(1));
+		MimeMessage[] receivedMessages = this.sslMailServer
+				.getReceivedMessages();
+		assertThat(receivedMessages.length, is(1));
+		assertThat(receivedMessages[0].getSubject(), is("subject"));
+		assertThat(receivedMessages[0].getSentDate(),
+				is(FrozenTime.now().toDate()));
 		Object expectedContent = "content";
-		assertThat(mailbox.get(0).getContent(), is(expectedContent));
-		assertThat(mailbox.get(0).getSubject(), is("subject"));
-		assertThat(mailbox.get(0).getSentDate(), is(FrozenTime.now().toDate()));
+		assertThat(GreenMailUtil.getBody(receivedMessages[0]).trim(),
+				is(expectedContent));
 	}
 
 	/**
@@ -108,8 +172,7 @@ public class TestSmtpSender {
 	 */
 	@Test
 	public void sendHtmlEmail() throws Exception {
-		Mailbox mailbox = Mailbox.get("recipient@elastisys.com");
-		assertTrue(mailbox.isEmpty());
+		assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 		HtmlEmail email = new HtmlEmail();
 		email.setFrom("sender@elastisys.com");
@@ -119,14 +182,19 @@ public class TestSmtpSender {
 		email.addTo("recipient@elastisys.com");
 		email.setSentDate(UtcTime.now().toDate());
 		SmtpSender sender = new SmtpSender(email,
-				new SmtpClientConfig("some.smtp.host", 25,
-						new SmtpClientAuthentication("user", "pass"), true));
+				new SmtpClientConfig("localhost", SMTP_SSL_PORT,
+						new SmtpClientAuthentication(USERNAME, PASSWORD),
+						true));
 		sender.call();
 
 		// check mailbox after sending
-		mailbox = Mailbox.get("recipient@elastisys.com");
-		assertThat(mailbox.size(), is(1));
-		Message message = mailbox.get(0);
+		MimeMessage[] receivedMessages = this.sslMailServer
+				.getReceivedMessages();
+		assertThat(receivedMessages.length, is(1));
+		assertThat(receivedMessages[0].getSubject(), is("subject"));
+		assertThat(receivedMessages[0].getSentDate(),
+				is(FrozenTime.now().toDate()));
+		MimeMessage message = receivedMessages[0];
 		Object content = message.getContent();
 		assertThat(content, instanceOf(MimeMultipart.class));
 		MimeMultipart mimeContent = (MimeMultipart) content;
@@ -134,6 +202,6 @@ public class TestSmtpSender {
 		Object secondPart = mimeContent.getBodyPart(1).getContent();
 		assertThat(firstPart,
 				is("Hi! Your mail client doesn't seem to support HTML."));
-		assertThat(secondPart, is("<h1>Hi</h1>\nHope you're doing well."));
+		assertThat(secondPart, is("<h1>Hi</h1>\r\nHope you're doing well."));
 	}
 }

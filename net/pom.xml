@@ -69,14 +69,12 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-    <!-- A mock SMTP server, that redirects sent mails to an in-memory mail 
-      box. -->
+    <!-- SMTP server used in tests -->
     <dependency>
-      <groupId>org.jvnet.mock-javamail</groupId>
-      <artifactId>mock-javamail</artifactId>
-      <version>1.9</version>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency>    
 
   </dependencies>
 </project>
