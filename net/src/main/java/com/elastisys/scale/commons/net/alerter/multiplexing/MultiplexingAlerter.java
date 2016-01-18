@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,28 +34,46 @@ import com.google.gson.JsonElement;
  * <p/>
  * New {@link Alerter}s are registered with a {@link AlertersConfig}, which
  * describes a number of SMTP and HTTP {@link Alerter}s as well as for how long
- * to suppress duplicate {@link Alert} messages. Two {@link Alert}s are
- * considered equal if they share topic, message and metadata tags (see
- * {@link FilteringAlerter#DEFAULT_IDENTITY_FUNCTION}).
+ * to suppress duplicate {@link Alert} messages. An <i>identity function</i> is
+ * used to determine if two {@link Alert}s are considered equal.
  */
 public class MultiplexingAlerter implements Alerter {
 	private final static Logger LOG = LoggerFactory
 			.getLogger(MultiplexingAlerter.class);
 
 	/**
+	 * The identity function used by the duplicate suppression filter to
+	 * determine if two {@link Alert}s are to be considered equal.
+	 */
+	private final Function<Alert, String> identityFunction;
+
+	/**
 	 * Holds the list of configured {@link Alerter}s (if any) to which incoming
 	 * {@link Alert}s will be dispatched (unless the duplicate filter is
 	 * triggered for the {@link Alerter}).
 	 */
-	private List<Alerter> alerters;
+	private final List<Alerter> alerters;
 
 	/**
-	 * Creates an {@link MultiplexingAlerter} that dispatches any received
-	 * {@link Alert}s to all registered {@link Alerter}s.
-	 *
+	 * Creates a {@link MultiplexingAlerter} that dispatches {@link Alert}s to
+	 * registered {@link Alerter}s, and uses the default identity function,
+	 * {@link FilteringAlerter#DEFAULT_IDENTITY_FUNCTION}, to determine if two
+	 * {@link Alert}s are equal when suppressing duplicates.
 	 */
 	public MultiplexingAlerter() {
+		this(FilteringAlerter.DEFAULT_IDENTITY_FUNCTION);
+	}
+
+	/**
+	 * Creates a {@link MultiplexingAlerter} that dispatches {@link Alert}s to
+	 * registered {@link Alerter}s, and uses the supplied identity function used
+	 * to determine if two {@link Alert}s are equal when suppressing duplicates.
+	 *
+	 * @param identityFunction
+	 */
+	public MultiplexingAlerter(Function<Alert, String> identityFunction) {
 		this.alerters = new CopyOnWriteArrayList<>();
+		this.identityFunction = identityFunction;
 	}
 
 	/**
@@ -133,7 +152,8 @@ public class MultiplexingAlerter implements Alerter {
 			TimeInterval duplicateSuppression) {
 		long suppressionTime = duplicateSuppression.getTime();
 		TimeUnit timeUnit = duplicateSuppression.getUnit();
-		return new FilteringAlerter(alerter, suppressionTime, timeUnit);
+		return new FilteringAlerter(alerter, this.identityFunction,
+				suppressionTime, timeUnit);
 	}
 
 	/**

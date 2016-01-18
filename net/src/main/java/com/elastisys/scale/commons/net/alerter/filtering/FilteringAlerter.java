@@ -29,10 +29,33 @@ public class FilteringAlerter implements Alerter {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(FilteringAlerter.class);
 
-	/** The default {@link Alert} identity function. */
-	public static final Function<Alert, String> DEFAULT_IDENTITY_FUNCTION = (alert -> String
+	/**
+	 * An identity function that considers two {@link Alert}s to be equal if
+	 * they share a common topic.
+	 */
+	public static final Function<Alert, String> TOPIC_IDENTITY_FUNCTION = (alert -> String
+			.valueOf(Objects.hashCode(alert.getTopic())));
+
+	/**
+	 * An identity function that considers two {@link Alert}s to be equal if
+	 * they share a common topic and message.
+	 */
+	public static final Function<Alert, String> TOPIC_MSG_IDENTITY_FUNCTION = (alert -> String
+			.valueOf(Objects.hashCode(alert.getTopic(), alert.getMessage())));
+
+	/**
+	 * An identity function that considers two {@link Alert}s to be equal if
+	 * they share a common topic, message and metadata tags.
+	 */
+	public static final Function<Alert, String> TOPIC_MSG_TAGS_IDENTITY_FUNCTION = (alert -> String
 			.valueOf(Objects.hashCode(alert.getTopic(), alert.getMessage(),
 					alert.getMetadata())));
+
+	/**
+	 * The default {@link Alert} identity function. Two {@link Alert}s are
+	 * considered equal if they share topic, message and metadata tags.
+	 */
+	public static final Function<Alert, String> DEFAULT_IDENTITY_FUNCTION = TOPIC_MSG_TAGS_IDENTITY_FUNCTION;
 
 	/**
 	 * The number of calls between every call to

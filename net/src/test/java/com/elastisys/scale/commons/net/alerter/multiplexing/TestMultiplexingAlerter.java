@@ -39,6 +39,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonElement;
 import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.GreenMailUtil;
 
 /**
  * Exercise the {@link MultiplexingAlerter} class.
@@ -73,7 +74,8 @@ public class TestMultiplexingAlerter {
 		// freeze current time in tests
 		FrozenTime.setFixed(UtcTime.parse("2015-01-01T12:00:00Z"));
 
-		this.multiplexingAlerter = new MultiplexingAlerter();
+		this.multiplexingAlerter = new MultiplexingAlerter(
+				FilteringAlerter.TOPIC_IDENTITY_FUNCTION);
 		this.eventBus.register(this.multiplexingAlerter);
 	}
 
@@ -313,32 +315,46 @@ public class TestMultiplexingAlerter {
 			assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
 			// dispatch alert
-			Alert alert = AlertBuilder.create().topic("topic")
-					.severity(AlertSeverity.ERROR).message("error!").build();
+			Alert alert1 = AlertBuilder.create().topic("topic1")
+					.severity(AlertSeverity.ERROR).message("error").build();
+			Alert alert2 = AlertBuilder.create().topic("topic2")
+					.severity(AlertSeverity.INFO).message("info").build();
 
-			this.multiplexingAlerter.handleAlert(alert);
+			this.multiplexingAlerter.handleAlert(alert1);
+			this.multiplexingAlerter.handleAlert(alert2);
 			// verify that alert was dispatched to http and smtp alerters
-			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
+			assertThat(webServer.getPostedMessages().size(), is(2));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(2));
+			assertAlertMail(this.sslMailServer.getReceivedMessages()[0],
+					"topic1");
+			assertAlertMail(this.sslMailServer.getReceivedMessages()[1],
+					"topic2");
 
 			FrozenTime.tick(60);
-			// dispatch a duplicate alert, should be filtered out
-			this.multiplexingAlerter.handleAlert(alert);
-			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
+			// dispatch duplicate alerts, should be filtered out
+			this.multiplexingAlerter.handleAlert(alert1);
+			this.multiplexingAlerter.handleAlert(alert2);
+			assertThat(webServer.getPostedMessages().size(), is(2));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(2));
 
 			FrozenTime.tick(60);
-			// dispatch another duplicate alert, should be filtered out
-			this.multiplexingAlerter.handleAlert(alert);
-			assertThat(webServer.getPostedMessages().size(), is(1));
-			assertThat(this.sslMailServer.getReceivedMessages().length, is(1));
+			// dispatch duplicate alerts again, should be filtered out
+			this.multiplexingAlerter.handleAlert(alert1);
+			this.multiplexingAlerter.handleAlert(alert2);
+			assertThat(webServer.getPostedMessages().size(), is(2));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(2));
 
 			FrozenTime.tick(61);
 			// duplicate suppression has passed, alert should no longer be
 			// filtered
-			this.multiplexingAlerter.handleAlert(alert);
-			assertThat(webServer.getPostedMessages().size(), is(2));
-			assertThat(this.sslMailServer.getReceivedMessages().length, is(2));
+			this.multiplexingAlerter.handleAlert(alert1);
+			this.multiplexingAlerter.handleAlert(alert2);
+			assertThat(webServer.getPostedMessages().size(), is(4));
+			assertThat(this.sslMailServer.getReceivedMessages().length, is(4));
+			assertAlertMail(this.sslMailServer.getReceivedMessages()[2],
+					"topic1");
+			assertAlertMail(this.sslMailServer.getReceivedMessages()[3],
+					"topic2");
 		} finally {
 			webServer.stop();
 		}
@@ -405,4 +421,43 @@ public class TestMultiplexingAlerter {
 				new HttpAuthConfig(new BasicCredentials("user", "pass"), null));
 	}
 
+	/**
+	 * Asserts that the given email message is an {@link Alert} with a given
+	 * topic and severity.
+	 *
+	 * @param emailMessage
+	 *            The email message.
+	 * @param expectedTopic
+	 *            The expected {@link Alert} topic.
+	 * @param expectedSeverity
+	 *            The expected {@link Alert} severity. Can be null, in which
+	 *            case it is not checked.
+	 */
+	private static void assertAlertMail(MimeMessage emailMessage,
+			String expectedTopic, AlertSeverity expectedSeverity) {
+		Alert notificationAlert = extractAlert(emailMessage);
+		assertThat(notificationAlert.getTopic(), is(expectedTopic));
+		if (expectedSeverity != null) {
+			assertThat(notificationAlert.getSeverity(), is(expectedSeverity));
+		}
+	}
+
+	private static Alert extractAlert(MimeMessage emailMessage) {
+		String notificationMail = GreenMailUtil.getBody(emailMessage);
+		Alert notificationAlert = JsonUtils.toObject(
+				JsonUtils.parseJsonString(notificationMail), Alert.class);
+		return notificationAlert;
+	}
+
+	/**
+	 * Asserts that the given email message is an {@link Alert} with a given
+	 * topic.
+	 *
+	 * @param emailMessage
+	 * @param expectedTopic
+	 */
+	private static void assertAlertMail(MimeMessage emailMessage,
+			String expectedTopic) {
+		assertAlertMail(emailMessage, expectedTopic, null);
+	}
 }

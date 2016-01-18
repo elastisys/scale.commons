@@ -116,33 +116,104 @@ public class TestFilteringAlerter {
 	}
 
 	/**
-	 * Default identity function is based on topic, message and metadata tags.
+	 * Exercise the {@link FilteringAlerter#TOPIC_IDENTITY_FUNCTION} based on
+	 * topic field only.
 	 */
 	@Test
-	public void defaultIdentityFunction() {
+	public void topicIdentityFunction() {
+		Function<Alert, String> idFunc = FilteringAlerter.TOPIC_IDENTITY_FUNCTION;
+
+		// equal alerts => equal
+		Alert alert1 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		Alert alert1Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		assertEquals(idFunc.apply(alert1), idFunc.apply(alert1Copy));
+
+		// same topic, different fields otherwise => equal
+		Alert otherSeverity = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.WARN).message("message1").build();
+		Alert otherMessage = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message2").build();
+		Alert otherTags = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("tag1", "value1").build();
+		assertEquals(idFunc.apply(alert1), idFunc.apply(otherSeverity));
+		assertEquals(idFunc.apply(alert1), idFunc.apply(otherMessage));
+		assertEquals(idFunc.apply(alert1), idFunc.apply(otherTags));
+
+		// wrong topic => not equal
+		Alert alert2 = AlertBuilder.create().topic("topic2")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(alert2));
+	}
+
+	/**
+	 * Exercise the {@link FilteringAlerter#TOPIC_MSG_IDENTITY_FUNCTION} based
+	 * on topic and message fields.
+	 */
+	@Test
+	public void topicMsgIdentityFunction() {
+		Function<Alert, String> idFunc = FilteringAlerter.TOPIC_MSG_IDENTITY_FUNCTION;
+
+		// equal alerts => equal
+		Alert alert1 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("tag1", "value1").build();
+		Alert alert1Copy = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message1")
+				.addMetadata("tag1", "value1").build();
+		assertEquals(idFunc.apply(alert1), idFunc.apply(alert1Copy));
+
+		// same topic and msg, different fields otherwise => equal
+		Alert otherSeverity = AlertBuilder.create().topic("topic1")
+				.message("message1").severity(AlertSeverity.WARN).build();
+		Alert otherTags = AlertBuilder.create().topic("topic1")
+				.message("message1").severity(AlertSeverity.INFO)
+				.addMetadata("tag2", "value2").build();
+		assertEquals(idFunc.apply(alert1), idFunc.apply(otherSeverity));
+		assertEquals(idFunc.apply(alert1), idFunc.apply(otherTags));
+
+		// wrong topic or message => not equal
+		Alert wrongTopic = AlertBuilder.create().topic("topic2")
+				.severity(AlertSeverity.INFO).message("message1").build();
+		Alert wrongMessage = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.INFO).message("message2").build();
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(wrongTopic));
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(wrongMessage));
+	}
+
+	/**
+	 * Exercise the {@link FilteringAlerter#TOPIC_MSG_TAGS_IDENTITY_FUNCTION}
+	 * based on topic, message and metadata fields.
+	 */
+	@Test
+	public void topicMsgTagsIdentityFunction() {
+		Function<Alert, String> idFunc = FilteringAlerter.TOPIC_MSG_TAGS_IDENTITY_FUNCTION;
+
 		Alert alert1 = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message1").build();
 		Alert alert1Copy = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message1").build();
 
-		assertEquals(identity(alert1), identity(alert1Copy));
+		assertEquals(idFunc.apply(alert1), idFunc.apply(alert1Copy));
 
 		Alert alert2 = AlertBuilder.create().topic("topic2")
 				.severity(AlertSeverity.INFO).message("message1").build();
 		Alert alert2Copy = AlertBuilder.create().topic("topic2")
 				.severity(AlertSeverity.INFO).message("message1").build();
 
-		assertEquals(identity(alert2), identity(alert2Copy));
-		assertNotEquals(identity(alert1), identity(alert2));
+		assertEquals(idFunc.apply(alert2), idFunc.apply(alert2Copy));
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(alert2));
 
 		Alert alert3 = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message2").build();
 		Alert alert3Copy = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message2").build();
 
-		assertEquals(identity(alert3), identity(alert3Copy));
-		assertNotEquals(identity(alert1), identity(alert3));
-		assertNotEquals(identity(alert2), identity(alert3));
+		assertEquals(idFunc.apply(alert3), idFunc.apply(alert3Copy));
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(alert3));
+		assertNotEquals(idFunc.apply(alert2), idFunc.apply(alert3));
 
 		Alert alert4 = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message1")
@@ -151,10 +222,10 @@ public class TestFilteringAlerter {
 				.severity(AlertSeverity.INFO).message("message1")
 				.addMetadata("key1", "value1").build();
 
-		assertEquals(identity(alert4), identity(alert4Copy));
-		assertNotEquals(identity(alert1), identity(alert3));
-		assertNotEquals(identity(alert2), identity(alert3));
-		assertNotEquals(identity(alert3), identity(alert4));
+		assertEquals(idFunc.apply(alert4), idFunc.apply(alert4Copy));
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(alert3));
+		assertNotEquals(idFunc.apply(alert2), idFunc.apply(alert3));
+		assertNotEquals(idFunc.apply(alert3), idFunc.apply(alert4));
 
 		Alert alert5 = AlertBuilder.create().topic("topic1")
 				.severity(AlertSeverity.INFO).message("message1")
@@ -165,21 +236,17 @@ public class TestFilteringAlerter {
 				.addMetadata("key1", "value1").addMetadata("key2", "value2")
 				.build();
 
-		assertEquals(identity(alert5), identity(alert5Copy));
-		assertNotEquals(identity(alert1), identity(alert3));
-		assertNotEquals(identity(alert2), identity(alert3));
-		assertNotEquals(identity(alert3), identity(alert4));
-		assertNotEquals(identity(alert4), identity(alert5));
+		assertEquals(idFunc.apply(alert5), idFunc.apply(alert5Copy));
+		assertNotEquals(idFunc.apply(alert1), idFunc.apply(alert3));
+		assertNotEquals(idFunc.apply(alert2), idFunc.apply(alert3));
+		assertNotEquals(idFunc.apply(alert3), idFunc.apply(alert4));
+		assertNotEquals(idFunc.apply(alert4), idFunc.apply(alert5));
 	}
 
-	/**
-	 * Returns the default identity of an {@link Alert}.
-	 *
-	 * @param alert
-	 * @return
-	 */
-	private String identity(Alert alert) {
-		return FilteringAlerter.DEFAULT_IDENTITY_FUNCTION.apply(alert);
+	@Test
+	public void defaultIdentifyFunction() {
+		assertThat(FilteringAlerter.DEFAULT_IDENTITY_FUNCTION,
+				is(FilteringAlerter.TOPIC_MSG_TAGS_IDENTITY_FUNCTION));
 	}
 
 	@Test
