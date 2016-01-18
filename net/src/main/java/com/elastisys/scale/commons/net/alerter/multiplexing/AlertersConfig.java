@@ -40,8 +40,8 @@ public class AlertersConfig {
 
 	/**
 	 * Duration of time to suppress duplicate {@link Alert}s from being re-sent.
-	 * Two {@link Alert}s are considered equal if they share topic, message and
-	 * metadata tags (see {@link FilteringAlerter#DEFAULT_IDENTITY_FUNCTION}).
+	 * {@link Alert} equality is determined by the identity function that was
+	 * supplied on creation of the {@link FilteringAlerter}.
 	 */
 	private final TimeInterval duplicateSuppression;
 
@@ -72,10 +72,10 @@ public class AlertersConfig {
 	 *            <code>null</code> value is equivalent to an empty list.
 	 * @param duplicateSuppression
 	 *            Duration of time to suppress duplicate {@link Alert}s from
-	 *            being re-sent. Two {@link Alert}s are considered equal if they
-	 *            share topic, message and metadata tags (see
-	 *            {@link FilteringAlerter#DEFAULT_IDENTITY_FUNCTION}). May be
-	 *            <code>null</code>. Default: 5 minutes.
+	 *            being re-sent. {@link Alert} equality is determined by the
+	 *            identity function that was supplied on creation of the
+	 *            {@link FilteringAlerter}. May be <code>null</code>. Default: 5
+	 *            minutes.
 	 */
 	public AlertersConfig(List<SmtpAlerterConfig> smtpAlerters,
 			List<HttpAlerterConfig> httpAlerters,
@@ -111,8 +111,8 @@ public class AlertersConfig {
 
 	/**
 	 * Duration of time to suppress duplicate {@link Alert}s from being re-sent.
-	 * Two {@link Alert}s are considered equal if they share topic, message and
-	 * metadata tags (see {@link FilteringAlerter#DEFAULT_IDENTITY_FUNCTION}).
+	 * {@link Alert} equality is determined by the identity function that was
+	 * supplied on creation of the {@link FilteringAlerter}.
 	 *
 	 * @return
 	 */
