@@ -108,7 +108,7 @@ public class TestSmtpAlerter {
 
 		// post an Alert on the event bus
 		Alert alert = new Alert("/alert/topic", AlertSeverity.INFO,
-				UtcTime.now(), "message");
+				UtcTime.now(), "message", null);
 		this.eventBus.post(alert);
 
 		// check mailbox after alert
@@ -138,7 +138,7 @@ public class TestSmtpAlerter {
 
 		// post an Alert on the event bus
 		Alert alert = new Alert("/alert/topic", AlertSeverity.INFO,
-				UtcTime.now(), "message");
+				UtcTime.now(), "message", null);
 		this.eventBus.post(alert);
 
 		// check mailbox after alert
@@ -178,7 +178,7 @@ public class TestSmtpAlerter {
 
 		// post an Alert on the event bus
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.INFO,
-				UtcTime.now(), "message"));
+				UtcTime.now(), "message", null));
 
 		// check mailbox after alert
 		MimeMessage[] receivedMessages = this.insecureMailServer
@@ -215,13 +215,13 @@ public class TestSmtpAlerter {
 
 		// post Alerts with different severity on the event bus
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.INFO,
-				UtcTime.now(), "info message"));
+				UtcTime.now(), "info message", null));
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.WARN,
-				UtcTime.now(), "warn message"));
+				UtcTime.now(), "warn message", null));
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.ERROR,
-				UtcTime.now(), "error message"));
+				UtcTime.now(), "error message", null));
 		this.eventBus.post(new Alert("/alert/topic", AlertSeverity.FATAL,
-				UtcTime.now(), "fatal message"));
+				UtcTime.now(), "fatal message", null));
 
 		// check mailbox after alerts: should only contain alerts that match
 		// filter

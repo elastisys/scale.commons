@@ -89,7 +89,7 @@ public class TestHttpAlerterWithBasicAndCertAuth {
 	public void deliverAlert() {
 
 		Alert alert = new Alert("topic1", AlertSeverity.DEBUG, UtcTime.now(),
-				"debug message");
+				"debug message", null);
 
 		// first make sure that we cannot deliver unauthenticated
 		HttpAuthConfig noAuth = new HttpAuthConfig(null, null);

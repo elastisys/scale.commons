@@ -18,9 +18,11 @@ public class TestSeverityFilter {
 		SeverityFilter filter = new SeverityFilter("ERROR");
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.DEBUG)), is(true));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.INFO)), is(true));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.NOTICE)), is(true));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.NOTICE)),
+				is(true));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.WARN)), is(true));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)), is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)),
+				is(false));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.FATAL)), is(true));
 
 		// interested in NOTICE, WARN, ERROR and FATAL
@@ -30,22 +32,28 @@ public class TestSeverityFilter {
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.NOTICE)),
 				is(false));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.WARN)), is(false));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)), is(false));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.FATAL)), is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)),
+				is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.FATAL)),
+				is(false));
 
 		// interested in all
 		filter = new SeverityFilter(".*");
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.DEBUG)), is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.DEBUG)),
+				is(false));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.INFO)), is(false));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.NOTICE)),
 				is(false));
 		assertThat(filter.shouldSuppress(alert(AlertSeverity.WARN)), is(false));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)), is(false));
-		assertThat(filter.shouldSuppress(alert(AlertSeverity.FATAL)), is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.ERROR)),
+				is(false));
+		assertThat(filter.shouldSuppress(alert(AlertSeverity.FATAL)),
+				is(false));
 	}
 
 	private Alert alert(AlertSeverity severity) {
-		return new Alert("some topic", severity, UtcTime.now(), "some message");
+		return new Alert("some topic", severity, UtcTime.now(), "some message",
+				null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

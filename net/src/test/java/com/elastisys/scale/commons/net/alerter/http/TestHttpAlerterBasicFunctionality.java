@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
+import com.elastisys.scale.commons.net.alerter.AlertBuilder;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.server.ServletDefinition;
@@ -85,21 +86,34 @@ public class TestHttpAlerterBasicFunctionality {
 				null);
 
 		// alerts with different severity
-		Alert alert1 = new Alert("topic1", AlertSeverity.DEBUG, new DateTime(1,
-				DateTimeZone.UTC), "debug message");
-		Alert alert2 = new Alert("topic1", AlertSeverity.INFO, new DateTime(2,
-				DateTimeZone.UTC), "info message");
-		Alert alert3 = new Alert("topic3", AlertSeverity.NOTICE, new DateTime(
-				3, DateTimeZone.UTC), "notice message");
-		Alert alert4 = new Alert("topic4", AlertSeverity.WARN, new DateTime(4,
-				DateTimeZone.UTC), "warn message");
-		Alert alert5 = new Alert("topic5", AlertSeverity.ERROR, new DateTime(5,
-				DateTimeZone.UTC), "error message");
+		Alert alert1 = AlertBuilder.create().topic("topic1")
+				.severity(AlertSeverity.DEBUG)
+				.timestamp(new DateTime(1, DateTimeZone.UTC))
+				.message("debug message").build();
+		Alert alert2 = AlertBuilder.create().topic("topic2")
+				.severity(AlertSeverity.INFO)
+				.timestamp(new DateTime(2, DateTimeZone.UTC))
+				.message("info message").build();
+		Alert alert3 = AlertBuilder.create().topic("topic3")
+				.severity(AlertSeverity.NOTICE)
+				.timestamp(new DateTime(3, DateTimeZone.UTC))
+				.message("notice message").build();
+		Alert alert4 = AlertBuilder.create().topic("topic4")
+				.severity(AlertSeverity.WARN)
+				.timestamp(new DateTime(4, DateTimeZone.UTC))
+				.message("warn message").build();
+		Alert alert5 = AlertBuilder.create().topic("topic5")
+				.severity(AlertSeverity.ERROR)
+				.timestamp(new DateTime(5, DateTimeZone.UTC))
+				.message("error message").build();
 		// alert with metadata
 		Map<String, JsonElement> metadata = Maps.newHashMap();
 		metadata.put("key1", JsonUtils.toJson("value1"));
-		Alert alert6 = new Alert("topic6", AlertSeverity.FATAL, new DateTime(6,
-				DateTimeZone.UTC), "fatal message", metadata);
+		Alert alert6 = AlertBuilder.create().topic("topic6")
+				.severity(AlertSeverity.FATAL)
+				.timestamp(new DateTime(6, DateTimeZone.UTC))
+				.message("fatal message")
+				.addMetadata("key1", JsonUtils.toJson("value1")).build();
 
 		alerter.handleAlert(alert1);
 		alerter.handleAlert(alert2);
@@ -133,20 +147,22 @@ public class TestHttpAlerterBasicFunctionality {
 				standardMetadata);
 
 		// send alert without any extra metadata tags
-		Alert alert = new Alert("topic1", AlertSeverity.INFO, new DateTime(2,
-				DateTimeZone.UTC), "info message");
+		Alert alert = new Alert("topic1", AlertSeverity.INFO,
+				new DateTime(2, DateTimeZone.UTC), "info message", null);
 		// verify that standard metadata tags were added
 		alerter.handleAlert(alert);
-		Alert expectedAlert = alert.withMetadata("key1",
-				JsonUtils.toJson("value1")).withMetadata("key2", value2);
+		Alert expectedAlert = alert
+				.withMetadata("key1", JsonUtils.toJson("value1"))
+				.withMetadata("key2", value2);
 		assertThat(webhook.getReceivedMessages().size(), is(1));
 		assertThat(webhook.getReceivedMessages().get(0), is(expectedAlert));
 
 		// send alert with some extra metadata tags
 		Map<String, JsonElement> extraMetadata = Maps.newHashMap();
 		extraMetadata.put("key3", JsonUtils.toJson("value3"));
-		alert = new Alert("topic1", AlertSeverity.INFO, new DateTime(2,
-				DateTimeZone.UTC), "info message", extraMetadata);
+		alert = new Alert("topic1", AlertSeverity.INFO,
+				new DateTime(2, DateTimeZone.UTC), "info message", null,
+				extraMetadata);
 		// verify that standard metadata tags were added
 		alerter.handleAlert(alert);
 		expectedAlert = alert.withMetadata("key1", JsonUtils.toJson("value1"))
@@ -162,16 +178,22 @@ public class TestHttpAlerterBasicFunctionality {
 	public void testDeliverySuppression() {
 		// use a non-default severity filter
 		String severityFilter = "WARN|ERROR";
-		HttpAlerter alerter = new HttpAlerter(config(webhookUrl(),
-				severityFilter, null), null);
+		HttpAlerter alerter = new HttpAlerter(
+				config(webhookUrl(), severityFilter, null), null);
 
 		// send alerts with different severity
-		Alert alert1 = new Alert("topic", AlertSeverity.DEBUG, now(), "msg");
-		Alert alert2 = new Alert("topic", AlertSeverity.INFO, now(), "msg");
-		Alert alert3 = new Alert("topic", AlertSeverity.NOTICE, now(), "msg");
-		Alert alert4 = new Alert("topic", AlertSeverity.WARN, now(), "msg");
-		Alert alert5 = new Alert("topic", AlertSeverity.ERROR, now(), "msg");
-		Alert alert6 = new Alert("topic", AlertSeverity.FATAL, now(), "msg");
+		Alert alert1 = new Alert("topic", AlertSeverity.DEBUG, now(), "msg",
+				null);
+		Alert alert2 = new Alert("topic", AlertSeverity.INFO, now(), "msg",
+				null);
+		Alert alert3 = new Alert("topic", AlertSeverity.NOTICE, now(), "msg",
+				null);
+		Alert alert4 = new Alert("topic", AlertSeverity.WARN, now(), "msg",
+				null);
+		Alert alert5 = new Alert("topic", AlertSeverity.ERROR, now(), "msg",
+				null);
+		Alert alert6 = new Alert("topic", AlertSeverity.FATAL, now(), "msg",
+				null);
 		alerter.handleAlert(alert1);
 		alerter.handleAlert(alert2);
 		alerter.handleAlert(alert3);
@@ -192,11 +214,13 @@ public class TestHttpAlerterBasicFunctionality {
 	public void multipleDestinations() {
 		// use multiple destinations (although they are actually the same
 		// endpoint)
-		HttpAlerterConfig config = new HttpAlerterConfig(Arrays.asList(
-				webhookUrl(), webhookUrl()), null, null, 100, 100);
+		HttpAlerterConfig config = new HttpAlerterConfig(
+				Arrays.asList(webhookUrl(), webhookUrl()), null, null, 100,
+				100);
 		HttpAlerter alerter = new HttpAlerter(config, null);
 
-		Alert alert = new Alert("topic", AlertSeverity.INFO, now(), "msg");
+		Alert alert = new Alert("topic", AlertSeverity.INFO, now(), "msg",
+				null);
 		alerter.handleAlert(alert);
 
 		// make sure that the endpoint got the alert twice
@@ -212,12 +236,13 @@ public class TestHttpAlerterBasicFunctionality {
 	@Test
 	public void multipleDestinationsAndOneThatCannotBeReached() {
 		// use multiple destinations, one of which is not reachable
-		HttpAlerterConfig config = new HttpAlerterConfig(Arrays.asList(
-				webhookUrl(), "https://non.existing.host:443/"), null, null,
-				100, 100);
+		HttpAlerterConfig config = new HttpAlerterConfig(
+				Arrays.asList(webhookUrl(), "https://non.existing.host:443/"),
+				null, null, 100, 100);
 		HttpAlerter alerter = new HttpAlerter(config, null);
 
-		Alert alert = new Alert("topic", AlertSeverity.INFO, now(), "msg");
+		Alert alert = new Alert("topic", AlertSeverity.INFO, now(), "msg",
+				null);
 		alerter.handleAlert(alert);
 
 		// make sure that the functioning endpoint got the alert

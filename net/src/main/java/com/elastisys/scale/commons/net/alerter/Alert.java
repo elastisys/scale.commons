@@ -31,8 +31,13 @@ public class Alert {
 	private final AlertSeverity severity;
 	/** The time at which the triggering event occurred. */
 	private final DateTime timestamp;
-	/** A message with details about the triggering event. */
+	/** A human-readable description of the triggering event. */
 	private final String message;
+	/**
+	 * Optional human-readable message carrying additional details about the
+	 * alert.
+	 */
+	private final String details;
 	/**
 	 * Additional JSON meta data about the {@link Alert} as a {@link Map} of
 	 * meta data keys mapped to a {@link JsonObject}s.
@@ -49,11 +54,14 @@ public class Alert {
 	 * @param timestamp
 	 *            The time at which the triggering event occurred.
 	 * @param message
-	 *            A message with details about the triggering event.
+	 *            A human-readable description of the triggering event.
+	 * @param details
+	 *            Optional human-readable message carrying additional details
+	 *            about the alert. May be <code>null</code>.
 	 */
 	public Alert(String topic, AlertSeverity severity, DateTime timestamp,
-			String message) {
-		this(topic, severity, timestamp, message,
+			String message, String details) {
+		this(topic, severity, timestamp, message, details,
 				new HashMap<String, JsonElement>(0));
 	}
 
@@ -67,13 +75,16 @@ public class Alert {
 	 * @param timestamp
 	 *            The time at which the triggering event occurred.
 	 * @param message
-	 *            A message with details about the triggering event.
+	 *            A human-readable description of the triggering event.
+	 * @param details
+	 *            Optional human-readable message carrying additional details
+	 *            about the alert event. May be <code>null</code>.
 	 * @param metadata
 	 *            Additional JSON meta data about the {@link Alert} as a
 	 *            {@link Map} of meta data keys mapped to {@link JsonObject}s.
 	 */
 	public Alert(String topic, AlertSeverity severity, DateTime timestamp,
-			String message, Map<String, JsonElement> metadata) {
+			String message, String details, Map<String, JsonElement> metadata) {
 		checkNotNull(topic, "topic cannot be null");
 		checkNotNull(severity, "severity cannot be null");
 		checkNotNull(timestamp, "timestamp cannot be null");
@@ -84,6 +95,7 @@ public class Alert {
 		this.severity = severity;
 		this.timestamp = timestamp;
 		this.message = message;
+		this.details = details;
 		this.metadata = Maps.newTreeMap();
 		this.metadata.putAll(metadata);
 	}
@@ -117,13 +129,23 @@ public class Alert {
 	}
 
 	/**
-	 * Returns a message with details about the triggering event of this
-	 * {@link Alert}.
+	 * Returns a human-readable description of the triggering event.
 	 *
 	 * @return
 	 */
 	public String getMessage() {
 		return this.message;
+	}
+
+	/**
+	 * Returns a human-readable message carrying additional details about the
+	 * alert. May be <code>null</code>, if no details were supplied at creation
+	 * time.
+	 *
+	 * @return
+	 */
+	public String getDetails() {
+		return this.details;
 	}
 
 	/**
@@ -163,21 +185,21 @@ public class Alert {
 		extendedTags.putAll(additionalTags);
 
 		return new Alert(this.topic, this.severity, this.timestamp,
-				this.message, extendedTags);
+				this.message, this.details, extendedTags);
 	}
 
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("topic", this.topic)
 				.add("severity", this.severity).add("timestamp", this.timestamp)
-				.add("message", this.message).add("metadata", this.metadata)
-				.toString();
+				.add("message", this.message).add("details", this.details)
+				.add("metadata", this.metadata).toString();
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.topic, this.severity, this.timestamp,
-				this.message, this.metadata);
+				this.message, this.details, this.metadata);
 	}
 
 	@Override
@@ -188,6 +210,7 @@ public class Alert {
 					&& Objects.equal(this.severity, that.severity)
 					&& Objects.equal(this.timestamp, that.timestamp)
 					&& Objects.equal(this.message, that.message)
+					&& Objects.equal(this.details, that.details)
 					&& Objects.equal(this.metadata, that.metadata);
 		} else {
 			return false;

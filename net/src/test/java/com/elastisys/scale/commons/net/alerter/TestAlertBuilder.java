@@ -49,6 +49,7 @@ public class TestAlertBuilder {
 				.addMetadata("host", "my.host")
 				.addMetadata("list", Arrays.asList(true, false, true))
 				.addMetadata("map", ImmutableMap.of("k1", "v1", "k2", "v2"))
+				.addMetadata(ImmutableMap.of("extra", JsonUtils.toJson("v3")))
 				.build();
 
 		assertThat(alert.getTopic(), is("/topic"));
@@ -59,10 +60,11 @@ public class TestAlertBuilder {
 				"host", JsonUtils.toJson("my.host"), //
 				"list", JsonUtils.toJson(Arrays.asList(true, false, true)), //
 				"map",
-				JsonUtils.toJson(ImmutableMap.of("k1", "v1", "k2", "v2")));
+				JsonUtils.toJson(ImmutableMap.of("k1", "v1", "k2", "v2")), //
+				"extra", JsonUtils.toJson("v3"));
 		assertThat(alert.getMetadata(), is(expectedMetadata));
 		assertThat(JsonUtils.toString(JsonUtils.toJson(expectedMetadata)), is(
-				"{\"host\":\"my.host\",\"list\":[true,false,true],\"map\":{\"k1\":\"v1\",\"k2\":\"v2\"}}"));
+				"{\"host\":\"my.host\",\"list\":[true,false,true],\"map\":{\"k1\":\"v1\",\"k2\":\"v2\"},\"extra\":\"v3\"}"));
 	}
 
 	/**

@@ -26,8 +26,14 @@ public class AlertBuilder {
 	private AlertSeverity severity;
 	/** The time at which the triggering event occurred. */
 	private DateTime timestamp;
-	/** A message with details about the triggering event. */
+	/** A human-readable description of the triggering event. */
 	private String message;
+	/**
+	 * Optional human-readable message carrying additional details about the
+	 * alert.
+	 */
+	private String details;
+
 	/**
 	 * Additional JSON meta data about the {@link Alert} as a {@link Map} of
 	 * meta data keys mapped to a {@link JsonObject}s.
@@ -51,7 +57,7 @@ public class AlertBuilder {
 				.or(UtcTime.now());
 
 		return new Alert(this.topic, this.severity, this.timestamp,
-				this.message, this.metadata);
+				this.message, this.details, this.metadata);
 	}
 
 	/**
@@ -79,13 +85,25 @@ public class AlertBuilder {
 	}
 
 	/**
-	 * Sets the {@link Alert} message. A human-readable string.
+	 * Sets a human-readable description of the alert.
 	 *
 	 * @param message
 	 * @return
 	 */
 	public AlertBuilder message(String message) {
 		this.message = message;
+		return this;
+	}
+
+	/**
+	 * Sets a human-readable message carrying additional details about the
+	 * alert.
+	 *
+	 * @param details
+	 * @return
+	 */
+	public AlertBuilder details(String details) {
+		this.details = details;
 		return this;
 	}
 
@@ -110,6 +128,17 @@ public class AlertBuilder {
 	 */
 	public AlertBuilder addMetadata(String key, Object value) {
 		this.metadata.put(key, JsonUtils.toJson(value));
+		return this;
+	}
+
+	/**
+	 * Adds a collection of metadata tags to the {@link Alert}.
+	 *
+	 * @param metadata
+	 * @return
+	 */
+	public AlertBuilder addMetadata(Map<String, JsonElement> metadata) {
+		this.metadata.putAll(metadata);
 		return this;
 	}
 }

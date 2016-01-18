@@ -76,26 +76,27 @@ public class TestHttpAlerterWithBasicAuth {
 	public void deliverAlert() {
 
 		Alert alert = new Alert("topic1", AlertSeverity.DEBUG, UtcTime.now(),
-				"debug message");
+				"debug message", null);
 
 		// first make sure that we cannot deliver unauthenticated
 		HttpAuthConfig noAuth = new HttpAuthConfig(null, null);
-		HttpAlerter noAuthAlerter = new HttpAlerter(new HttpAlerterConfig(
-				asList(webhookUrl()), ".*", noAuth), null);
+		HttpAlerter noAuthAlerter = new HttpAlerter(
+				new HttpAlerterConfig(asList(webhookUrl()), ".*", noAuth),
+				null);
 		noAuthAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... also verify that we cannot deliver with wrong credentials
-		HttpAuthConfig wrongCredsAuth = new HttpAuthConfig(new BasicCredentials(
-				"baduser", "badpass"), null);
+		HttpAuthConfig wrongCredsAuth = new HttpAuthConfig(
+				new BasicCredentials("baduser", "badpass"), null);
 		HttpAlerter wrongCredsAlerter = new HttpAlerter(new HttpAlerterConfig(
 				asList(webhookUrl()), ".*", wrongCredsAuth), null);
 		wrongCredsAlerter.handleAlert(alert);
 		assertThat(webhook.getReceivedMessages().isEmpty(), is(true));
 
 		// ... then verify that we can deliver with proper credentials
-		HttpAuthConfig rightCredsAuth = new HttpAuthConfig(new BasicCredentials("user",
-				"secret"), null);
+		HttpAuthConfig rightCredsAuth = new HttpAuthConfig(
+				new BasicCredentials("user", "secret"), null);
 		HttpAlerter rightCredsAlerter = new HttpAlerter(new HttpAlerterConfig(
 				asList(webhookUrl()), ".*", rightCredsAuth), null);
 		rightCredsAlerter.handleAlert(alert);

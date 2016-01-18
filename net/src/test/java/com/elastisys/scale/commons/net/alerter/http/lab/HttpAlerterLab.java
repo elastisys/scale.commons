@@ -37,10 +37,10 @@ public class HttpAlerterLab {
 		eventBus.register(alerter);
 		// should NOT be sent (doesn't match severity filter)
 		eventBus.post(new Alert("/topic", AlertSeverity.INFO, UtcTime.now(),
-				"hello info"));
+				"hello info", null));
 		// should be sent (matches severity filter)
 		eventBus.post(new Alert("/topic", AlertSeverity.WARN, UtcTime.now(),
-				"hello warning"));
+				"hello warning", null));
 		eventBus.unregister(alerter);
 
 		executor.shutdownNow();
