@@ -59,8 +59,8 @@ public class JaxRsApplication extends Application {
 	}
 
 	/**
-	 * Registers the all response handler web resources as singleton root
-	 * resources.
+	 * Takes care of registering required resource (including our response
+	 * handler web resources), provider and feature instances.
 	 *
 	 * @see javax.ws.rs.core.Application#getSingletons()
 	 */
@@ -72,11 +72,16 @@ public class JaxRsApplication extends Application {
 		for (Object handler : this.responseHandlers) {
 			singletons.add(handler);
 		}
+
+		// can add additional resources, providers and features here as well
+		// singletons.add(new RequestLogFilter());
+
 		return singletons;
 	}
 
 	/**
-	 * Takes care of registering required provider classes and features.
+	 * Takes care of registering required resource, provider and feature
+	 * classes.
 	 *
 	 * @see javax.ws.rs.core.Application#getClasses()
 	 */
