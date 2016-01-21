@@ -115,11 +115,11 @@ public class Docker {
 			String output = (reader != null) ? reader.getOutput()
 					: "no output was captured";
 			throw new DockerException(String.format(
-					"failed on docker run: captured output:\n{}", output), e);
+					"failed on docker run: captured output:\n%s", output), e);
 		}
 		if (exitStatus != 0) {
 			throw new DockerException(String.format(
-					"failed on docker run: {}\ncaptured output:\n{}",
+					"failed on docker run: %d\ncaptured output:\n%s",
 					exitStatus, reader.getOutput()));
 		}
 		return reader.getOutput().trim();
