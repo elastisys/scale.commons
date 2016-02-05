@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import com.elastisys.scale.commons.util.time.UtcTime;
 import com.google.common.reflect.TypeToken;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -203,6 +204,22 @@ public class TestJsonUtils {
 				"  \"b\": 1" + "\n" + //
 				"}";
 		assertThat(JsonUtils.toPrettyString(jsonObject), is(prettyJsonString));
+	}
+
+	/**
+	 * Make sure base64-encoded JSON content gets properly represented when
+	 * converted to strings. In particular, verify that equals sign {@code =}
+	 * doesn't get converted to {@code \u003d}, which happens without
+	 * {@link GsonBuilder#disableHtmlEscaping()}.
+	 */
+	@Test
+	public void toStringWithBase64EncodedDataContainingEqualsSign() {
+		// base 64 encoded form of 'hello you'
+		JsonObject json = JsonUtils
+				.parseJsonString("{\"base64\": \"aGVsbG8geW91IQ==\"}")
+				.getAsJsonObject();
+		assertThat(JsonUtils.toString(json),
+				is("{\"base64\":\"aGVsbG8geW91IQ==\"}"));
 	}
 
 	@Test

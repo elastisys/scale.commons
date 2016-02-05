@@ -155,8 +155,7 @@ public class JsonUtils {
 	public static String toPrettyString(JsonElement jsonElement) {
 		Preconditions.checkArgument(jsonElement != null,
 				"null jsonElement not allowed");
-		Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting()
-				.create();
+		Gson gson = toStringGsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(jsonElement);
 	}
 
@@ -170,8 +169,20 @@ public class JsonUtils {
 	public static String toString(JsonElement jsonElement) {
 		Preconditions.checkArgument(jsonElement != null,
 				"null jsonElement not allowed");
-		Gson gson = new GsonBuilder().serializeNulls().create();
+		Gson gson = toStringGsonBuilder().create();
 		return gson.toJson(jsonElement);
+	}
+
+	/**
+	 * Creates a {@link Gson} instance for use when doing JSON to string
+	 * conversions.
+	 *
+	 * @return
+	 */
+	private static GsonBuilder toStringGsonBuilder() {
+		// disableHtmlEscaping: prevent '=' (like in base64 encoded stuff) to be
+		// escaped in the output as '\u003d'.
+		return prepareGsonBuilder().disableHtmlEscaping().serializeNulls();
 	}
 
 	/**
