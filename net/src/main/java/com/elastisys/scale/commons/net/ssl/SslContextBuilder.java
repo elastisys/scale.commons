@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.net.ssl;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -133,6 +135,11 @@ public class SslContextBuilder {
 	public SslContextBuilder clientAuthentication(KeyStore keyStore,
 			String keyPassword) throws NoSuchAlgorithmException,
 					UnrecoverableKeyException, KeyStoreException {
+		checkArgument(keyStore != null, "null keystore given");
+		checkArgument(keyPassword != null,
+				"null keyPassword given (keystore keys cannot "
+						+ "be recovered without a password)");
+
 		KeyManagerFactory keyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		keyManagerFactory.init(keyStore, keyPassword.toCharArray());

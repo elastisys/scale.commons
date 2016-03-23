@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.net.http;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -251,12 +253,47 @@ public class HttpBuilder {
 		String keystorePath = clientCertCredentials.getKeystorePath();
 		String keystorePassword = clientCertCredentials.getKeystorePassword();
 		String keyPassword = clientCertCredentials.getKeyPassword();
+		KeyStore keyStore = null;
 		try {
-
-			KeyStore keyStore = SslUtils.loadKeyStore(
+			keyStore = SslUtils.loadKeyStore(
 					clientCertCredentials.getKeystoreType(), keystorePath,
 					keystorePassword);
-			this.sslContextBuilder.clientAuthentication(keyStore, keyPassword);
+		} catch (Exception e) {
+			throw new HttpBuilderException(
+					"failed to set client certificate credentials: "
+							+ e.getMessage(),
+					e);
+		}
+		return clientCertAuth(keyStore, keyPassword);
+	}
+
+	/**
+	 * Set to enable client certificate authentication for SSL connections. If
+	 * set, a client certificate from the supplied {@link KeyStore} will be
+	 * included in SSL connections, and the server may choose to authenticate
+	 * the client via the provided certificate. Client certificate
+	 * authentication is further described
+	 * <a href="http://docs.oracle.com/javaee/6/tutorial/doc/glien.html">here
+	 * </a>.
+	 *
+	 * @param clientCertKeystore
+	 *            The {@link KeyStore} containing the client certificate and
+	 *            private key to be used for authenticating the client.
+	 * @param keyPassword
+	 *            The password used to recover the client key from the key
+	 *            store.
+	 * @return
+	 */
+	public HttpBuilder clientCertAuth(KeyStore clientCertKeystore,
+			String keyPassword) {
+		checkArgument(clientCertKeystore != null, "null keystore given");
+		checkArgument(keyPassword != null,
+				"null keyPassword given (keystore keys cannot "
+						+ "be recovered without a password)");
+
+		try {
+			this.sslContextBuilder.clientAuthentication(clientCertKeystore,
+					keyPassword);
 		} catch (Exception e) {
 			throw new HttpBuilderException(
 					"failed to set client certificate credentials: "

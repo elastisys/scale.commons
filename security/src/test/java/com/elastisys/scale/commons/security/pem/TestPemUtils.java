@@ -6,9 +6,17 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -31,6 +39,11 @@ public class TestPemUtils {
 	/** Public RSA key generated with openssl. */
 	private static final File opensslPublic = new File(KEY_DIR,
 			"openssl_public.pem");
+
+	/** */
+	private static final File x509Cert = new File(KEY_DIR, "x509cert.pem");
+	private static final File x509CertKey = new File(KEY_DIR,
+			"x509cert-key.pem");
 
 	/**
 	 * Make sure that key pairs generated using {@code openssl} (as described in
@@ -74,6 +87,55 @@ public class TestPemUtils {
 				verifySignature(message, signatureBytes, rsaPublicKey));
 	}
 
+	/**
+	 * Make sure that X.509 cert and key (created as described in
+	 * {@link PemUtils}) are properly parsed.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void parseX509CertAndKey() throws Exception {
+		X509Certificate cert = PemUtils.parseX509Cert(x509Cert);
+		RSAPrivateKey certKey = PemUtils.parseRsaPrivateKey(x509CertKey);
+		assertNotNull(cert);
+		assertNotNull(certKey);
+		assertThat(cert.getSubjectDN().getName(),
+				is("CN=Client, O=Elastisys, C=SE"));
+
+		// make sure that the public key can be used to create a signature that
+		// can be validated by the private key
+		String message = "hello world";
+		byte[] signatureBytes = sign(message, certKey);
+		assertTrue(
+				"failed to validate signature by public key with private key",
+				verifySignature(message, signatureBytes, cert.getPublicKey()));
+	}
+
+	/**
+	 * Test producing in-memory {@link KeyStore} from X.509 cert and RSA key.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testKeyStoreFromCertAndKey() throws Exception {
+		X509Certificate cert = PemUtils.parseX509Cert(x509Cert);
+		RSAPrivateKey certKey = PemUtils.parseRsaPrivateKey(x509CertKey);
+		String keyPassword = "mysecret";
+
+		// produce in-mem keystore
+		KeyStore keyStore = PemUtils.keyStoreFromCertAndKey(cert, certKey,
+				keyPassword);
+
+		// make sure that it indeed contains the right cert and key
+		List<String> entries = Collections.list(keyStore.aliases());
+		assertThat(entries.size(), is(1));
+		Certificate loadedCert = keyStore.getCertificate(entries.get(0));
+		assertThat(loadedCert, is(cert));
+		Key loadedKey = keyStore.getKey(entries.get(0),
+				keyPassword.toCharArray());
+		assertThat(loadedKey, is(certKey));
+	}
+
 	@Test
 	public void testToPem() throws Exception {
 		// parse keys from file
@@ -104,7 +166,7 @@ public class TestPemUtils {
 	 * @return The signature in bytes.
 	 * @throws Exception
 	 */
-	private static byte[] sign(String message, RSAPrivateKey rsaPrivateKey)
+	private static byte[] sign(String message, PrivateKey rsaPrivateKey)
 			throws Exception {
 		Signature signature = Signature.getInstance("SHA1withRSA");
 		signature.initSign(rsaPrivateKey);
@@ -128,7 +190,7 @@ public class TestPemUtils {
 	 * @throws Exception
 	 */
 	private boolean verifySignature(String signedMessage, byte[] signatureBytes,
-			RSAPublicKey rsaPublicKey) throws Exception {
+			PublicKey rsaPublicKey) throws Exception {
 		Signature signature = Signature.getInstance("SHA1withRSA");
 		signature.initVerify(rsaPublicKey);
 		signature.update(signedMessage.getBytes());

@@ -10,3 +10,8 @@ The pair generated with openssl:
     openssl genrsa -out openssl_private.pem 4096
     openssl rsa -in openssl_private.pem -pubout > openssl_public.pem
 
+The x.509 certificate and key:
+
+    openssl genrsa -out x509cert-key.pem 2048
+	openssl req -new -x509 -key x509cert-key.pem -out x509cert.pem -days 365 -subj '/C=SE/O=Elastisys/CN=Client'
+
