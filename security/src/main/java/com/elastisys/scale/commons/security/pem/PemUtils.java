@@ -250,7 +250,7 @@ public class PemUtils {
 	 * @throws CertificateException
 	 * @throws NoSuchAlgorithmException
 	 */
-	public static KeyStore keyStoreFromCertAndKey(X509Certificate cert,
+	public static KeyStore keyStoreFromCertAndKey(Certificate cert,
 			PrivateKey key, String keyPassword)
 					throws KeyStoreException, NoSuchAlgorithmException,
 					CertificateException, IOException {
@@ -259,6 +259,32 @@ public class PemUtils {
 		keyStore.load(null, null);
 		keyStore.setKeyEntry("client", key, keyPassword.toCharArray(),
 				new Certificate[] { cert });
+		return keyStore;
+	}
+
+	/**
+	 * Produces an in-memory {@link KeyStore} from a given certificate. A new
+	 * {@link KeyStore} is created and populated with the given certificate and
+	 * password.
+	 * <p/>
+	 * This method is, for instance, useful for clients that need a trust store
+	 * in order to authenticate with a given PEM-encoded CA/server certificate.
+	 *
+	 * @param cert
+	 *            An X.509 CA/server certificate to include in the trust store.
+	 * @return The trust store in the form of a {@link KeyStore}.
+	 * @throws KeyStoreException
+	 * @throws IOException
+	 * @throws CertificateException
+	 * @throws NoSuchAlgorithmException
+	 */
+	public static KeyStore keyStoreFromCert(Certificate cert)
+			throws KeyStoreException, NoSuchAlgorithmException,
+			CertificateException, IOException {
+		KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+		// creates an empty keystore
+		keyStore.load(null, null);
+		keyStore.setCertificateEntry("client", cert);
 		return keyStore;
 	}
 }

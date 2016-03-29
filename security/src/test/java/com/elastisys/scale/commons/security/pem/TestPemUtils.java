@@ -137,6 +137,20 @@ public class TestPemUtils {
 	}
 
 	@Test
+	public void testKeyStoreFromCert() throws Exception {
+		X509Certificate cert = PemUtils.parseX509Cert(x509Cert);
+
+		// produce in-mem keystore
+		KeyStore keyStore = PemUtils.keyStoreFromCert(cert);
+
+		// make sure that it indeed contains the right cert
+		List<String> entries = Collections.list(keyStore.aliases());
+		assertThat(entries.size(), is(1));
+		Certificate loadedCert = keyStore.getCertificate(entries.get(0));
+		assertThat(loadedCert, is(cert));
+	}
+
+	@Test
 	public void testToPem() throws Exception {
 		// parse keys from file
 		RSAPublicKey rsaPublicKey = PemUtils.parseRsaPublicKey(sshkeygenPublic);

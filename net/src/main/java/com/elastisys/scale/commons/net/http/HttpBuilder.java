@@ -364,9 +364,11 @@ public class HttpBuilder {
 	 * @param type
 	 *            The type of the trust store.
 	 * @param trustStorePath
-	 *            The file system path to the trust store.
+	 *            The file system path to a trust store that contains trusted
+	 *            CA/server certificates.
 	 * @param storePassword
 	 *            The password used to protect the integrity of the trust store.
+	 *            Can be <code>null</code>.
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyStoreException
@@ -374,9 +376,37 @@ public class HttpBuilder {
 	public HttpBuilder serverAuthTrustStore(KeyStoreType type,
 			String trustStorePath, String storePassword)
 					throws HttpBuilderException {
+		KeyStore trustStore = null;
 		try {
-			KeyStore trustStore = SslUtils.loadKeyStore(type, trustStorePath,
+			trustStore = SslUtils.loadKeyStore(type, trustStorePath,
 					storePassword);
+		} catch (Exception e) {
+			throw new HttpBuilderException(
+					"failed to set server auth trust store: " + e.getMessage(),
+					e);
+		}
+		return serverAuthTrustStore(trustStore);
+	}
+
+	/**
+	 * Sets a custom trust store to use when server authentication is requested
+	 * (via {@link #verifyHostCert}). If no custom trust store has been
+	 * specified and server authentication is requested via
+	 * {@link #verifyHostCert(boolean)}, the server certificate according to the
+	 * default trust store configured with the JVM (see the guide on <a href=
+	 * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
+	 * JSSE</a>).
+	 *
+	 * @param trustStore
+	 *            The {@link KeyStore} that contains trusted CA/server
+	 *            certificates.
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws KeyStoreException
+	 */
+	public HttpBuilder serverAuthTrustStore(KeyStore trustStore)
+			throws HttpBuilderException {
+		try {
 			this.sslContextBuilder.serverAuthTrustStore(trustStore);
 		} catch (Exception e) {
 			throw new HttpBuilderException(
