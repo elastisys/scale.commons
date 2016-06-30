@@ -2,12 +2,15 @@ package com.elastisys.scale.commons.util.base64;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.BaseEncoding;
+import com.google.common.io.Files;
 
 /**
  * Utility class for encoding/decoding
@@ -72,4 +75,11 @@ public class Base64Utils {
 		return BaseEncoding.base64().encode(text.getBytes());
 	}
 
+	/**
+	 * Encodes a file to base64.
+	 * @throws IOException
+	 */
+	public static String toBase64(File file) throws IOException {
+        return BaseEncoding.base64().encode(Files.toByteArray(file));
+	}
 }
