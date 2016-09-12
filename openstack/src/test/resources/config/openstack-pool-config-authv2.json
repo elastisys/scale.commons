@@ -1,0 +1,11 @@
+{
+    "auth": {  
+        "keystoneUrl": "http://nova.host.com:5000/v2.0",  
+        "v2Credentials": {
+            "tenantName": "tenant",
+            "userName": "clouduser",
+            "password": "cloudpass"
+        }
+    },    
+    "region": "RegionTwo"
+}

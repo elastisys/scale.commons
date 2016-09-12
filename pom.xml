@@ -37,6 +37,7 @@
     <module>util</module>
     <module>logreplayer</module>
     <module>security</module>
+    <module>openstack</module>
   </modules>
 
   <!-- Location of Git repository. Used to tag releases. -->
@@ -72,6 +73,7 @@
     <args4j.version>2.32</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
     <bouncycastle.version>1.53</bouncycastle.version>
+    <openstack4j.version>3.0.2</openstack4j.version>
 
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
@@ -232,6 +234,19 @@
         <version>${bouncycastle.version}</version>
       </dependency>
 
+      <!-- OpenStack API access -->
+      <dependency>
+        <groupId>org.pacesys</groupId>
+        <artifactId>openstack4j-core</artifactId>
+        <version>${openstack4j.version}</version>
+      </dependency>
+      <!-- openstack4j connector -->
+      <dependency>
+        <groupId>org.pacesys.openstack4j.connectors</groupId>
+        <artifactId>openstack4j-jersey2</artifactId>
+        <version>${openstack4j.version}</version>
+      </dependency>
+      
       <!-- Test dependencies -->
       <dependency>
         <groupId>junit</groupId>
