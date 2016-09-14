@@ -43,41 +43,31 @@ import com.google.gson.JsonParseException;
 @Consumes(MediaType.APPLICATION_JSON)
 @Singleton
 public class GsonMessageBodyReader<T> implements MessageBodyReader<T> {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(GsonMessageBodyReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GsonMessageBodyReader.class);
 
-	@Override
-	public boolean isReadable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		// assume we can deserialize instances for any class
-		return true;
-	}
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        // assume we can deserialize instances for any class
+        return true;
+    }
 
-	@Override
-	public T readFrom(Class<T> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-			throws IOException, WebApplicationException {
-		try (Reader entityReader = new InputStreamReader(entityStream,
-				Charsets.UTF_8)) {
-			String entity = CharStreams.toString(entityReader);
-			if (entity == null || entity.isEmpty()) {
-				throw new NoContentException(
-						"failed to deserialize JSON entity: "
-								+ "empty/null entity stream");
-			}
-			return JsonUtils.toObject(JsonUtils.parseJsonString(entity), type);
-		} catch (IllegalArgumentException e) {
-			// produce a 400 http response
-			throw new WebApplicationException(e, Response
-					.status(Status.BAD_REQUEST).entity(new ErrorType(e))
-					.build());
-		} catch (JsonParseException e) {
-			// produce a 400 http response
-			throw new WebApplicationException(e, Response
-					.status(Status.BAD_REQUEST).entity(new ErrorType(e))
-					.build());
-		}
-	}
+    @Override
+    public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException {
+        try (Reader entityReader = new InputStreamReader(entityStream, Charsets.UTF_8)) {
+            String entity = CharStreams.toString(entityReader);
+            if (entity == null || entity.isEmpty()) {
+                throw new NoContentException("failed to deserialize JSON entity: " + "empty/null entity stream");
+            }
+            return JsonUtils.toObject(JsonUtils.parseJsonString(entity), type);
+        } catch (IllegalArgumentException e) {
+            // produce a 400 http response
+            throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(new ErrorType(e)).build());
+        } catch (JsonParseException e) {
+            // produce a 400 http response
+            throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(new ErrorType(e)).build());
+        }
+    }
 
 }

@@ -18,31 +18,26 @@ import com.google.common.base.Charsets;
  * {@code 204 (No Content)} response without any message body in the response.
  */
 public class SilentServlet extends HttpServlet {
-	static final Logger logger = LoggerFactory
-			.getLogger(HelloWorldServlet.class);
+    static final Logger logger = LoggerFactory.getLogger(HelloWorldServlet.class);
 
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String body = IO.toString(request.getInputStream(),
-				Charsets.UTF_8.displayName());
-		logger.debug("received {} request: {}\n  Body: '{}'",
-				request.getMethod(), request.getRequestURI(), body);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
-		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-		return;
-	}
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        return;
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String body = IO.toString(request.getInputStream(),
-				Charsets.UTF_8.displayName());
-		logger.debug("received {} request: {}\n  Body: '{}'",
-				request.getMethod(), request.getRequestURI(), body);
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
-		response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-		return;
-	}
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        return;
+    }
 
 }

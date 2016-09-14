@@ -22,129 +22,119 @@ import org.glassfish.jersey.filter.LoggingFilter;
  */
 public class RestClientUtils {
 
-	/**
-	 * Produces a HTTP client with BASIC client authentication.
-	 *
-	 * @param userName
-	 * @param password
-	 * @return
-	 */
-	public static Client httpBasicAuth(String userName, String password) {
-		Client client = ClientBuilder.newBuilder().build();
-		client.register(HttpAuthenticationFeature.basic(userName, password));
-		client.register(new LoggingFilter());
-		return client;
-	}
+    /**
+     * Produces a HTTP client with BASIC client authentication.
+     *
+     * @param userName
+     * @param password
+     * @return
+     */
+    public static Client httpBasicAuth(String userName, String password) {
+        Client client = ClientBuilder.newBuilder().build();
+        client.register(HttpAuthenticationFeature.basic(userName, password));
+        client.register(new LoggingFilter());
+        return client;
+    }
 
-	/**
-	 * Produces a HTTP client with no client authentication.
-	 *
-	 * @return
-	 */
-	public static Client httpNoAuth() {
-		Client client = ClientBuilder.newBuilder().build();
-		client.register(new LoggingFilter());
-		return client;
-	}
+    /**
+     * Produces a HTTP client with no client authentication.
+     *
+     * @return
+     */
+    public static Client httpNoAuth() {
+        Client client = ClientBuilder.newBuilder().build();
+        client.register(new LoggingFilter());
+        return client;
+    }
 
-	/**
-	 * Produces a HTTPS client with BASIC client authentication.
-	 *
-	 * @param userName
-	 * @param password
-	 * @return
-	 */
-	public static Client httpsBasicAuth(String userName, String password) {
-		SSLContext sslContext = insecureSslContext();
-		Client client = ClientBuilder.newBuilder().sslContext(sslContext)
-				.hostnameVerifier(allowAnyVerifier()).build();
-		client.register(HttpAuthenticationFeature.basic(userName, password));
-		client.register(new LoggingFilter());
-		return client;
-	}
+    /**
+     * Produces a HTTPS client with BASIC client authentication.
+     *
+     * @param userName
+     * @param password
+     * @return
+     */
+    public static Client httpsBasicAuth(String userName, String password) {
+        SSLContext sslContext = insecureSslContext();
+        Client client = ClientBuilder.newBuilder().sslContext(sslContext).hostnameVerifier(allowAnyVerifier()).build();
+        client.register(HttpAuthenticationFeature.basic(userName, password));
+        client.register(new LoggingFilter());
+        return client;
+    }
 
-	/**
-	 * Produces a HTTPS client with no client authentication.
-	 *
-	 * @return
-	 */
-	public static Client httpsNoAuth() {
-		SSLContext sslContext = insecureSslContext();
-		Client client = ClientBuilder.newBuilder().sslContext(sslContext)
-				.hostnameVerifier(allowAnyVerifier()).build();
-		client.register(new LoggingFilter());
-		return client;
-	}
+    /**
+     * Produces a HTTPS client with no client authentication.
+     *
+     * @return
+     */
+    public static Client httpsNoAuth() {
+        SSLContext sslContext = insecureSslContext();
+        Client client = ClientBuilder.newBuilder().sslContext(sslContext).hostnameVerifier(allowAnyVerifier()).build();
+        client.register(new LoggingFilter());
+        return client;
+    }
 
-	/**
-	 * Produces a HTTPS client with client certificate-based authentication.
-	 *
-	 * @param keyStorePath
-	 *            Key store where client certificate is stored.
-	 * @param keyStorePassword
-	 *            Key store password.
-	 * @param keystoreType
-	 *            The type of key store.
-	 * @return
-	 * @throws RuntimeException
-	 */
-	public static Client httpsCertAuth(String keyStorePath,
-			String keyStorePassword, SslKeyStoreType keystoreType)
-			throws RuntimeException {
+    /**
+     * Produces a HTTPS client with client certificate-based authentication.
+     *
+     * @param keyStorePath
+     *            Key store where client certificate is stored.
+     * @param keyStorePassword
+     *            Key store password.
+     * @param keystoreType
+     *            The type of key store.
+     * @return
+     * @throws RuntimeException
+     */
+    public static Client httpsCertAuth(String keyStorePath, String keyStorePassword, SslKeyStoreType keystoreType)
+            throws RuntimeException {
 
-		SSLContext sslContext;
-		try (InputStream keystoreFile = new FileInputStream(keyStorePath)) {
-			KeyStore keystore = KeyStore.getInstance(keystoreType.name());
-			keystore.load(keystoreFile, keyStorePassword.toCharArray());
-			sslContext = new SSLContextBuilder()
-					.loadTrustMaterial(null, new TrustSelfSignedStrategy())
-					.loadKeyMaterial(keystore, keyStorePassword.toCharArray())
-					.build();
-		} catch (Exception e) {
-			throw new RuntimeException("failed to set up an SSL context: "
-					+ e.getMessage(), e);
-		}
+        SSLContext sslContext;
+        try (InputStream keystoreFile = new FileInputStream(keyStorePath)) {
+            KeyStore keystore = KeyStore.getInstance(keystoreType.name());
+            keystore.load(keystoreFile, keyStorePassword.toCharArray());
+            sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                    .loadKeyMaterial(keystore, keyStorePassword.toCharArray()).build();
+        } catch (Exception e) {
+            throw new RuntimeException("failed to set up an SSL context: " + e.getMessage(), e);
+        }
 
-		Client client = ClientBuilder.newBuilder().sslContext(sslContext)
-				.hostnameVerifier(allowAnyVerifier()).build();
+        Client client = ClientBuilder.newBuilder().sslContext(sslContext).hostnameVerifier(allowAnyVerifier()).build();
 
-		client.register(new LoggingFilter());
-		return client;
-	}
+        client.register(new LoggingFilter());
+        return client;
+    }
 
-	/**
-	 * Creates a {@link SSLContext} that trusts all server certificates it is
-	 * presented with. That is, all certificate chain/host identity checks are
-	 * disabled.
-	 * <p/>
-	 * This is similar to using the <code>--insecure</code> flag in
-	 * <code>curl</code>.
-	 *
-	 * @return
-	 */
-	private static SSLContext insecureSslContext() {
-		try {
-			return new SSLContextBuilder().loadTrustMaterial(null,
-					new TrustSelfSignedStrategy()).build();
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"failed to set up an insecure SSL context: "
-							+ e.getMessage(), e);
-		}
-	}
+    /**
+     * Creates a {@link SSLContext} that trusts all server certificates it is
+     * presented with. That is, all certificate chain/host identity checks are
+     * disabled.
+     * <p/>
+     * This is similar to using the <code>--insecure</code> flag in
+     * <code>curl</code>.
+     *
+     * @return
+     */
+    private static SSLContext insecureSslContext() {
+        try {
+            return new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();
+        } catch (Exception e) {
+            throw new RuntimeException("failed to set up an insecure SSL context: " + e.getMessage(), e);
+        }
+    }
 
-	/**
-	 * Returns a {@link HostnameVerifier} that, during SSL handshakes, considers
-	 * all host names valid.
-	 *
-	 * @return
-	 */
-	private static HostnameVerifier allowAnyVerifier() {
-		return new HostnameVerifier() {
-			@Override
-			public boolean verify(String hostname, SSLSession session) {
-				return true;
-			}
-		};
-	}
+    /**
+     * Returns a {@link HostnameVerifier} that, during SSL handshakes, considers
+     * all host names valid.
+     *
+     * @return
+     */
+    private static HostnameVerifier allowAnyVerifier() {
+        return new HostnameVerifier() {
+            @Override
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+    }
 }

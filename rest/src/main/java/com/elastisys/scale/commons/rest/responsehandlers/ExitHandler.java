@@ -29,34 +29,34 @@ import com.google.common.util.concurrent.Uninterruptibles;
  */
 @Path("/exit")
 public class ExitHandler {
-	static Logger log = LoggerFactory.getLogger(ExitHandler.class);
+    static Logger log = LoggerFactory.getLogger(ExitHandler.class);
 
-	public ExitHandler() {
-		log.info(getClass().getSimpleName() + " created");
-	}
+    public ExitHandler() {
+        log.info(getClass().getSimpleName() + " created");
+    }
 
-	/**
-	 * Terminates the REST server process.
-	 * 
-	 * @return A {@code 200} {@link Response}.
-	 */
-	@GET
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response exit() {
-		log.info("GET /exit");
-		try {
-			return Response.ok().build();
-		} finally {
-			// shut down in a separate thread (after some delay) to give server
-			// a chance to respond to client
-			Executors.newSingleThreadExecutor().submit(new Runnable() {
-				@Override
-				public void run() {
-					Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-					System.exit(0);
-				}
-			});
-		}
-	}
+    /**
+     * Terminates the REST server process.
+     * 
+     * @return A {@code 200} {@link Response}.
+     */
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response exit() {
+        log.info("GET /exit");
+        try {
+            return Response.ok().build();
+        } finally {
+            // shut down in a separate thread (after some delay) to give server
+            // a chance to respond to client
+            Executors.newSingleThreadExecutor().submit(new Runnable() {
+                @Override
+                public void run() {
+                    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+                    System.exit(0);
+                }
+            });
+        }
+    }
 }

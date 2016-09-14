@@ -26,94 +26,90 @@ import com.google.common.collect.Lists;
  * Intended for test use as a simple HTTP endpoint.
  */
 public class RequestLoggingHttpServer implements Closeable {
-	static Logger logger = LoggerFactory
-			.getLogger(RequestLoggingHttpServer.class);
+    static Logger logger = LoggerFactory.getLogger(RequestLoggingHttpServer.class);
 
-	/** The embedded HTTP server. */
-	private final Server server;
-	private final int httpPort;
-	/** Keeps track of all POSTed messages to this HTTP server. */
-	private final List<String> postedMessages;
+    /** The embedded HTTP server. */
+    private final Server server;
+    private final int httpPort;
+    /** Keeps track of all POSTed messages to this HTTP server. */
+    private final List<String> postedMessages;
 
-	/**
-	 * Constructs a new {@link RequestLoggingHttpServer}.
-	 *
-	 * @param contextPath
-	 *            the root URI path to associate the context with
-	 * @param port
-	 *            HTTP server listening port
-	 */
-	public RequestLoggingHttpServer(String contextPath, int port) {
-		this.httpPort = port;
-		this.postedMessages = Lists.newLinkedList();
+    /**
+     * Constructs a new {@link RequestLoggingHttpServer}.
+     *
+     * @param contextPath
+     *            the root URI path to associate the context with
+     * @param port
+     *            HTTP server listening port
+     */
+    public RequestLoggingHttpServer(String contextPath, int port) {
+        this.httpPort = port;
+        this.postedMessages = Lists.newLinkedList();
 
-		this.server = new Server(this.httpPort);
-		this.server.setHandler(new LoggingRequestHandler(this.postedMessages));
-	}
+        this.server = new Server(this.httpPort);
+        this.server.setHandler(new LoggingRequestHandler(this.postedMessages));
+    }
 
-	/**
-	 * Starts the HTTP server.
-	 *
-	 * @throws Exception
-	 */
-	public void start() throws Exception {
-		this.server.start();
-		logger.info("Started HTTP server " + this.httpPort);
-	}
+    /**
+     * Starts the HTTP server.
+     *
+     * @throws Exception
+     */
+    public void start() throws Exception {
+        this.server.start();
+        logger.info("Started HTTP server " + this.httpPort);
+    }
 
-	/**
-	 * Stops the HTTP server.
-	 *
-	 * @throws Exception
-	 */
-	public void stop() throws Exception {
-		this.server.stop();
-		this.server.join();
-		logger.info("Stopped HTTP server " + this.httpPort);
-	}
+    /**
+     * Stops the HTTP server.
+     *
+     * @throws Exception
+     */
+    public void stop() throws Exception {
+        this.server.stop();
+        this.server.join();
+        logger.info("Stopped HTTP server " + this.httpPort);
+    }
 
-	@Override
-	public void close() throws IOException {
-		try {
-			this.stop();
-		} catch (Exception e) {
-			throw Throwables.propagate(e);
-		}
-	}
+    @Override
+    public void close() throws IOException {
+        try {
+            this.stop();
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
+    }
 
-	public List<String> getPostedMessages() {
-		return this.postedMessages;
-	}
+    public List<String> getPostedMessages() {
+        return this.postedMessages;
+    }
 
-	public int getHttpPort() {
-		return this.httpPort;
-	}
+    public int getHttpPort() {
+        return this.httpPort;
+    }
 
-	static class LoggingRequestHandler extends AbstractHandler {
-		/** Keeps track of all POSTed messages to this HTTP server. */
-		private final List<String> postedMessages;
+    static class LoggingRequestHandler extends AbstractHandler {
+        /** Keeps track of all POSTed messages to this HTTP server. */
+        private final List<String> postedMessages;
 
-		public LoggingRequestHandler(List<String> postedMessages) {
-			this.postedMessages = postedMessages;
-		}
+        public LoggingRequestHandler(List<String> postedMessages) {
+            this.postedMessages = postedMessages;
+        }
 
-		@Override
-		public void handle(String target, Request baseRequest,
-				HttpServletRequest request, HttpServletResponse response)
-						throws IOException, ServletException {
+        @Override
+        public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+                throws IOException, ServletException {
 
-			String receivedMessage = IO.toString(request.getInputStream(),
-					Charsets.UTF_8.displayName());
-			logger.debug("received {} request: {}\n  Body: '{}'",
-					request.getMethod(), request.getRequestURI(),
-					receivedMessage);
-			this.postedMessages.add(receivedMessage);
+            String receivedMessage = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+            logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(),
+                    receivedMessage);
+            this.postedMessages.add(receivedMessage);
 
-			response.setContentType("text/html;charset=utf-8");
-			response.setStatus(HttpServletResponse.SC_OK);
-			baseRequest.setHandled(true);
-			String responseMessage = "This is the response";
-			response.getWriter().println(responseMessage);
-		}
-	}
+            response.setContentType("text/html;charset=utf-8");
+            response.setStatus(HttpServletResponse.SC_OK);
+            baseRequest.setHandled(true);
+            String responseMessage = "This is the response";
+            response.getWriter().println(responseMessage);
+        }
+    }
 }

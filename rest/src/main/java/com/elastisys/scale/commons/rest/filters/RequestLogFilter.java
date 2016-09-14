@@ -15,19 +15,16 @@ import org.slf4j.LoggerFactory;
  * request. For example, <code>GET /api/resource by 1.2.3.4</code>.
  */
 public class RequestLogFilter implements ContainerRequestFilter {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(RequestLogFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RequestLogFilter.class);
 
-	/** Have request injected by Jersey. */
-	@Context
-	private HttpServletRequest request;
+    /** Have request injected by Jersey. */
+    @Context
+    private HttpServletRequest request;
 
-	@Override
-	public void filter(ContainerRequestContext requestContext)
-			throws IOException {
-		LOG.info("{} {} by {}", this.request.getMethod(),
-				requestContext.getUriInfo().getAbsolutePath(),
-				this.request.getRemoteHost());
-	}
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        LOG.info("{} {} by {}", this.request.getMethod(), requestContext.getUriInfo().getAbsolutePath(),
+                this.request.getRemoteHost());
+    }
 
 }

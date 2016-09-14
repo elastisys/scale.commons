@@ -11,38 +11,35 @@ import org.jose4j.jwt.MalformedClaimException;
  * claims can be retrieved via {@link #getTokenClaims()}.
  */
 public class AuthTokenPrincipal implements Principal {
-	/** The authentication token client claims. */
-	private final JwtClaims tokenClaims;
+    /** The authentication token client claims. */
+    private final JwtClaims tokenClaims;
 
-	/**
-	 * Creates an {@link AuthTokenPrincipal} from a given client auth token.
-	 *
-	 * @param tokenClaims
-	 *            The authentication token client claims.
-	 */
-	public AuthTokenPrincipal(JwtClaims tokenClaims) {
-		this.tokenClaims = tokenClaims;
-	}
+    /**
+     * Creates an {@link AuthTokenPrincipal} from a given client auth token.
+     *
+     * @param tokenClaims
+     *            The authentication token client claims.
+     */
+    public AuthTokenPrincipal(JwtClaims tokenClaims) {
+        this.tokenClaims = tokenClaims;
+    }
 
-	@Override
-	public String getName() {
-		try {
-			return this.tokenClaims.getSubject();
-		} catch (MalformedClaimException e) {
-			throw new RuntimeException(
-					String.format("failed to extract subject from auth token",
-							e.getMessage()),
-					e);
-		}
-	}
+    @Override
+    public String getName() {
+        try {
+            return this.tokenClaims.getSubject();
+        } catch (MalformedClaimException e) {
+            throw new RuntimeException(String.format("failed to extract subject from auth token", e.getMessage()), e);
+        }
+    }
 
-	/**
-	 * Returns all authentication token client claims.
-	 *
-	 * @return
-	 */
-	public JwtClaims getTokenClaims() {
-		return this.tokenClaims;
-	}
+    /**
+     * Returns all authentication token client claims.
+     *
+     * @return
+     */
+    public JwtClaims getTokenClaims() {
+        return this.tokenClaims;
+    }
 
 }

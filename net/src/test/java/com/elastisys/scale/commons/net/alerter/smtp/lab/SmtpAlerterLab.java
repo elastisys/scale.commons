@@ -22,34 +22,29 @@ import com.google.common.eventbus.EventBus;
  * Some parameters need to be set as environment variables.
  */
 public class SmtpAlerterLab {
-	// TODO: make sure ${EMAIL_ADDRESS} is set
-	private static final List<String> RECIPIENTS = Arrays
-			.asList(System.getenv("EMAIL_ADDRESS"));
-	// TODO: make sure ${EMAIL_SERVER} is set
-	private static final String MAIL_SERVER = System.getenv("EMAIL_SERVER");
-	private static final int MAIL_PORT = 25;
-	private static final SmtpClientAuthentication AUTH = null;
-	private static final boolean USE_SSL = false;
+    // TODO: make sure ${EMAIL_ADDRESS} is set
+    private static final List<String> RECIPIENTS = Arrays.asList(System.getenv("EMAIL_ADDRESS"));
+    // TODO: make sure ${EMAIL_SERVER} is set
+    private static final String MAIL_SERVER = System.getenv("EMAIL_SERVER");
+    private static final int MAIL_PORT = 25;
+    private static final SmtpClientAuthentication AUTH = null;
+    private static final boolean USE_SSL = false;
 
-	public static void main(String[] args) {
-		ExecutorService executor = Executors.newFixedThreadPool(5);
-		EventBus eventBus = new AsyncEventBus("alert-bus", executor);
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+        EventBus eventBus = new AsyncEventBus("alert-bus", executor);
 
-		SmtpClientConfig smtpClientconfig = new SmtpClientConfig(MAIL_SERVER,
-				MAIL_PORT, AUTH, USE_SSL);
-		Alerter alerter = new SmtpAlerter(
-				new SmtpAlerterConfig(RECIPIENTS, "noreply@elastisys.com",
-						"alert message", "WARN|ERROR", smtpClientconfig));
+        SmtpClientConfig smtpClientconfig = new SmtpClientConfig(MAIL_SERVER, MAIL_PORT, AUTH, USE_SSL);
+        Alerter alerter = new SmtpAlerter(new SmtpAlerterConfig(RECIPIENTS, "noreply@elastisys.com", "alert message",
+                "WARN|ERROR", smtpClientconfig));
 
-		eventBus.register(alerter);
-		// should NOT be sent (doesn't match severity filter)
-		eventBus.post(new Alert("/topic", AlertSeverity.INFO, UtcTime.now(),
-				"hello info", null));
-		// should be sent (matches severity filter)
-		eventBus.post(new Alert("/topic", AlertSeverity.WARN, UtcTime.now(),
-				"hello warning", null));
-		eventBus.unregister(alerter);
+        eventBus.register(alerter);
+        // should NOT be sent (doesn't match severity filter)
+        eventBus.post(new Alert("/topic", AlertSeverity.INFO, UtcTime.now(), "hello info", null));
+        // should be sent (matches severity filter)
+        eventBus.post(new Alert("/topic", AlertSeverity.WARN, UtcTime.now(), "hello warning", null));
+        eventBus.unregister(alerter);
 
-		executor.shutdownNow();
-	}
+        executor.shutdownNow();
+    }
 }

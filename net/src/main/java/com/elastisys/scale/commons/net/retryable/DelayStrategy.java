@@ -8,13 +8,13 @@ package com.elastisys.scale.commons.net.retryable;
  */
 public interface DelayStrategy {
 
-	/**
-	 * Called to introduce a delay (that is, sleep) after a failed attempt.
-	 *
-	 * @param failedAttempts
-	 *            The number of failed attempts thus far.
-	 * @param elapsedTimeMillis
-	 *            The elapsed time in milliseconds since the first attempt.
-	 */
-	void introduceDelay(int failedAttempts, long elapsedTimeMillis);
+    /**
+     * Called to introduce a delay (that is, sleep) after a failed attempt.
+     *
+     * @param failedAttempts
+     *            The number of failed attempts thus far.
+     * @param elapsedTimeMillis
+     *            The elapsed time in milliseconds since the first attempt.
+     */
+    void introduceDelay(int failedAttempts, long elapsedTimeMillis);
 }

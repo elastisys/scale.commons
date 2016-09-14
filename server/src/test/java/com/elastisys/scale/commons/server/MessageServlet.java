@@ -26,50 +26,48 @@ import com.google.common.base.Charsets;
  *
  */
 public class MessageServlet extends HttpServlet {
-	static final Logger logger = LoggerFactory.getLogger(MessageServlet.class);
+    static final Logger logger = LoggerFactory.getLogger(MessageServlet.class);
 
-	/** Message that the {@link Servlet} responds to all requests with. */
-	private final String message;
+    /** Message that the {@link Servlet} responds to all requests with. */
+    private final String message;
 
-	/** The init-params that this {@link Servlet} was initialized with. */
-	private Map<String, String> initParams = new HashMap<>();
+    /** The init-params that this {@link Servlet} was initialized with. */
+    private Map<String, String> initParams = new HashMap<>();
 
-	/**
-	 * Constructs a new {@link MessageServlet}.
-	 *
-	 * @param message
-	 *            Message that the {@link Servlet} responds to all requests
-	 *            with.
-	 */
-	public MessageServlet(String message) {
-		this.message = message;
-	}
+    /**
+     * Constructs a new {@link MessageServlet}.
+     *
+     * @param message
+     *            Message that the {@link Servlet} responds to all requests
+     *            with.
+     */
+    public MessageServlet(String message) {
+        this.message = message;
+    }
 
-	@Override
-	public void init(ServletConfig config) throws ServletException {
-		super.init(config);
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
 
-		Enumeration<String> paramNames = config.getInitParameterNames();
-		while (paramNames.hasMoreElements()) {
-			String paramName = paramNames.nextElement();
-			this.initParams.put(paramName, config.getInitParameter(paramName));
-		}
-	}
+        Enumeration<String> paramNames = config.getInitParameterNames();
+        while (paramNames.hasMoreElements()) {
+            String paramName = paramNames.nextElement();
+            this.initParams.put(paramName, config.getInitParameter(paramName));
+        }
+    }
 
-	public Map<String, String> getInitParams() {
-		return this.initParams;
-	}
+    public Map<String, String> getInitParams() {
+        return this.initParams;
+    }
 
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String body = IO.toString(request.getInputStream(),
-				Charsets.UTF_8.displayName());
-		logger.debug("received {} request: {}\n  Body: '{}'",
-				request.getMethod(), request.getRequestURI(), body);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
-		response.setContentType("text/html;charset=utf-8");
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter().print(this.message);
-	}
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().print(this.message);
+    }
 }

@@ -30,229 +30,210 @@ import com.google.gson.JsonParser;
  */
 public class JsonUtils {
 
-	private JsonUtils() {
-		throw new UnsupportedOperationException(
-				JsonUtils.class.getName() + " is not instantiable.");
-	}
+    private JsonUtils() {
+        throw new UnsupportedOperationException(JsonUtils.class.getName() + " is not instantiable.");
+    }
 
-	/**
-	 * Parses a JSON-formatted {@link String}.
-	 *
-	 * @param jsonString
-	 *            The JSON-formatted string.
-	 * @return A {@link JsonElement} for the parsed JSON {@link String}.
-	 * @throws JsonParseException
-	 * @throws IllegalArgumentException
-	 */
-	public static JsonElement parseJsonString(String jsonString)
-			throws JsonParseException, IllegalArgumentException {
-		Preconditions.checkArgument(jsonString != null,
-				"null argument not allowed");
-		return new JsonParser().parse(jsonString);
-	}
+    /**
+     * Parses a JSON-formatted {@link String}.
+     *
+     * @param jsonString
+     *            The JSON-formatted string.
+     * @return A {@link JsonElement} for the parsed JSON {@link String}.
+     * @throws JsonParseException
+     * @throws IllegalArgumentException
+     */
+    public static JsonElement parseJsonString(String jsonString) throws JsonParseException, IllegalArgumentException {
+        Preconditions.checkArgument(jsonString != null, "null argument not allowed");
+        return new JsonParser().parse(jsonString);
+    }
 
-	/**
-	 * Loads and parses a JSON-formatted resource file (assumed to be found in
-	 * the class path).
-	 *
-	 * @param resourceName
-	 *            The name/path of the resource. The resource file is assumed to
-	 *            be found in the class path.
-	 * @return A {@link JsonElement} for the parsed JSON file.
-	 * @throws JsonParseException
-	 * @throws IllegalArgumentException
-	 */
-	public static JsonElement parseJsonResource(String resourceName)
-			throws JsonParseException, IllegalArgumentException {
-		Preconditions.checkArgument(resourceName != null,
-				"null resource not allowed");
-		URL resource = Resources.getResource(resourceName);
-		try {
-			return parseJsonString(
-					Resources.toString(resource, Charsets.UTF_8));
-		} catch (IOException e) {
-			throw new JsonParseException(
-					String.format("failed to parse JSON resource %s: %s",
-							resourceName, e.getMessage()),
-					e);
-		}
-	}
+    /**
+     * Loads and parses a JSON-formatted resource file (assumed to be found in
+     * the class path).
+     *
+     * @param resourceName
+     *            The name/path of the resource. The resource file is assumed to
+     *            be found in the class path.
+     * @return A {@link JsonElement} for the parsed JSON file.
+     * @throws JsonParseException
+     * @throws IllegalArgumentException
+     */
+    public static JsonElement parseJsonResource(String resourceName)
+            throws JsonParseException, IllegalArgumentException {
+        Preconditions.checkArgument(resourceName != null, "null resource not allowed");
+        URL resource = Resources.getResource(resourceName);
+        try {
+            return parseJsonString(Resources.toString(resource, Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new JsonParseException(
+                    String.format("failed to parse JSON resource %s: %s", resourceName, e.getMessage()), e);
+        }
+    }
 
-	/**
-	 * Loads and parses a JSON-formatted {@link File}.
-	 *
-	 * @param jsonFile
-	 *            The JSON-formatted {@link File}.
-	 * @return A {@link JsonElement} for the parsed JSON {@link File}.
-	 * @throws JsonParseException
-	 * @throws IllegalArgumentException
-	 */
-	public static JsonElement parseJsonFile(File jsonFile)
-			throws JsonParseException, IllegalArgumentException {
-		Preconditions.checkArgument(jsonFile != null, "null file not allowed");
-		try {
-			return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
-		} catch (IOException e) {
-			throw new JsonParseException(
-					String.format("failed to parse JSON file %s: %s",
-							jsonFile.getAbsolutePath(), e.getMessage()),
-					e);
-		}
-	}
+    /**
+     * Loads and parses a JSON-formatted {@link File}.
+     *
+     * @param jsonFile
+     *            The JSON-formatted {@link File}.
+     * @return A {@link JsonElement} for the parsed JSON {@link File}.
+     * @throws JsonParseException
+     * @throws IllegalArgumentException
+     */
+    public static JsonElement parseJsonFile(File jsonFile) throws JsonParseException, IllegalArgumentException {
+        Preconditions.checkArgument(jsonFile != null, "null file not allowed");
+        try {
+            return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new JsonParseException(
+                    String.format("failed to parse JSON file %s: %s", jsonFile.getAbsolutePath(), e.getMessage()), e);
+        }
+    }
 
-	/**
-	 * Serializes the specified object into its equivalent representation as a
-	 * tree of JsonElements. <code>null</code>-valued fields are excluded from
-	 * the output.
-	 * <p/>
-	 * This method handles serializing {@link DateTime} fields to their string
-	 * representation.
-	 *
-	 * @param object
-	 *            The Java object.
-	 * @return The JSON-serialized representation of the object.
-	 */
-	public static JsonElement toJson(Object object) {
-		return toJson(object, false);
-	}
+    /**
+     * Serializes the specified object into its equivalent representation as a
+     * tree of JsonElements. <code>null</code>-valued fields are excluded from
+     * the output.
+     * <p/>
+     * This method handles serializing {@link DateTime} fields to their string
+     * representation.
+     *
+     * @param object
+     *            The Java object.
+     * @return The JSON-serialized representation of the object.
+     */
+    public static JsonElement toJson(Object object) {
+        return toJson(object, false);
+    }
 
-	/**
-	 * Serializes the specified object into its equivalent representation as a
-	 * tree of JsonElements, with optional inclusion of <code>null</code>-valued
-	 * fields.
-	 * <p/>
-	 * This method handles serializing {@link DateTime} fields to their string
-	 * representation.
-	 *
-	 * @param object
-	 *            The Java object.
-	 * @param serializeNullFields
-	 *            If <code>true</code>, <code>null</code>-values fields are
-	 *            included in the output. If <code>false</code>, they are left
-	 *            out (producing more compact JSON).
-	 *
-	 * @return The JSON-serialized representation of the object.
-	 */
-	public static JsonElement toJson(Object object,
-			boolean serializeNullFields) {
-		Preconditions.checkArgument(object != null, "null object not allowed");
-		GsonBuilder gsonBuilder = prepareGsonBuilder();
-		if (serializeNullFields) {
-			gsonBuilder.serializeNulls();
-		}
-		Gson gson = gsonBuilder.create();
-		return gson.toJsonTree(object);
-	}
+    /**
+     * Serializes the specified object into its equivalent representation as a
+     * tree of JsonElements, with optional inclusion of <code>null</code>-valued
+     * fields.
+     * <p/>
+     * This method handles serializing {@link DateTime} fields to their string
+     * representation.
+     *
+     * @param object
+     *            The Java object.
+     * @param serializeNullFields
+     *            If <code>true</code>, <code>null</code>-values fields are
+     *            included in the output. If <code>false</code>, they are left
+     *            out (producing more compact JSON).
+     *
+     * @return The JSON-serialized representation of the object.
+     */
+    public static JsonElement toJson(Object object, boolean serializeNullFields) {
+        Preconditions.checkArgument(object != null, "null object not allowed");
+        GsonBuilder gsonBuilder = prepareGsonBuilder();
+        if (serializeNullFields) {
+            gsonBuilder.serializeNulls();
+        }
+        Gson gson = gsonBuilder.create();
+        return gson.toJsonTree(object);
+    }
 
-	/**
-	 * Returns the "pretty print" {@link String} version of a
-	 * {@link JsonElement}
-	 *
-	 * @param jsonElement
-	 *            The json element.
-	 * @return The corresponding pretty-printed {@link String}.
-	 */
-	public static String toPrettyString(JsonElement jsonElement) {
-		Preconditions.checkArgument(jsonElement != null,
-				"null jsonElement not allowed");
-		Gson gson = toStringGsonBuilder().setPrettyPrinting().create();
-		return gson.toJson(jsonElement);
-	}
+    /**
+     * Returns the "pretty print" {@link String} version of a
+     * {@link JsonElement}
+     *
+     * @param jsonElement
+     *            The json element.
+     * @return The corresponding pretty-printed {@link String}.
+     */
+    public static String toPrettyString(JsonElement jsonElement) {
+        Preconditions.checkArgument(jsonElement != null, "null jsonElement not allowed");
+        Gson gson = toStringGsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(jsonElement);
+    }
 
-	/**
-	 * Returns the {@link String} version of a {@link JsonElement}.
-	 *
-	 * @param jsonElement
-	 *            The json element.
-	 * @return The corresponding JSON {@link String}.
-	 */
-	public static String toString(JsonElement jsonElement) {
-		Preconditions.checkArgument(jsonElement != null,
-				"null jsonElement not allowed");
-		Gson gson = toStringGsonBuilder().create();
-		return gson.toJson(jsonElement);
-	}
+    /**
+     * Returns the {@link String} version of a {@link JsonElement}.
+     *
+     * @param jsonElement
+     *            The json element.
+     * @return The corresponding JSON {@link String}.
+     */
+    public static String toString(JsonElement jsonElement) {
+        Preconditions.checkArgument(jsonElement != null, "null jsonElement not allowed");
+        Gson gson = toStringGsonBuilder().create();
+        return gson.toJson(jsonElement);
+    }
 
-	/**
-	 * Creates a {@link Gson} instance for use when doing JSON to string
-	 * conversions.
-	 *
-	 * @return
-	 */
-	private static GsonBuilder toStringGsonBuilder() {
-		// disableHtmlEscaping: prevent '=' (like in base64 encoded stuff) to be
-		// escaped in the output as '\u003d'.
-		return prepareGsonBuilder().disableHtmlEscaping().serializeNulls();
-	}
+    /**
+     * Creates a {@link Gson} instance for use when doing JSON to string
+     * conversions.
+     *
+     * @return
+     */
+    private static GsonBuilder toStringGsonBuilder() {
+        // disableHtmlEscaping: prevent '=' (like in base64 encoded stuff) to be
+        // escaped in the output as '\u003d'.
+        return prepareGsonBuilder().disableHtmlEscaping().serializeNulls();
+    }
 
-	/**
-	 * Converts a {@link JsonElement} to a Java object of a certain
-	 * {@link Class}.
-	 * <p/>
-	 * This method also handles deserializing time stamp elements into
-	 * {@link DateTime} fields.
-	 *
-	 * @param jsonElement
-	 *            The JSON element to serialize.
-	 * @param type
-	 *            The class of the Java object.
-	 * @return An instance of the specified {@code type}, created by
-	 *         deserializing the given {@code jsonElement}.
-	 */
-	public static <T> T toObject(JsonElement jsonElement, Class<T> type) {
-		Preconditions.checkArgument(jsonElement != null,
-				"null jsonElement not allowed");
-		Preconditions.checkArgument(type != null, "null type not allowed");
-		Gson gson = prepareGsonBuilder().create();
-		return type.cast(gson.fromJson(jsonElement, type));
-	}
+    /**
+     * Converts a {@link JsonElement} to a Java object of a certain
+     * {@link Class}.
+     * <p/>
+     * This method also handles deserializing time stamp elements into
+     * {@link DateTime} fields.
+     *
+     * @param jsonElement
+     *            The JSON element to serialize.
+     * @param type
+     *            The class of the Java object.
+     * @return An instance of the specified {@code type}, created by
+     *         deserializing the given {@code jsonElement}.
+     */
+    public static <T> T toObject(JsonElement jsonElement, Class<T> type) {
+        Preconditions.checkArgument(jsonElement != null, "null jsonElement not allowed");
+        Preconditions.checkArgument(type != null, "null type not allowed");
+        Gson gson = prepareGsonBuilder().create();
+        return type.cast(gson.fromJson(jsonElement, type));
+    }
 
-	/**
-	 * Converts a {@link JsonElement} to a Java object of a given {@link Type}.
-	 * <p/>
-	 * This method is useful when it comes to deserializing generic types. For
-	 * instance, to deserialize {@link Map} of {@link String} to
-	 * {@link DateTime} entries, one could use the following code:
-	 *
-	 * <pre>
-	 * Type stringDateMap = new TypeToken&lt;Map&lt;String, DateTime&gt;&gt;() {
-	 * }.getType();
-	 * Map&lt;String, DateTime&gt; map = JsonUtils.toObject(json, stringDateMap);
-	 * </pre>
-	 * <p/>
-	 * This method also handles deserializing time stamp elements into
-	 * {@link DateTime} fields.
-	 *
-	 * @param jsonElement
-	 *            The JSON element to serialize.
-	 * @param type
-	 *            The {@link Type} of the Java object.
-	 * @return An instance of the specified {@code type}, created by
-	 *         deserializing the given {@code jsonElement}.
-	 */
-	public static <T> T toObject(JsonElement jsonElement, Type type) {
-		Preconditions.checkArgument(jsonElement != null,
-				"null jsonElement not allowed");
-		Preconditions.checkArgument(type != null, "null type not allowed");
-		Gson gson = prepareGsonBuilder().create();
-		return gson.fromJson(jsonElement, type);
-	}
+    /**
+     * Converts a {@link JsonElement} to a Java object of a given {@link Type}.
+     * <p/>
+     * This method is useful when it comes to deserializing generic types. For
+     * instance, to deserialize {@link Map} of {@link String} to
+     * {@link DateTime} entries, one could use the following code:
+     *
+     * <pre>
+     * Type stringDateMap = new TypeToken&lt;Map&lt;String, DateTime&gt;&gt;() {
+     * }.getType();
+     * Map&lt;String, DateTime&gt; map = JsonUtils.toObject(json, stringDateMap);
+     * </pre>
+     * <p/>
+     * This method also handles deserializing time stamp elements into
+     * {@link DateTime} fields.
+     *
+     * @param jsonElement
+     *            The JSON element to serialize.
+     * @param type
+     *            The {@link Type} of the Java object.
+     * @return An instance of the specified {@code type}, created by
+     *         deserializing the given {@code jsonElement}.
+     */
+    public static <T> T toObject(JsonElement jsonElement, Type type) {
+        Preconditions.checkArgument(jsonElement != null, "null jsonElement not allowed");
+        Preconditions.checkArgument(type != null, "null type not allowed");
+        Gson gson = prepareGsonBuilder().create();
+        return gson.fromJson(jsonElement, type);
+    }
 
-	/**
-	 * Prepares a {@link GsonBuilder} instance with registered type adapters for
-	 * {@link DateTime} and {@link ImmutableList}.
-	 *
-	 * @return
-	 */
-	public static GsonBuilder prepareGsonBuilder() {
-		return new GsonBuilder()
-				.registerTypeAdapter(DateTime.class,
-						new GsonDateTimeDeserializer())
-				.registerTypeAdapter(DateTime.class,
-						new GsonDateTimeSerializer())
-				.registerTypeAdapter(ImmutableList.class,
-						new ImmutableListDeserializer())
-				.setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    /**
+     * Prepares a {@link GsonBuilder} instance with registered type adapters for
+     * {@link DateTime} and {@link ImmutableList}.
+     *
+     * @return
+     */
+    public static GsonBuilder prepareGsonBuilder() {
+        return new GsonBuilder().registerTypeAdapter(DateTime.class, new GsonDateTimeDeserializer())
+                .registerTypeAdapter(DateTime.class, new GsonDateTimeSerializer())
+                .registerTypeAdapter(ImmutableList.class, new ImmutableListDeserializer())
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
-	}
+    }
 }

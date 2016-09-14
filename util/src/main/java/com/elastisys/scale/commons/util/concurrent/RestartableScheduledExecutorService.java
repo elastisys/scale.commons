@@ -13,39 +13,37 @@ import java.util.concurrent.TimeUnit;
  *
  *
  */
-public interface RestartableScheduledExecutorService extends
-		ScheduledExecutorService {
+public interface RestartableScheduledExecutorService extends ScheduledExecutorService {
 
-	/**
-	 * (Re)starts this {@link RestartableScheduledExecutorService}.
-	 * <p/>
-	 * Note that on a restart, any tasks that were scheduled for execution prior
-	 * to stopping the service have been removed and need to be added again if
-	 * desired.
-	 */
-	public void start();
+    /**
+     * (Re)starts this {@link RestartableScheduledExecutorService}.
+     * <p/>
+     * Note that on a restart, any tasks that were scheduled for execution prior
+     * to stopping the service have been removed and need to be added again if
+     * desired.
+     */
+    public void start();
 
-	/**
-	 * Stops this {@link RestartableScheduledExecutorService}. Any running tasks
-	 * will be shut down.
-	 *
-	 * @param taskTerminationGracePeriod
-	 *            The grace period given to running tasks to complete before
-	 *            they are slayed.
-	 * @param unit
-	 *            The time unit of the {@code taskTerminationGracePeriod}.
-	 * @throws InterruptedException
-	 *             if interrupted while waiting
-	 */
-	public void stop(int taskTerminationGracePeriod, TimeUnit unit)
-			throws InterruptedException;
+    /**
+     * Stops this {@link RestartableScheduledExecutorService}. Any running tasks
+     * will be shut down.
+     *
+     * @param taskTerminationGracePeriod
+     *            The grace period given to running tasks to complete before
+     *            they are slayed.
+     * @param unit
+     *            The time unit of the {@code taskTerminationGracePeriod}.
+     * @throws InterruptedException
+     *             if interrupted while waiting
+     */
+    public void stop(int taskTerminationGracePeriod, TimeUnit unit) throws InterruptedException;
 
-	/**
-	 * Returns <code>true</code> if this
-	 * {@link RestartableScheduledExecutorService} has been started,
-	 * <code>false</code> otherwise.
-	 *
-	 * @return <code>true</code> if started, <code>false</code> otherwise.
-	 */
-	public boolean isStarted();
+    /**
+     * Returns <code>true</code> if this
+     * {@link RestartableScheduledExecutorService} has been started,
+     * <code>false</code> otherwise.
+     *
+     * @return <code>true</code> if started, <code>false</code> otherwise.
+     */
+    public boolean isStarted();
 }

@@ -41,80 +41,69 @@ import com.elastisys.scale.commons.security.jwt.AuthTokenValidator;
  */
 @RequireJwtAuthentication
 public class AuthTokenRequestFilter implements ContainerRequestFilter {
-	static Logger LOG = LoggerFactory.getLogger(AuthTokenRequestFilter.class);
+    static Logger LOG = LoggerFactory.getLogger(AuthTokenRequestFilter.class);
 
-	private static final String AUTHORIZATION_HEADER = "Authorization";
-	/**
-	 * Will be called to deserialize and validate an auth token for requests
-	 * that have them.
-	 */
-	private final AuthTokenValidator tokenValidator;
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    /**
+     * Will be called to deserialize and validate an auth token for requests
+     * that have them.
+     */
+    private final AuthTokenValidator tokenValidator;
 
-	/**
-	 * Creates an {@link AuthTokenRequestFilter} with a given token validator.
-	 *
-	 * @param tokenValidator
-	 *            The {@link AuthTokenValidator} which will be called to
-	 *            deserialize and validate an auth token for requests that have
-	 *            them.
-	 */
-	public AuthTokenRequestFilter(AuthTokenValidator tokenValidator) {
-		this.tokenValidator = tokenValidator;
-	}
+    /**
+     * Creates an {@link AuthTokenRequestFilter} with a given token validator.
+     *
+     * @param tokenValidator
+     *            The {@link AuthTokenValidator} which will be called to
+     *            deserialize and validate an auth token for requests that have
+     *            them.
+     */
+    public AuthTokenRequestFilter(AuthTokenValidator tokenValidator) {
+        this.tokenValidator = tokenValidator;
+    }
 
-	@Override
-	public void filter(ContainerRequestContext request) throws IOException {
-		try {
-			validateAuthToken(request);
-		} catch (Exception e) {
-			LOG.debug("authentication token validation failed: {}",
-					e.getMessage(), e);
-			throw e;
-		}
-	}
+    @Override
+    public void filter(ContainerRequestContext request) throws IOException {
+        try {
+            validateAuthToken(request);
+        } catch (Exception e) {
+            LOG.debug("authentication token validation failed: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 
-	private void validateAuthToken(ContainerRequestContext request) {
-		String authorizationHeader = request
-				.getHeaderString(AUTHORIZATION_HEADER);
-		if (authorizationHeader == null) {
-			String message = "failed to validate Authorization token";
-			String detail = format("request missing %s Bearer token header",
-					AUTHORIZATION_HEADER);
-			request.abortWith(errorResponse(new ErrorType(message, detail)));
-			return;
-		}
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("received request with authorization header {}",
-					authorizationHeader);
-		}
-		try {
-			AuthTokenHeaderValidator headerValidator = new AuthTokenHeaderValidator(
-					this.tokenValidator);
-			JwtClaims tokenClaims = headerValidator
-					.validate(authorizationHeader);
-			boolean secure = request.getSecurityContext().isSecure();
-			// set up a security context for the logged in principal
-			request.setSecurityContext(
-					new AuthTokenSecurityContext(tokenClaims, secure));
-			LOG.debug("validated auth token for client '{}'",
-					request.getSecurityContext().getUserPrincipal().getName());
-		} catch (AuthTokenValidationException e) {
-			LOG.debug("Authorization header validation failed: {}",
-					e.getMessage());
-			request.abortWith(errorResponse(
-					new ErrorType(e.getMessage(), e.getDetail())));
-			return;
-		}
-	}
+    private void validateAuthToken(ContainerRequestContext request) {
+        String authorizationHeader = request.getHeaderString(AUTHORIZATION_HEADER);
+        if (authorizationHeader == null) {
+            String message = "failed to validate Authorization token";
+            String detail = format("request missing %s Bearer token header", AUTHORIZATION_HEADER);
+            request.abortWith(errorResponse(new ErrorType(message, detail)));
+            return;
+        }
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("received request with authorization header {}", authorizationHeader);
+        }
+        try {
+            AuthTokenHeaderValidator headerValidator = new AuthTokenHeaderValidator(this.tokenValidator);
+            JwtClaims tokenClaims = headerValidator.validate(authorizationHeader);
+            boolean secure = request.getSecurityContext().isSecure();
+            // set up a security context for the logged in principal
+            request.setSecurityContext(new AuthTokenSecurityContext(tokenClaims, secure));
+            LOG.debug("validated auth token for client '{}'",
+                    request.getSecurityContext().getUserPrincipal().getName());
+        } catch (AuthTokenValidationException e) {
+            LOG.debug("Authorization header validation failed: {}", e.getMessage());
+            request.abortWith(errorResponse(new ErrorType(e.getMessage(), e.getDetail())));
+            return;
+        }
+    }
 
-	private Response errorResponse(ErrorType error) {
-		String errorHeader = "WWW-Authenticate";
-		String errorHeaderValue = String.format(
-				"Bearer, error=\"%s\", error_description=\"%s\"",
-				"invalid_token", error.getMessage());
-		return Response.status(Response.Status.UNAUTHORIZED).entity(error)
-				.type(MediaType.APPLICATION_JSON)
-				.header(errorHeader, errorHeaderValue).build();
-	}
+    private Response errorResponse(ErrorType error) {
+        String errorHeader = "WWW-Authenticate";
+        String errorHeaderValue = String.format("Bearer, error=\"%s\", error_description=\"%s\"", "invalid_token",
+                error.getMessage());
+        return Response.status(Response.Status.UNAUTHORIZED).entity(error).type(MediaType.APPLICATION_JSON)
+                .header(errorHeader, errorHeaderValue).build();
+    }
 
 }

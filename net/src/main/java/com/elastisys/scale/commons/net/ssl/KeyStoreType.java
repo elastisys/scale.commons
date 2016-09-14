@@ -7,8 +7,8 @@ package com.elastisys.scale.commons.net.ssl;
  * 
  */
 public enum KeyStoreType {
-	/** Java Key Store (JKS) type of key store. */
-	JKS,
-	/** PKCS #12 type of key store. */
-	PKCS12
+    /** Java Key Store (JKS) type of key store. */
+    JKS,
+    /** PKCS #12 type of key store. */
+    PKCS12
 }

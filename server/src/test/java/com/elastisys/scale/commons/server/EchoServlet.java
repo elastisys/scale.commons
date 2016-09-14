@@ -21,18 +21,16 @@ import com.google.common.base.Charsets;
  * 
  */
 public class EchoServlet extends HttpServlet {
-	static final Logger logger = LoggerFactory.getLogger(EchoServlet.class);
+    static final Logger logger = LoggerFactory.getLogger(EchoServlet.class);
 
-	@Override
-	protected void doGet(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String body = IO.toString(request.getInputStream(),
-				Charsets.UTF_8.displayName());
-		logger.debug("received {} request: {}\n  Body: '{}'",
-				request.getMethod(), request.getRequestURI(), body);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
-		response.setContentType("text/html;charset=utf-8");
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.getWriter().println(body);
-	}
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().println(body);
+    }
 }

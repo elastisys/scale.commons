@@ -23,46 +23,43 @@ import com.google.common.collect.Lists;
  * message bodys.
  */
 public class WebhookServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	static final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
+    static final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
 
-	private final int responseCode;
-	private final List<Alert> receivedAlerts = Lists.newArrayList();
+    private final int responseCode;
+    private final List<Alert> receivedAlerts = Lists.newArrayList();
 
-	/**
-	 * @param responseCode
-	 *            The HTTP response code that the servlet will always respond.
-	 *            For example, {@link HttpServletResponse#SC_OK}. with.
-	 */
-	public WebhookServlet(int responseCode) {
-		super();
-		this.responseCode = responseCode;
-	}
+    /**
+     * @param responseCode
+     *            The HTTP response code that the servlet will always respond.
+     *            For example, {@link HttpServletResponse#SC_OK}. with.
+     */
+    public WebhookServlet(int responseCode) {
+        super();
+        this.responseCode = responseCode;
+    }
 
-	@Override
-	protected void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
-		String body = IO.toString(request.getInputStream(),
-				Charsets.UTF_8.displayName());
-		logger.debug("received {} request: {}\n  Body: '{}'",
-				request.getMethod(), request.getRequestURI(), body);
-		this.receivedAlerts.add(JsonUtils.toObject(
-				JsonUtils.parseJsonString(body), Alert.class));
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
+        this.receivedAlerts.add(JsonUtils.toObject(JsonUtils.parseJsonString(body), Alert.class));
 
-		response.setContentType("text/html;charset=utf-8");
-		response.setStatus(this.responseCode);
-		response.getWriter().close();
-	}
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(this.responseCode);
+        response.getWriter().close();
+    }
 
-	/**
-	 * Forget any received {@link Alert}s.
-	 */
-	public void clear() {
-		this.receivedAlerts.clear();
-	}
+    /**
+     * Forget any received {@link Alert}s.
+     */
+    public void clear() {
+        this.receivedAlerts.clear();
+    }
 
-	public List<Alert> getReceivedMessages() {
-		return this.receivedAlerts;
-	}
+    public List<Alert> getReceivedMessages() {
+        return this.receivedAlerts;
+    }
 }

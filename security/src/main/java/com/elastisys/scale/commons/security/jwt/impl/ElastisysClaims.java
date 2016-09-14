@@ -5,9 +5,9 @@ package com.elastisys.scale.commons.security.jwt.impl;
  */
 public class ElastisysClaims {
 
-	/**
-	 * The {@code iss} field value. The "iss" (issuer) claim identifies the
-	 * principal that issued the JWT.
-	 */
-	public static final String ISSUER = "Elastisys AB";
+    /**
+     * The {@code iss} field value. The "iss" (issuer) claim identifies the
+     * principal that issued the JWT.
+     */
+    public static final String ISSUER = "Elastisys AB";
 }

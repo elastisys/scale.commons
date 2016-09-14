@@ -13,28 +13,27 @@ import com.google.common.collect.ImmutableSet;
  */
 public class ValidHttpUrl implements Predicate<String> {
 
-	private static final Collection<String> ALLOWED_PROTOCOLS = ImmutableSet
-			.of("http", "https");
+    private static final Collection<String> ALLOWED_PROTOCOLS = ImmutableSet.of("http", "https");
 
-	/**
-	 * Validates a given URL for correctness.
-	 *
-	 * @param url
-	 *            A URL.
-	 * @return <code>true</code> if the URL is correct, <code>false</code>
-	 *         otherwise.
-	 */
-	public static boolean isValid(String url) {
-		return new ValidHttpUrl().apply(url);
-	}
+    /**
+     * Validates a given URL for correctness.
+     *
+     * @param url
+     *            A URL.
+     * @return <code>true</code> if the URL is correct, <code>false</code>
+     *         otherwise.
+     */
+    public static boolean isValid(String url) {
+        return new ValidHttpUrl().apply(url);
+    }
 
-	@Override
-	public boolean apply(String url) {
-		try {
-			URL urlInstance = new URL(url);
-			return ALLOWED_PROTOCOLS.contains(urlInstance.getProtocol());
-		} catch (MalformedURLException e) {
-			return false;
-		}
-	}
+    @Override
+    public boolean apply(String url) {
+        try {
+            URL urlInstance = new URL(url);
+            return ALLOWED_PROTOCOLS.contains(urlInstance.getProtocol());
+        } catch (MalformedURLException e) {
+            return false;
+        }
+    }
 }

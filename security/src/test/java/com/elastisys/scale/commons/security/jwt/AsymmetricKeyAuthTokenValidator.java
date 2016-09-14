@@ -17,58 +17,55 @@ import com.elastisys.scale.commons.util.time.UtcTime;
  *
  */
 public class AsymmetricKeyAuthTokenValidator implements AuthTokenValidator {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(AsymmetricKeyAuthTokenValidator.class);
-	/**
-	 * The public/private key pair used to sign and validate a signature.
-	 */
-	private final RsaJsonWebKey signatureKeyPair;
-	/**
-	 * an expected issuer that must be present (in a token's {@code iss} claim)
-	 * in order for validation to succeed. Can be <code>null</code>.
-	 */
-	private String expectedIssuer = null;
+    private static final Logger LOG = LoggerFactory.getLogger(AsymmetricKeyAuthTokenValidator.class);
+    /**
+     * The public/private key pair used to sign and validate a signature.
+     */
+    private final RsaJsonWebKey signatureKeyPair;
+    /**
+     * an expected issuer that must be present (in a token's {@code iss} claim)
+     * in order for validation to succeed. Can be <code>null</code>.
+     */
+    private String expectedIssuer = null;
 
-	/**
-	 * Creates an {@link AsymmetricKeyAuthTokenValidator} with a given signature
-	 * key pair.
-	 *
-	 * @param signatureKeyPair
-	 */
-	public AsymmetricKeyAuthTokenValidator(RsaJsonWebKey signatureKeyPair) {
-		this.signatureKeyPair = signatureKeyPair;
-	}
+    /**
+     * Creates an {@link AsymmetricKeyAuthTokenValidator} with a given signature
+     * key pair.
+     *
+     * @param signatureKeyPair
+     */
+    public AsymmetricKeyAuthTokenValidator(RsaJsonWebKey signatureKeyPair) {
+        this.signatureKeyPair = signatureKeyPair;
+    }
 
-	/**
-	 * Sets an expected issuer that must be present (in a token's {@code iss}
-	 * claim) in order for validation to succeed.
-	 *
-	 * @param expectedIssuer
-	 * @return
-	 */
-	public AsymmetricKeyAuthTokenValidator withExpectedIssuer(
-			String expectedIssuer) {
-		this.expectedIssuer = expectedIssuer;
-		return this;
-	}
+    /**
+     * Sets an expected issuer that must be present (in a token's {@code iss}
+     * claim) in order for validation to succeed.
+     *
+     * @param expectedIssuer
+     * @return
+     */
+    public AsymmetricKeyAuthTokenValidator withExpectedIssuer(String expectedIssuer) {
+        this.expectedIssuer = expectedIssuer;
+        return this;
+    }
 
-	@Override
-	public JwtClaims validate(String signedToken) throws InvalidJwtException {
-		JwtConsumerBuilder jwtConsumerBuilder = new JwtConsumerBuilder()
-				// verify the signature with the public key
-				.setVerificationKey(this.signatureKeyPair.getKey());
-		if (this.expectedIssuer != null) {
-			jwtConsumerBuilder.setExpectedIssuer(this.expectedIssuer);
-		}
-		jwtConsumerBuilder.setRequireExpirationTime();
-		// set evaluation time to present time
-		NumericDate now = NumericDate
-				.fromMilliseconds(UtcTime.now().getMillis());
-		jwtConsumerBuilder.setEvaluationTime(now);
-		JwtConsumer jwtConsumer = jwtConsumerBuilder.build();
+    @Override
+    public JwtClaims validate(String signedToken) throws InvalidJwtException {
+        JwtConsumerBuilder jwtConsumerBuilder = new JwtConsumerBuilder()
+                // verify the signature with the public key
+                .setVerificationKey(this.signatureKeyPair.getKey());
+        if (this.expectedIssuer != null) {
+            jwtConsumerBuilder.setExpectedIssuer(this.expectedIssuer);
+        }
+        jwtConsumerBuilder.setRequireExpirationTime();
+        // set evaluation time to present time
+        NumericDate now = NumericDate.fromMilliseconds(UtcTime.now().getMillis());
+        jwtConsumerBuilder.setEvaluationTime(now);
+        JwtConsumer jwtConsumer = jwtConsumerBuilder.build();
 
-		// Deserialize and validate the JWT and process it to the Claims
-		return jwtConsumer.processToClaims(signedToken);
-	}
+        // Deserialize and validate the JWT and process it to the Claims
+        return jwtConsumer.processToClaims(signedToken);
+    }
 
 }

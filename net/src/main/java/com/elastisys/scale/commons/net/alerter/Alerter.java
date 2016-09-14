@@ -21,16 +21,16 @@ import com.google.common.eventbus.Subscribe;
  */
 public interface Alerter {
 
-	/**
-	 * Forwards an {@link Alert} message to the configured recipients according
-	 * to the supported protocol.
-	 *
-	 * @param alert
-	 *            An {@link Alert} to be sent.
-	 * @throws RuntimeException
-	 *             if the alert could not be sent.
-	 */
-	@Subscribe
-	@AllowConcurrentEvents
-	public void handleAlert(Alert alert) throws RuntimeException;
+    /**
+     * Forwards an {@link Alert} message to the configured recipients according
+     * to the supported protocol.
+     *
+     * @param alert
+     *            An {@link Alert} to be sent.
+     * @throws RuntimeException
+     *             if the alert could not be sent.
+     */
+    @Subscribe
+    @AllowConcurrentEvents
+    public void handleAlert(Alert alert) throws RuntimeException;
 }

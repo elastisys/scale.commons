@@ -12,94 +12,83 @@ import org.junit.Test;
  */
 public class TestTimeInterval {
 
-	@Test
-	public void basicSanity() {
-		// same value, different constructors
-		TimeInterval interval1 = new TimeInterval(10L, "seconds");
-		TimeInterval interval2 = new TimeInterval(10L, TimeUnit.SECONDS);
+    @Test
+    public void basicSanity() {
+        // same value, different constructors
+        TimeInterval interval1 = new TimeInterval(10L, "seconds");
+        TimeInterval interval2 = new TimeInterval(10L, TimeUnit.SECONDS);
 
-		assertThat(interval1.getTime(), is(10L));
-		assertThat(interval1.getUnit(), is(TimeUnit.SECONDS));
-		assertThat(interval1, is(interval2));
-	}
+        assertThat(interval1.getTime(), is(10L));
+        assertThat(interval1.getUnit(), is(TimeUnit.SECONDS));
+        assertThat(interval1, is(interval2));
+    }
 
-	/**
-	 * Should be allowed to give zero as duration.
-	 */
-	@Test
-	public void withZeroDuration() {
-		new TimeInterval(0L, TimeUnit.MINUTES);
-	}
+    /**
+     * Should be allowed to give zero as duration.
+     */
+    @Test
+    public void withZeroDuration() {
+        new TimeInterval(0L, TimeUnit.MINUTES);
+    }
 
-	/**
-	 * Try out all recognized time units.
-	 */
-	@Test
-	public void withDifferentUnits() {
-		assertThat(new TimeInterval(10L, "nanoseconds").getUnit(),
-				is(TimeUnit.NANOSECONDS));
+    /**
+     * Try out all recognized time units.
+     */
+    @Test
+    public void withDifferentUnits() {
+        assertThat(new TimeInterval(10L, "nanoseconds").getUnit(), is(TimeUnit.NANOSECONDS));
 
-		assertThat(new TimeInterval(10L, "microseconds").getUnit(),
-				is(TimeUnit.MICROSECONDS));
-		assertThat(new TimeInterval(10L, "milliseconds").getUnit(),
-				is(TimeUnit.MILLISECONDS));
-		assertThat(new TimeInterval(10L, "seconds").getUnit(),
-				is(TimeUnit.SECONDS));
-		assertThat(new TimeInterval(10L, "minutes").getUnit(),
-				is(TimeUnit.MINUTES));
-		assertThat(new TimeInterval(10L, "hours").getUnit(),
-				is(TimeUnit.HOURS));
-		assertThat(new TimeInterval(10L, "days").getUnit(), is(TimeUnit.DAYS));
-	}
+        assertThat(new TimeInterval(10L, "microseconds").getUnit(), is(TimeUnit.MICROSECONDS));
+        assertThat(new TimeInterval(10L, "milliseconds").getUnit(), is(TimeUnit.MILLISECONDS));
+        assertThat(new TimeInterval(10L, "seconds").getUnit(), is(TimeUnit.SECONDS));
+        assertThat(new TimeInterval(10L, "minutes").getUnit(), is(TimeUnit.MINUTES));
+        assertThat(new TimeInterval(10L, "hours").getUnit(), is(TimeUnit.HOURS));
+        assertThat(new TimeInterval(10L, "days").getUnit(), is(TimeUnit.DAYS));
+    }
 
-	@Test
-	public void getMillis() {
-		assertThat(new TimeInterval(10L, "nanoseconds").getMillis(), is(0L));
+    @Test
+    public void getMillis() {
+        assertThat(new TimeInterval(10L, "nanoseconds").getMillis(), is(0L));
 
-		assertThat(new TimeInterval(10L, "microseconds").getMillis(), is(0L));
-		assertThat(new TimeInterval(10L, "milliseconds").getMillis(), is(10L));
-		assertThat(new TimeInterval(10L, "seconds").getMillis(),
-				is(10 * 1000L));
-		assertThat(new TimeInterval(10L, "minutes").getMillis(),
-				is(10 * 60 * 1000L));
-		assertThat(new TimeInterval(10L, "hours").getMillis(),
-				is(10 * 60 * 60 * 1000L));
-		assertThat(new TimeInterval(10L, "days").getMillis(),
-				is(10 * 24 * 3600 * 1000L));
-	}
+        assertThat(new TimeInterval(10L, "microseconds").getMillis(), is(0L));
+        assertThat(new TimeInterval(10L, "milliseconds").getMillis(), is(10L));
+        assertThat(new TimeInterval(10L, "seconds").getMillis(), is(10 * 1000L));
+        assertThat(new TimeInterval(10L, "minutes").getMillis(), is(10 * 60 * 1000L));
+        assertThat(new TimeInterval(10L, "hours").getMillis(), is(10 * 60 * 60 * 1000L));
+        assertThat(new TimeInterval(10L, "days").getMillis(), is(10 * 24 * 3600 * 1000L));
+    }
 
-	/**
-	 * Time unit should be case insensitive.
-	 */
-	@Test
-	public void caseInsensitive() {
-		assertThat(new TimeInterval(10L, "SeConDs").getUnit(),
-				is(TimeUnit.SECONDS));
-	}
+    /**
+     * Time unit should be case insensitive.
+     */
+    @Test
+    public void caseInsensitive() {
+        assertThat(new TimeInterval(10L, "SeConDs").getUnit(), is(TimeUnit.SECONDS));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithNullTime() {
-		new TimeInterval(null, TimeUnit.SECONDS);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void createWithNullTime() {
+        new TimeInterval(null, TimeUnit.SECONDS);
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithNullTimeUnit() {
-		new TimeInterval(10L, (TimeUnit) null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void createWithNullTimeUnit() {
+        new TimeInterval(10L, (TimeUnit) null);
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithNullUnitAsString() {
-		new TimeInterval(10L, (String) null);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void createWithNullUnitAsString() {
+        new TimeInterval(10L, (String) null);
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithUnrecognizedUnit() {
-		new TimeInterval(10L, "months");
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void createWithUnrecognizedUnit() {
+        new TimeInterval(10L, "months");
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void createWithNegativeDuration() {
-		new TimeInterval(-1L, TimeUnit.SECONDS);
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void createWithNegativeDuration() {
+        new TimeInterval(-1L, TimeUnit.SECONDS);
+    }
 
 }

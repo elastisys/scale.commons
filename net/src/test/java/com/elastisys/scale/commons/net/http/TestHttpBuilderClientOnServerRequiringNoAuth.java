@@ -24,109 +24,102 @@ import com.elastisys.scale.commons.server.SslKeyStoreType;
  */
 public class TestHttpBuilderClientOnServerRequiringNoAuth {
 
-	// Keystore for a client certificate: even if used, this should be ignored
-	// by the test server, which isn't configured to check client certificates
-	private static final String CLIENT_PKCS12_KEYSTORE = "src/test/resources/security/untrusted/client_keystore.p12";
-	private static final String CLIENT_PKCS12_KEYSTORE_PASSWORD = "untrustedpass";
-	private static final CertificateCredentials certCredentials = new CertificateCredentials(
-			CLIENT_PKCS12_KEYSTORE, CLIENT_PKCS12_KEYSTORE_PASSWORD,
-			CLIENT_PKCS12_KEYSTORE_PASSWORD);
+    // Keystore for a client certificate: even if used, this should be ignored
+    // by the test server, which isn't configured to check client certificates
+    private static final String CLIENT_PKCS12_KEYSTORE = "src/test/resources/security/untrusted/client_keystore.p12";
+    private static final String CLIENT_PKCS12_KEYSTORE_PASSWORD = "untrustedpass";
+    private static final CertificateCredentials certCredentials = new CertificateCredentials(CLIENT_PKCS12_KEYSTORE,
+            CLIENT_PKCS12_KEYSTORE_PASSWORD, CLIENT_PKCS12_KEYSTORE_PASSWORD);
 
-	private static final BasicCredentials trustedPasswordCredentials = new BasicCredentials(
-			"user", "secret");
+    private static final BasicCredentials trustedPasswordCredentials = new BasicCredentials("user", "secret");
 
-	// Server keystore set up to only trust the trusted client's certificate
-	private static final String SERVER_PKCS12_KEYSTORE = "src/test/resources/security/server/server_keystore.p12";
-	private static final String SERVER_PKCS12_KEYSTORE_PASSWORD = "serverpassword";
+    // Server keystore set up to only trust the trusted client's certificate
+    private static final String SERVER_PKCS12_KEYSTORE = "src/test/resources/security/server/server_keystore.p12";
+    private static final String SERVER_PKCS12_KEYSTORE_PASSWORD = "serverpassword";
 
-	/** The port where a HTTPS server is set up. */
-	private static Integer httpsPort;
-	/** Dummy HTTPS server. */
-	private static Server server;
+    /** The port where a HTTPS server is set up. */
+    private static Integer httpsPort;
+    /** Dummy HTTPS server. */
+    private static Server server;
 
-	@BeforeClass
-	public static void beforeTests() throws Exception {
-		// find a free port for test server
-		List<Integer> freePorts = HostUtils.findFreePorts(1);
-		httpsPort = freePorts.get(0);
-		// server instances are created by each individual test method
-		server = createHttpsServer(httpsPort);
-		server.start();
-	}
+    @BeforeClass
+    public static void beforeTests() throws Exception {
+        // find a free port for test server
+        List<Integer> freePorts = HostUtils.findFreePorts(1);
+        httpsPort = freePorts.get(0);
+        // server instances are created by each individual test method
+        server = createHttpsServer(httpsPort);
+        server.start();
+    }
 
-	/**
-	 * Creates a HTTPS server to be used during the test methods. The server
-	 * requires no client authentication.
-	 *
-	 * @param httpsPort
-	 * @return
-	 */
-	private static Server createHttpsServer(int httpsPort) {
-		ServletDefinition servlet = new ServletDefinition.Builder()
-				.servlet(new HelloWorldServlet()).servletPath("/")
-				.requireBasicAuth(false).requireRole("USER").build();
-		return ServletServerBuilder.create().httpsPort(httpsPort)
-				.sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(SERVER_PKCS12_KEYSTORE)
-				.sslKeyStorePassword(SERVER_PKCS12_KEYSTORE_PASSWORD)
-				.sslRequireClientCert(false).addServlet(servlet).build();
-	}
+    /**
+     * Creates a HTTPS server to be used during the test methods. The server
+     * requires no client authentication.
+     *
+     * @param httpsPort
+     * @return
+     */
+    private static Server createHttpsServer(int httpsPort) {
+        ServletDefinition servlet = new ServletDefinition.Builder().servlet(new HelloWorldServlet()).servletPath("/")
+                .requireBasicAuth(false).requireRole("USER").build();
+        return ServletServerBuilder.create().httpsPort(httpsPort).sslKeyStoreType(SslKeyStoreType.PKCS12)
+                .sslKeyStorePath(SERVER_PKCS12_KEYSTORE).sslKeyStorePassword(SERVER_PKCS12_KEYSTORE_PASSWORD)
+                .sslRequireClientCert(false).addServlet(servlet).build();
+    }
 
-	/**
-	 * Access with no authentication.
-	 */
-	@Test
-	public void nonAuthenticatedClient() throws IOException {
-		Http http = Http.builder().build();
+    /**
+     * Access with no authentication.
+     */
+    @Test
+    public void nonAuthenticatedClient() throws IOException {
+        Http http = Http.builder().build();
 
-		HttpRequestResponse response = http.execute(new HttpGet(url("/")));
-		assertThat(response.getStatusCode(), is(200));
-		assertThat(response.getResponseBody(), is("Hello World!"));
-	}
+        HttpRequestResponse response = http.execute(new HttpGet(url("/")));
+        assertThat(response.getStatusCode(), is(200));
+        assertThat(response.getResponseBody(), is("Hello World!"));
+    }
 
-	/**
-	 * Authenticating with basic authentication (should work, server doesn't
-	 * care).
-	 */
-	@Test
-	public void basicCredentialsClient() throws IOException {
-		Http http = Http.builder().clientBasicAuth(trustedPasswordCredentials)
-				.build();
+    /**
+     * Authenticating with basic authentication (should work, server doesn't
+     * care).
+     */
+    @Test
+    public void basicCredentialsClient() throws IOException {
+        Http http = Http.builder().clientBasicAuth(trustedPasswordCredentials).build();
 
-		HttpRequestResponse response = http.execute(new HttpGet(url("/")));
-		assertThat(response.getStatusCode(), is(200));
-		assertThat(response.getResponseBody(), is("Hello World!"));
-	}
+        HttpRequestResponse response = http.execute(new HttpGet(url("/")));
+        assertThat(response.getStatusCode(), is(200));
+        assertThat(response.getResponseBody(), is("Hello World!"));
+    }
 
-	/**
-	 * Authenticating with cert authentication (should work, server doesn't
-	 * care).
-	 */
-	@Test
-	public void certCredentialsClient() throws IOException {
-		Http http = Http.builder().clientCertAuth(certCredentials).build();
+    /**
+     * Authenticating with cert authentication (should work, server doesn't
+     * care).
+     */
+    @Test
+    public void certCredentialsClient() throws IOException {
+        Http http = Http.builder().clientCertAuth(certCredentials).build();
 
-		HttpRequestResponse response = http.execute(new HttpGet(url("/")));
-		assertThat(response.getStatusCode(), is(200));
-		assertThat(response.getResponseBody(), is("Hello World!"));
-	}
+        HttpRequestResponse response = http.execute(new HttpGet(url("/")));
+        assertThat(response.getStatusCode(), is(200));
+        assertThat(response.getResponseBody(), is("Hello World!"));
+    }
 
-	/**
-	 * Make sure the client can connect when supplying *both* BASIC and
-	 * certificate credentials. The server should simply ignore all
-	 * authentication credentials.
-	 */
-	@Test
-	public void authenticateWithBasicAndCertCredentials() throws IOException {
-		Http http = Http.builder().clientCertAuth(certCredentials)
-				.clientBasicAuth(trustedPasswordCredentials).build();
+    /**
+     * Make sure the client can connect when supplying *both* BASIC and
+     * certificate credentials. The server should simply ignore all
+     * authentication credentials.
+     */
+    @Test
+    public void authenticateWithBasicAndCertCredentials() throws IOException {
+        Http http = Http.builder().clientCertAuth(certCredentials).clientBasicAuth(trustedPasswordCredentials).build();
 
-		HttpRequestResponse response = http.execute(new HttpGet(url("/")));
-		assertThat(response.getStatusCode(), is(200));
-		assertThat(response.getResponseBody(), is("Hello World!"));
-	}
+        HttpRequestResponse response = http.execute(new HttpGet(url("/")));
+        assertThat(response.getStatusCode(), is(200));
+        assertThat(response.getResponseBody(), is("Hello World!"));
+    }
 
-	private String url(String path) {
-		return String.format("https://localhost:%d%s", httpsPort, path);
-	}
+    private String url(String path) {
+        return String.format("https://localhost:%d%s", httpsPort, path);
+    }
 }

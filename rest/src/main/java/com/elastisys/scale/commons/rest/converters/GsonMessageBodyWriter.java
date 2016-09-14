@@ -35,35 +35,29 @@ import com.google.common.base.Charsets;
 @Produces(MediaType.APPLICATION_JSON)
 @Singleton
 public class GsonMessageBodyWriter<T> implements MessageBodyWriter<T> {
-	private static final Logger LOG = LoggerFactory
-			.getLogger(GsonMessageBodyWriter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GsonMessageBodyWriter.class);
 
-	@Override
-	public boolean isWriteable(Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		// assume we can serialize instances for any class
-		return true;
-	}
+    @Override
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        // assume we can serialize instances for any class
+        return true;
+    }
 
-	@Override
-	public long getSize(T t, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType) {
-		// according to getSize javadoc, this method is ignored by the JAX-RS
-		// runtime
-		return -1;
-	}
+    @Override
+    public long getSize(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+        // according to getSize javadoc, this method is ignored by the JAX-RS
+        // runtime
+        return -1;
+    }
 
-	@Override
-	public void writeTo(T t, Class<?> type, Type genericType,
-			Annotation[] annotations, MediaType mediaType,
-			MultivaluedMap<String, Object> httpHeaders,
-			OutputStream entityStream) throws IOException,
-			WebApplicationException {
-		entityStream.write(serialize(t));
-	}
+    @Override
+    public void writeTo(T t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
+        entityStream.write(serialize(t));
+    }
 
-	private byte[] serialize(T t) {
-		return JsonUtils.toPrettyString(JsonUtils.toJson(t)).getBytes(
-				Charsets.UTF_8);
-	}
+    private byte[] serialize(T t) {
+        return JsonUtils.toPrettyString(JsonUtils.toJson(t)).getBytes(Charsets.UTF_8);
+    }
 }

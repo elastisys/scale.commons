@@ -31,78 +31,71 @@ import com.google.gson.JsonElement;
 @ApplicationPath("/")
 class SecuredApplication extends ResourceConfig {
 
-	private final static Logger LOG = LoggerFactory
-			.getLogger(SecuredApplication.class);
+    private final static Logger LOG = LoggerFactory.getLogger(SecuredApplication.class);
 
-	/**
-	 * Creates a new {@link SecuredApplication}.
-	 *
-	 * @param authTokenRequestFilter
-	 *            The {@link AuthTokenRequestFilter} that will be used to
-	 *            protect the application.
-	 */
-	public SecuredApplication(AuthTokenRequestFilter authTokenRequestFilter) {
-		super();
+    /**
+     * Creates a new {@link SecuredApplication}.
+     *
+     * @param authTokenRequestFilter
+     *            The {@link AuthTokenRequestFilter} that will be used to
+     *            protect the application.
+     */
+    public SecuredApplication(AuthTokenRequestFilter authTokenRequestFilter) {
+        super();
 
-		// request/response filters
-		register(authTokenRequestFilter);
+        // request/response filters
+        register(authTokenRequestFilter);
 
-		// POJO <-> JSON conversions
-		register(GsonMessageBodyReader.class);
-		register(GsonMessageBodyWriter.class);
+        // POJO <-> JSON conversions
+        register(GsonMessageBodyReader.class);
+        register(GsonMessageBodyWriter.class);
 
-		// add resource provider classes
-		register(ResponseHandler.class);
-	}
+        // add resource provider classes
+        register(ResponseHandler.class);
+    }
 
-	@Path("")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public static class ResponseHandler {
+    @Path("")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public static class ResponseHandler {
 
-		private static Logger LOG = LoggerFactory
-				.getLogger(ResponseHandler.class);
+        private static Logger LOG = LoggerFactory.getLogger(ResponseHandler.class);
 
-		@Context
-		private UriInfo requestUri;
+        @Context
+        private UriInfo requestUri;
 
-		/**
-		 * Authentication required for this resource.
-		 *
-		 * @return
-		 */
-		@GET
-		@Path("/protected")
-		@RequireJwtAuthentication
-		public Response getProtected(@Context SecurityContext securityContext)
-				throws MalformedClaimException {
-			LOG.info("GET {}", this.requestUri.getAbsolutePath());
+        /**
+         * Authentication required for this resource.
+         *
+         * @return
+         */
+        @GET
+        @Path("/protected")
+        @RequireJwtAuthentication
+        public Response getProtected(@Context SecurityContext securityContext) throws MalformedClaimException {
+            LOG.info("GET {}", this.requestUri.getAbsolutePath());
 
-			AuthTokenPrincipal authToken = AuthTokenPrincipal.class
-					.cast(securityContext.getUserPrincipal());
-			String client = authToken.getName();
-			String issuer = authToken.getTokenClaims().getIssuer();
-			LOG.debug("serving request for client '{}' (token issued by '{}')",
-					client, issuer);
-			JsonElement response = JsonUtils
-					.parseJsonString("{\"value\": \"protected\"}");
-			return Response.ok(response).build();
-		}
+            AuthTokenPrincipal authToken = AuthTokenPrincipal.class.cast(securityContext.getUserPrincipal());
+            String client = authToken.getName();
+            String issuer = authToken.getTokenClaims().getIssuer();
+            LOG.debug("serving request for client '{}' (token issued by '{}')", client, issuer);
+            JsonElement response = JsonUtils.parseJsonString("{\"value\": \"protected\"}");
+            return Response.ok(response).build();
+        }
 
-		/**
-		 * No authentication required for this resource.
-		 *
-		 * @return
-		 */
-		@GET
-		@Path("/unprotected")
-		public Response getUnprotected() {
-			LOG.info("GET {}", this.requestUri.getAbsolutePath());
-			JsonElement response = JsonUtils
-					.parseJsonString("{\"value\": \"unprotected\"}");
-			return Response.ok(response).build();
-		}
+        /**
+         * No authentication required for this resource.
+         *
+         * @return
+         */
+        @GET
+        @Path("/unprotected")
+        public Response getUnprotected() {
+            LOG.info("GET {}", this.requestUri.getAbsolutePath());
+            JsonElement response = JsonUtils.parseJsonString("{\"value\": \"unprotected\"}");
+            return Response.ok(response).build();
+        }
 
-	}
+    }
 
 }

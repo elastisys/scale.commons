@@ -15,15 +15,15 @@ import org.jose4j.jwt.consumer.InvalidJwtException;
 @FunctionalInterface
 public interface AuthTokenValidator {
 
-	/**
-	 * Deserializes and validates the signature of a JSON Web Token and checks
-	 * the validity of the token claims.
-	 *
-	 * @param signedToken
-	 *            A signed and base 64-encoded JSON Web Token.
-	 * @return The token claims, if the token could be validated.
-	 * @throws InvalidJwtException
-	 *             on failure to validate the authentication token
-	 */
-	JwtClaims validate(String signedToken) throws InvalidJwtException;
+    /**
+     * Deserializes and validates the signature of a JSON Web Token and checks
+     * the validity of the token claims.
+     *
+     * @param signedToken
+     *            A signed and base 64-encoded JSON Web Token.
+     * @return The token claims, if the token could be validated.
+     * @throws InvalidJwtException
+     *             on failure to validate the authentication token
+     */
+    JwtClaims validate(String signedToken) throws InvalidJwtException;
 }

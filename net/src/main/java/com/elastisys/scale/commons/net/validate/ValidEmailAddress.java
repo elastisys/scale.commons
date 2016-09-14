@@ -10,27 +10,27 @@ import com.google.common.base.Predicate;
  */
 public class ValidEmailAddress implements Predicate<String> {
 
-	/**
-	 * Validates a given email address for correctness.
-	 *
-	 * @param emailAddress
-	 *            An email address.
-	 * @return <code>true</code> if the email address is correct,
-	 *         <code>false</code> otherwise.
-	 */
-	public static boolean isValid(String emailAddress) {
-		return new ValidEmailAddress().apply(emailAddress);
-	}
+    /**
+     * Validates a given email address for correctness.
+     *
+     * @param emailAddress
+     *            An email address.
+     * @return <code>true</code> if the email address is correct,
+     *         <code>false</code> otherwise.
+     */
+    public static boolean isValid(String emailAddress) {
+        return new ValidEmailAddress().apply(emailAddress);
+    }
 
-	@Override
-	public boolean apply(String emailAddress) {
-		try {
-			InternetAddress address = new InternetAddress(emailAddress);
-			address.validate();
-			return true;
-		} catch (AddressException ex) {
-			return false;
-		}
-	}
+    @Override
+    public boolean apply(String emailAddress) {
+        try {
+            InternetAddress address = new InternetAddress(emailAddress);
+            address.validate();
+            return true;
+        } catch (AddressException ex) {
+            return false;
+        }
+    }
 
 }

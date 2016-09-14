@@ -27,10 +27,9 @@ import com.google.gson.JsonSerializer;
  */
 public class GsonDateTimeSerializer implements JsonSerializer<DateTime> {
 
-	@Override
-	public JsonElement serialize(DateTime src, Type typeOfSrc,
-			JsonSerializationContext context) {
-		return new JsonPrimitive(src.toDateTime(DateTimeZone.UTC).toString());
-	}
+    @Override
+    public JsonElement serialize(DateTime src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(src.toDateTime(DateTimeZone.UTC).toString());
+    }
 
 }

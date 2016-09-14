@@ -24,183 +24,154 @@ import org.junit.Test;
  */
 public class TestBaseServerBuilder {
 
-	private static final String ETC_SECURITY = "/etc/security";
+    private static final String ETC_SECURITY = "/etc/security";
 
-	@Test
-	public void noListenPorts() throws Exception {
-		Server server = BaseServerBuilder.create().build();
-		assertTrue(Arrays.asList(server.getConnectors()).isEmpty());
-	}
+    @Test
+    public void noListenPorts() throws Exception {
+        Server server = BaseServerBuilder.create().build();
+        assertTrue(Arrays.asList(server.getConnectors()).isEmpty());
+    }
 
-	@Test
-	public void http() throws Exception {
-		Server server = BaseServerBuilder.create().httpPort(8080).build();
+    @Test
+    public void http() throws Exception {
+        Server server = BaseServerBuilder.create().httpPort(8080).build();
 
-		List<Connector> connectors = Arrays.asList(server.getConnectors());
-		assertThat(server.getConnectors().length, is(1));
-		// should have a server connector on port 8080
-		ServerConnector connector = (ServerConnector) connectors.get(0);
-		assertThat(connector.getPort(), is(8080));
+        List<Connector> connectors = Arrays.asList(server.getConnectors());
+        assertThat(server.getConnectors().length, is(1));
+        // should have a server connector on port 8080
+        ServerConnector connector = (ServerConnector) connectors.get(0);
+        assertThat(connector.getPort(), is(8080));
 
-		// should have a http connection factory
-		HttpConnectionFactory httpConnectionFactory = connector
-				.getConnectionFactory(HttpConnectionFactory.class);
-		assertThat(httpConnectionFactory, is(notNullValue()));
+        // should have a http connection factory
+        HttpConnectionFactory httpConnectionFactory = connector.getConnectionFactory(HttpConnectionFactory.class);
+        assertThat(httpConnectionFactory, is(notNullValue()));
 
-		// no https redirect port should be set
-		assertThat(httpConnectionFactory.getHttpConfiguration().getSecurePort(),
-				is(0));
-	}
+        // no https redirect port should be set
+        assertThat(httpConnectionFactory.getHttpConfiguration().getSecurePort(), is(0));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void httpsMissingKeystore() throws Exception {
-		BaseServerBuilder.create().httpsPort(8443).build();
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void httpsMissingKeystore() throws Exception {
+        BaseServerBuilder.create().httpsPort(8443).build();
+    }
 
-	/**
-	 * Creates a HTTPS server with a key store but without explicit trust store.
-	 * In these cases, the key store is used as trust store.
-	 */
-	@Test
-	public void https() throws Exception {
-		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
-				.sslKeyStorePassword("pkcs12password").build();
+    /**
+     * Creates a HTTPS server with a key store but without explicit trust store.
+     * In these cases, the key store is used as trust store.
+     */
+    @Test
+    public void https() throws Exception {
+        Server server = BaseServerBuilder.create().httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
+                .sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").sslKeyStorePassword("pkcs12password").build();
 
-		List<Connector> connectors = Arrays.asList(server.getConnectors());
-		assertThat(server.getConnectors().length, is(1));
-		// should have a server connector on port 8443
-		ServerConnector connector = (ServerConnector) connectors.get(0);
-		assertThat(connector.getPort(), is(8443));
+        List<Connector> connectors = Arrays.asList(server.getConnectors());
+        assertThat(server.getConnectors().length, is(1));
+        // should have a server connector on port 8443
+        ServerConnector connector = (ServerConnector) connectors.get(0);
+        assertThat(connector.getPort(), is(8443));
 
-		// should have a https connection factory
-		SslConnectionFactory httpsConnectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(httpsConnectionFactory, is(notNullValue()));
+        // should have a https connection factory
+        SslConnectionFactory httpsConnectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
+        assertThat(httpsConnectionFactory, is(notNullValue()));
 
-		// should have a key store configured
-		SslContextFactory sslContextFactory = httpsConnectionFactory
-				.getSslContextFactory();
-		assertThat(sslContextFactory, is(notNullValue()));
-		assertThat(sslContextFactory.getKeyStoreType(),
-				is(SslKeyStoreType.PKCS12.name()));
-		assertThat(sslContextFactory.getKeyStoreResource().getFile().getPath(),
-				is(ETC_SECURITY + "/server_keystore.p12"));
+        // should have a key store configured
+        SslContextFactory sslContextFactory = httpsConnectionFactory.getSslContextFactory();
+        assertThat(sslContextFactory, is(notNullValue()));
+        assertThat(sslContextFactory.getKeyStoreType(), is(SslKeyStoreType.PKCS12.name()));
+        assertThat(sslContextFactory.getKeyStoreResource().getFile().getPath(),
+                is(ETC_SECURITY + "/server_keystore.p12"));
 
-		// since no trust store was specified, it should fall back to use the
-		// key store as trust store
-		assertThat(sslContextFactory.getTrustStore(),
-				is(sslContextFactory.getKeyStore()));
+        // since no trust store was specified, it should fall back to use the
+        // key store as trust store
+        assertThat(sslContextFactory.getTrustStore(), is(sslContextFactory.getKeyStore()));
 
-		// should not require client cert authentication
-		assertThat(sslContextFactory.getNeedClientAuth(), is(false));
-		// should not *want* client cert authentication (if offered)
-		assertThat(sslContextFactory.getWantClientAuth(), is(false));
-	}
+        // should not require client cert authentication
+        assertThat(sslContextFactory.getNeedClientAuth(), is(false));
+        // should not *want* client cert authentication (if offered)
+        assertThat(sslContextFactory.getWantClientAuth(), is(false));
+    }
 
-	@Test(expected = IllegalArgumentException.class)
-	public void httpsMissingKeystorePassword() throws Exception {
-		BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").build();
-	}
+    @Test(expected = IllegalArgumentException.class)
+    public void httpsMissingKeystorePassword() throws Exception {
+        BaseServerBuilder.create().httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
+                .sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").build();
+    }
 
-	@Test
-	public void httpsWithExplicitTrustStore() throws Exception {
-		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
-				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(SslKeyStoreType.JKS)
-				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
-				.sslTrustStorePassword("truststorepassword").build();
+    @Test
+    public void httpsWithExplicitTrustStore() throws Exception {
+        Server server = BaseServerBuilder.create().httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
+                .sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").sslKeyStorePassword("pkcs12password")
+                .sslTrustStoreType(SslKeyStoreType.JKS).sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
+                .sslTrustStorePassword("truststorepassword").build();
 
-		List<Connector> connectors = Arrays.asList(server.getConnectors());
-		assertThat(server.getConnectors().length, is(1));
-		// should have a server connector on port 8443
-		ServerConnector connector = (ServerConnector) connectors.get(0);
-		assertThat(connector.getPort(), is(8443));
+        List<Connector> connectors = Arrays.asList(server.getConnectors());
+        assertThat(server.getConnectors().length, is(1));
+        // should have a server connector on port 8443
+        ServerConnector connector = (ServerConnector) connectors.get(0);
+        assertThat(connector.getPort(), is(8443));
 
-		// should have a https connection factory
-		SslConnectionFactory httpsConnectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(httpsConnectionFactory, is(notNullValue()));
+        // should have a https connection factory
+        SslConnectionFactory httpsConnectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
+        assertThat(httpsConnectionFactory, is(notNullValue()));
 
-		// should have a key store configured
-		SslContextFactory sslContextFactory = httpsConnectionFactory
-				.getSslContextFactory();
-		assertThat(sslContextFactory, is(notNullValue()));
-		assertThat(sslContextFactory.getTrustStoreType(),
-				is(SslKeyStoreType.JKS.name()));
-		assertThat(
-				sslContextFactory.getTrustStoreResource().getFile().getPath(),
-				is(ETC_SECURITY + "/server_truststore.jks"));
+        // should have a key store configured
+        SslContextFactory sslContextFactory = httpsConnectionFactory.getSslContextFactory();
+        assertThat(sslContextFactory, is(notNullValue()));
+        assertThat(sslContextFactory.getTrustStoreType(), is(SslKeyStoreType.JKS.name()));
+        assertThat(sslContextFactory.getTrustStoreResource().getFile().getPath(),
+                is(ETC_SECURITY + "/server_truststore.jks"));
 
-		// should not require client cert authentication
-		assertThat(sslContextFactory.getNeedClientAuth(), is(false));
-		// should not *want* client cert authentication (if offered)
-		assertThat(sslContextFactory.getWantClientAuth(), is(false));
-	}
+        // should not require client cert authentication
+        assertThat(sslContextFactory.getNeedClientAuth(), is(false));
+        // should not *want* client cert authentication (if offered)
+        assertThat(sslContextFactory.getWantClientAuth(), is(false));
+    }
 
-	@Test
-	public void httpsRequireClientCert() throws Exception {
-		Server server = BaseServerBuilder.create().httpsPort(8443)
-				.sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
-				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(SslKeyStoreType.JKS)
-				.sslRequireClientCert(true)
-				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
-				.sslTrustStorePassword("truststorepassword")
-				.sslRequireClientCert(true).build();
+    @Test
+    public void httpsRequireClientCert() throws Exception {
+        Server server = BaseServerBuilder.create().httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
+                .sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12").sslKeyStorePassword("pkcs12password")
+                .sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
+                .sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks").sslTrustStorePassword("truststorepassword")
+                .sslRequireClientCert(true).build();
 
-		List<Connector> connectors = Arrays.asList(server.getConnectors());
-		assertThat(server.getConnectors().length, is(1));
-		// should have a server connector on port 8443
-		ServerConnector connector = (ServerConnector) connectors.get(0);
-		assertThat(connector.getPort(), is(8443));
+        List<Connector> connectors = Arrays.asList(server.getConnectors());
+        assertThat(server.getConnectors().length, is(1));
+        // should have a server connector on port 8443
+        ServerConnector connector = (ServerConnector) connectors.get(0);
+        assertThat(connector.getPort(), is(8443));
 
-		// should have a https connection factory
-		SslConnectionFactory httpsConnectionFactory = connector
-				.getConnectionFactory(SslConnectionFactory.class);
-		assertThat(httpsConnectionFactory, is(notNullValue()));
+        // should have a https connection factory
+        SslConnectionFactory httpsConnectionFactory = connector.getConnectionFactory(SslConnectionFactory.class);
+        assertThat(httpsConnectionFactory, is(notNullValue()));
 
-		SslContextFactory sslContextFactory = httpsConnectionFactory
-				.getSslContextFactory();
+        SslContextFactory sslContextFactory = httpsConnectionFactory.getSslContextFactory();
 
-		// should require client cert authentication
-		assertThat(sslContextFactory.getNeedClientAuth(), is(true));
-	}
+        // should require client cert authentication
+        assertThat(sslContextFactory.getNeedClientAuth(), is(true));
+    }
 
-	@Test
-	public void httpAndHttps() {
-		Server server = BaseServerBuilder.create().httpPort(8080)
-				.httpsPort(8443).sslKeyStoreType(SslKeyStoreType.PKCS12)
-				.sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
-				.sslKeyStorePassword("pkcs12password")
-				.sslTrustStoreType(SslKeyStoreType.JKS)
-				.sslRequireClientCert(true)
-				.sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks")
-				.sslTrustStorePassword("truststorepassword")
-				.sslRequireClientCert(true).build();
+    @Test
+    public void httpAndHttps() {
+        Server server = BaseServerBuilder.create().httpPort(8080).httpsPort(8443)
+                .sslKeyStoreType(SslKeyStoreType.PKCS12).sslKeyStorePath(ETC_SECURITY + "/server_keystore.p12")
+                .sslKeyStorePassword("pkcs12password").sslTrustStoreType(SslKeyStoreType.JKS).sslRequireClientCert(true)
+                .sslTrustStorePath(ETC_SECURITY + "/server_truststore.jks").sslTrustStorePassword("truststorepassword")
+                .sslRequireClientCert(true).build();
 
-		List<Connector> connectors = Arrays.asList(server.getConnectors());
-		assertThat(server.getConnectors().length, is(2));
-		// should have a server connector on port 8080
-		ServerConnector httpConnector = (ServerConnector) connectors.get(0);
-		assertThat(httpConnector.getPort(), is(8080));
-		// should have a server connector on port 8443
-		ServerConnector httpsConnector = (ServerConnector) connectors.get(1);
-		assertThat(httpsConnector.getPort(), is(8443));
+        List<Connector> connectors = Arrays.asList(server.getConnectors());
+        assertThat(server.getConnectors().length, is(2));
+        // should have a server connector on port 8080
+        ServerConnector httpConnector = (ServerConnector) connectors.get(0);
+        assertThat(httpConnector.getPort(), is(8080));
+        // should have a server connector on port 8443
+        ServerConnector httpsConnector = (ServerConnector) connectors.get(1);
+        assertThat(httpsConnector.getPort(), is(8443));
 
-		// should redirect secure connections to https port
-		HttpConnectionFactory httpFactory = httpConnector
-				.getConnectionFactory(HttpConnectionFactory.class);
-		assertThat(httpFactory, is(notNullValue()));
-		assertThat(httpFactory.getHttpConfiguration().getSecurePort(),
-				is(8443));
-		assertThat(httpFactory.getHttpConfiguration().getSecureScheme(),
-				is("https"));
-	}
+        // should redirect secure connections to https port
+        HttpConnectionFactory httpFactory = httpConnector.getConnectionFactory(HttpConnectionFactory.class);
+        assertThat(httpFactory, is(notNullValue()));
+        assertThat(httpFactory.getHttpConfiguration().getSecurePort(), is(8443));
+        assertThat(httpFactory.getHttpConfiguration().getSecureScheme(), is("https"));
+    }
 }

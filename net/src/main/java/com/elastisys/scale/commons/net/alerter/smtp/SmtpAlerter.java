@@ -32,115 +32,107 @@ import com.google.gson.JsonElement;
  * .
  */
 public class SmtpAlerter implements Alerter {
-	static final Logger LOG = LoggerFactory.getLogger(SmtpAlerter.class);
+    static final Logger LOG = LoggerFactory.getLogger(SmtpAlerter.class);
 
-	/**
-	 * Configuration that governs how {@link Alert} emails are to be sent.
-	 */
-	private final SmtpAlerterConfig config;
-	/**
-	 * Standard meta data to append to every received {@link Alert} before
-	 * sending to the final receiver.
-	 */
-	private final Map<String, JsonElement> standardMetadata;
+    /**
+     * Configuration that governs how {@link Alert} emails are to be sent.
+     */
+    private final SmtpAlerterConfig config;
+    /**
+     * Standard meta data to append to every received {@link Alert} before
+     * sending to the final receiver.
+     */
+    private final Map<String, JsonElement> standardMetadata;
 
-	/**
-	 * Constructs an {@link SmtpAlerter} configured to send {@link Alert} events
-	 * through a given mail server to a given list of recipients.
-	 *
-	 * @param config
-	 *            Configuration that governs how {@link Alert} emails are to be
-	 *            sent.
-	 */
-	public SmtpAlerter(SmtpAlerterConfig config) {
-		this(config, new HashMap<String, JsonElement>());
-	}
+    /**
+     * Constructs an {@link SmtpAlerter} configured to send {@link Alert} events
+     * through a given mail server to a given list of recipients.
+     *
+     * @param config
+     *            Configuration that governs how {@link Alert} emails are to be
+     *            sent.
+     */
+    public SmtpAlerter(SmtpAlerterConfig config) {
+        this(config, new HashMap<String, JsonElement>());
+    }
 
-	/**
-	 * Constructs an {@link SmtpAlerter} configured to send {@link Alert} events
-	 * through a given mail server to a given list of recipients.
-	 *
-	 * @param config
-	 *            Configuration that governs how {@link Alert} emails are to be
-	 *            sent.
-	 * @param standardMetadata
-	 *            Standard meta data to add to every {@link Alert} before
-	 *            sending to the final receiver.
-	 */
-	public SmtpAlerter(SmtpAlerterConfig config,
-			Map<String, JsonElement> standardMetadata) {
-		this.config = config;
-		this.standardMetadata = standardMetadata;
-	}
+    /**
+     * Constructs an {@link SmtpAlerter} configured to send {@link Alert} events
+     * through a given mail server to a given list of recipients.
+     *
+     * @param config
+     *            Configuration that governs how {@link Alert} emails are to be
+     *            sent.
+     * @param standardMetadata
+     *            Standard meta data to add to every {@link Alert} before
+     *            sending to the final receiver.
+     */
+    public SmtpAlerter(SmtpAlerterConfig config, Map<String, JsonElement> standardMetadata) {
+        this.config = config;
+        this.standardMetadata = standardMetadata;
+    }
 
-	/**
-	 * Forwards an {@link Alert} to the list of email recipients that this
-	 * {@link SmtpAlerter} has been set up with, unless the {@link Alert} has a
-	 * severity that doesn't match the severity filter in the
-	 * {@link SmtpAlerterConfig} in which case the message will be suppressed.
-	 * <p/>
-	 * If this {@link SmtpAlerter} has been registered with an {@link EventBus}
-	 * , all {@link Alert} events posted on the {@link EventBus} will
-	 * automatically be passed to this method.
-	 *
-	 * @param alert
-	 */
-	@Override
-	@Subscribe
-	public void handleAlert(Alert alert) {
-		// apply severity filter
-		SeverityFilter severityFilter = this.config.getSeverityFilter();
-		if (severityFilter.shouldSuppress(alert)) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(
-						"suppressing alert message with severity {}, "
-								+ "as it doesn't match the severity filter '{}'.",
-						alert.getSeverity().name(),
-						severityFilter.getFilterExpression());
-			}
-			return;
-		}
+    /**
+     * Forwards an {@link Alert} to the list of email recipients that this
+     * {@link SmtpAlerter} has been set up with, unless the {@link Alert} has a
+     * severity that doesn't match the severity filter in the
+     * {@link SmtpAlerterConfig} in which case the message will be suppressed.
+     * <p/>
+     * If this {@link SmtpAlerter} has been registered with an {@link EventBus}
+     * , all {@link Alert} events posted on the {@link EventBus} will
+     * automatically be passed to this method.
+     *
+     * @param alert
+     */
+    @Override
+    @Subscribe
+    public void handleAlert(Alert alert) {
+        // apply severity filter
+        SeverityFilter severityFilter = this.config.getSeverityFilter();
+        if (severityFilter.shouldSuppress(alert)) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(
+                        "suppressing alert message with severity {}, "
+                                + "as it doesn't match the severity filter '{}'.",
+                        alert.getSeverity().name(), severityFilter.getFilterExpression());
+            }
+            return;
+        }
 
-		Alert taggedAlert = appendStandardTags(alert);
-		String alertMessage = JsonUtils
-				.toPrettyString(JsonUtils.toJson(taggedAlert));
-		try {
-			LOG.debug("sending alert to {}: {}", this.config.getRecipients(),
-					alert);
-			SmtpMessage email = new SmtpMessage(this.config.getRecipients(),
-					this.config.getSender(), this.config.getSubject(),
-					alertMessage, UtcTime.now());
-			new SmtpSender(email, this.config.getSmtpClientConfig()).call();
-		} catch (Exception e) {
-			LOG.error(String.format(
-					"failed to send alert message: %s\nAlert message was: %s",
-					e.getMessage(), alertMessage), e);
-		}
-	}
+        Alert taggedAlert = appendStandardTags(alert);
+        String alertMessage = JsonUtils.toPrettyString(JsonUtils.toJson(taggedAlert));
+        try {
+            LOG.debug("sending alert to {}: {}", this.config.getRecipients(), alert);
+            SmtpMessage email = new SmtpMessage(this.config.getRecipients(), this.config.getSender(),
+                    this.config.getSubject(), alertMessage, UtcTime.now());
+            new SmtpSender(email, this.config.getSmtpClientConfig()).call();
+        } catch (Exception e) {
+            LOG.error(String.format("failed to send alert message: %s\nAlert message was: %s", e.getMessage(),
+                    alertMessage), e);
+        }
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(this.config, this.standardMetadata);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.config, this.standardMetadata);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SmtpAlerter) {
-			SmtpAlerter that = (SmtpAlerter) obj;
-			return Objects.equal(this.config, that.config) && Objects
-					.equal(this.standardMetadata, that.standardMetadata);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SmtpAlerter) {
+            SmtpAlerter that = (SmtpAlerter) obj;
+            return Objects.equal(this.config, that.config)
+                    && Objects.equal(this.standardMetadata, that.standardMetadata);
 
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 
-	private Alert appendStandardTags(Alert alert) {
-		for (Entry<String, JsonElement> standardMetadata : this.standardMetadata
-				.entrySet()) {
-			alert = alert.withMetadata(standardMetadata.getKey(),
-					standardMetadata.getValue());
-		}
-		return alert;
-	}
+    private Alert appendStandardTags(Alert alert) {
+        for (Entry<String, JsonElement> standardMetadata : this.standardMetadata.entrySet()) {
+            alert = alert.withMetadata(standardMetadata.getKey(), standardMetadata.getValue());
+        }
+        return alert;
+    }
 
 }

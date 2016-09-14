@@ -6,35 +6,33 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class SomeClassWithTimestamp {
-	private final String a;
-	private final DateTime time;
+    private final String a;
+    private final DateTime time;
 
-	public SomeClassWithTimestamp(String a, DateTime time) {
-		this.a = a;
-		this.time = time;
-	}
+    public SomeClassWithTimestamp(String a, DateTime time) {
+        this.a = a;
+        this.time = time;
+    }
 
-	public String getA() {
-		return this.a;
-	}
+    public String getA() {
+        return this.a;
+    }
 
-	public DateTime getTime() {
-		return this.time;
-	}
+    public DateTime getTime() {
+        return this.time;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof SomeClassWithTimestamp) {
-			SomeClassWithTimestamp that = (SomeClassWithTimestamp) obj;
-			return Objects.equal(this.a, that.a)
-					&& Objects.equal(this.time, that.time);
-		}
-		return false;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof SomeClassWithTimestamp) {
+            SomeClassWithTimestamp that = (SomeClassWithTimestamp) obj;
+            return Objects.equal(this.a, that.a) && Objects.equal(this.time, that.time);
+        }
+        return false;
+    }
 
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this).add("a", this.a)
-				.add("time", this.time).toString();
-	}
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("a", this.a).add("time", this.time).toString();
+    }
 }

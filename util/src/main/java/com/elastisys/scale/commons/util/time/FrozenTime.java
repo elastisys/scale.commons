@@ -16,63 +16,63 @@ import org.joda.time.DateTimeUtils;
  * 
  */
 public class FrozenTime {
-	/**
-	 * Returns the current time as an UTC timestamp.
-	 * 
-	 * @return The current UTC time.
-	 */
-	public static DateTime now() {
-		return UtcTime.now();
-	}
+    /**
+     * Returns the current time as an UTC timestamp.
+     * 
+     * @return The current UTC time.
+     */
+    public static DateTime now() {
+        return UtcTime.now();
+    }
 
-	/**
-	 * Sets the current time (as returned by the {@link DateTime}) to a fixed
-	 * time instant. All subsequent requests for the current time to
-	 * {@link DateTime} will return this time instant (until
-	 * {@link #resumeSystemTime()} is invoked).
-	 * <p/>
-	 * Note: the system clock remains unaffected by this change.
-	 * 
-	 * @param timeInstant
-	 * @return
-	 */
-	public static void setFixed(DateTime timeInstant) {
-		DateTimeUtils.setCurrentMillisFixed(timeInstant.getMillis());
-	}
+    /**
+     * Sets the current time (as returned by the {@link DateTime}) to a fixed
+     * time instant. All subsequent requests for the current time to
+     * {@link DateTime} will return this time instant (until
+     * {@link #resumeSystemTime()} is invoked).
+     * <p/>
+     * Note: the system clock remains unaffected by this change.
+     * 
+     * @param timeInstant
+     * @return
+     */
+    public static void setFixed(DateTime timeInstant) {
+        DateTimeUtils.setCurrentMillisFixed(timeInstant.getMillis());
+    }
 
-	/**
-	 * Advances the current time (as returned by the {@link DateTime}) by one
-	 * second. All subsequent requests for the current time to {@link DateTime}
-	 * will return the resulting time instant (until {@link #resumeSystemTime()}
-	 * is invoked).
-	 * <p/>
-	 * Note: the system clock remains unaffected by this change.
-	 * 
-	 */
-	public static void tick() {
-		tick(1);
-	}
+    /**
+     * Advances the current time (as returned by the {@link DateTime}) by one
+     * second. All subsequent requests for the current time to {@link DateTime}
+     * will return the resulting time instant (until {@link #resumeSystemTime()}
+     * is invoked).
+     * <p/>
+     * Note: the system clock remains unaffected by this change.
+     * 
+     */
+    public static void tick() {
+        tick(1);
+    }
 
-	/**
-	 * Advances the current time (as returned by the {@link DateTime}) by a
-	 * specified number of seconds. All subsequent requests for the current time
-	 * to {@link DateTime} will return the resulting time instant (until
-	 * {@link #resumeSystemTime()} is invoked).
-	 * <p/>
-	 * Note: the system clock remains unaffected by this change.
-	 * 
-	 * 
-	 * @param seconds
-	 */
-	public static void tick(int seconds) {
-		setFixed(now().plusSeconds(seconds));
-	}
+    /**
+     * Advances the current time (as returned by the {@link DateTime}) by a
+     * specified number of seconds. All subsequent requests for the current time
+     * to {@link DateTime} will return the resulting time instant (until
+     * {@link #resumeSystemTime()} is invoked).
+     * <p/>
+     * Note: the system clock remains unaffected by this change.
+     * 
+     * 
+     * @param seconds
+     */
+    public static void tick(int seconds) {
+        setFixed(now().plusSeconds(seconds));
+    }
 
-	/**
-	 * (Re)sets the current time to follow the system clock.
-	 */
-	public static void resumeSystemTime() {
-		DateTimeUtils.setCurrentMillisSystem();
-	}
+    /**
+     * (Re)sets the current time to follow the system clock.
+     */
+    public static void resumeSystemTime() {
+        DateTimeUtils.setCurrentMillisSystem();
+    }
 
 }

@@ -21,39 +21,38 @@ import com.elastisys.scale.commons.util.time.UtcTime;
  * that the token claims look legitimate.
  */
 public class ElastisysAuthTokenValidator implements AuthTokenValidator {
-	/** The supplier of a public key used to sign tokens. */
-	private final Supplier<PublicKey> publicKeySupplier;
+    /** The supplier of a public key used to sign tokens. */
+    private final Supplier<PublicKey> publicKeySupplier;
 
-	/**
-	 * Creates an {@link ElastisysAuthTokenValidator} with a given
-	 * {@link Supplier} of a signature key pair.
-	 *
-	 * @param publicKeySupplier
-	 *            A {@link Supplier} that retrieves a public key used to
-	 *            validate auth token signatures.
-	 */
-	public ElastisysAuthTokenValidator(Supplier<PublicKey> publicKeySupplier) {
-		this.publicKeySupplier = publicKeySupplier;
-	}
+    /**
+     * Creates an {@link ElastisysAuthTokenValidator} with a given
+     * {@link Supplier} of a signature key pair.
+     *
+     * @param publicKeySupplier
+     *            A {@link Supplier} that retrieves a public key used to
+     *            validate auth token signatures.
+     */
+    public ElastisysAuthTokenValidator(Supplier<PublicKey> publicKeySupplier) {
+        this.publicKeySupplier = publicKeySupplier;
+    }
 
-	@Override
-	public JwtClaims validate(String signedToken) throws InvalidJwtException {
-		checkArgument(signedToken != null, "auth token cannot be null");
-		checkArgument(!signedToken.isEmpty(), "auth token cannot be empty");
+    @Override
+    public JwtClaims validate(String signedToken) throws InvalidJwtException {
+        checkArgument(signedToken != null, "auth token cannot be null");
+        checkArgument(!signedToken.isEmpty(), "auth token cannot be empty");
 
-		JwtConsumerBuilder jwtConsumerBuilder = new JwtConsumerBuilder()
-				// verify the signature with the public key
-				.setVerificationKey(this.publicKeySupplier.get());
-		jwtConsumerBuilder.setExpectedIssuer(ElastisysClaims.ISSUER);
-		// set time of token expiry evaluation to now
-		jwtConsumerBuilder.setRequireExpirationTime();
-		NumericDate now = NumericDate
-				.fromMilliseconds(UtcTime.now().getMillis());
-		jwtConsumerBuilder.setEvaluationTime(now);
-		JwtConsumer jwtConsumer = jwtConsumerBuilder.build();
+        JwtConsumerBuilder jwtConsumerBuilder = new JwtConsumerBuilder()
+                // verify the signature with the public key
+                .setVerificationKey(this.publicKeySupplier.get());
+        jwtConsumerBuilder.setExpectedIssuer(ElastisysClaims.ISSUER);
+        // set time of token expiry evaluation to now
+        jwtConsumerBuilder.setRequireExpirationTime();
+        NumericDate now = NumericDate.fromMilliseconds(UtcTime.now().getMillis());
+        jwtConsumerBuilder.setEvaluationTime(now);
+        JwtConsumer jwtConsumer = jwtConsumerBuilder.build();
 
-		// Deserialize and validate the JWT and process it to the Claims
-		return jwtConsumer.processToClaims(signedToken);
-	}
+        // Deserialize and validate the JWT and process it to the Claims
+        return jwtConsumer.processToClaims(signedToken);
+    }
 
 }

@@ -25,9 +25,9 @@ import com.google.gson.JsonParseException;
  * 
  */
 public class GsonDateTimeDeserializer implements JsonDeserializer<DateTime> {
-	@Override
-	public DateTime deserialize(JsonElement json, Type typeOfT,
-			JsonDeserializationContext context) throws JsonParseException {
-		return UtcTime.parse(json.getAsJsonPrimitive().getAsString());
-	}
+    @Override
+    public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return UtcTime.parse(json.getAsJsonPrimitive().getAsString());
+    }
 }
