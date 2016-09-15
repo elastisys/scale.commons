@@ -67,7 +67,7 @@ public class AuthV3Credentials {
 
     /**
      * Returns <code>true</code> if these credentials are project-scoped.
-     * 
+     *
      * @return
      */
     public boolean isProjectScoped() {
@@ -94,9 +94,9 @@ public class AuthV3Credentials {
      * {@link IllegalArgumentException} is thrown.
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.scope != null, "no auth scope given");
-        checkArgument(this.userId != null, "no userId given");
-        checkArgument(this.password != null, "no password given");
+        checkArgument(this.scope != null, "v3Credentials: no auth scope given");
+        checkArgument(this.userId != null, "v3Credentials: no userId given");
+        checkArgument(this.password != null, "v3Credentials: no password given");
         this.scope.validate();
     }
 

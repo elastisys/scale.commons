@@ -65,9 +65,9 @@ public class AuthV2Credentials {
      * {@link IllegalArgumentException} is thrown.
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.tenantName != null, "no tenantName given");
-        checkArgument(this.userName != null, "no userName given");
-        checkArgument(this.password != null, "no password given");
+        checkArgument(this.tenantName != null, "v2Credentials: no tenantName given");
+        checkArgument(this.userName != null, "v2Credentials: no userName given");
+        checkArgument(this.password != null, "v2Credentials: no password given");
     }
 
     @Override

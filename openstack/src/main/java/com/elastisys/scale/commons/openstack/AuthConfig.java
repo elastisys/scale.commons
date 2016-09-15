@@ -95,14 +95,18 @@ public class AuthConfig {
      * {@link IllegalArgumentException} is thrown.
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.keystoneUrl != null, "no keystoneUrl given");
-        checkArgument(this.v2Credentials != null ^ this.v3Credentials != null,
-                "*either* v2 or v3 auth credentials must be given");
-        if (this.v2Credentials != null) {
-            this.v2Credentials.validate();
-        }
-        if (this.v3Credentials != null) {
-            this.v3Credentials.validate();
+        try {
+            checkArgument(this.keystoneUrl != null, "no keystoneUrl given");
+            checkArgument(this.v2Credentials != null ^ this.v3Credentials != null,
+                    "*either* v2Credentials or v3Credentials must be given");
+            if (this.v2Credentials != null) {
+                this.v2Credentials.validate();
+            }
+            if (this.v3Credentials != null) {
+                this.v3Credentials.validate();
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("auth: " + e.getMessage(), e);
         }
     }
 
