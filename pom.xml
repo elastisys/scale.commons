@@ -38,6 +38,7 @@
     <module>logreplayer</module>
     <module>security</module>
     <module>openstack</module>
+    <module>cli</module>
   </modules>
 
   <!-- Location of Git repository. Used to tag releases. -->
@@ -54,7 +55,6 @@
     <!-- Required JDK version -->
     <java.version>1.8</java.version>
 
-    <!-- Version bump made on 2014-12-18 -->
     <guava.version>18.0</guava.version>
     <guice.version>4.1.0</guice.version>
     <apache.httpclient.version>4.5.1</apache.httpclient.version>
@@ -70,7 +70,7 @@
     <quarts.version>2.2.1</quarts.version>
     <commons.math.version>3.3</commons.math.version>
     <jsch.version>0.1.51</jsch.version>
-    <args4j.version>2.32</args4j.version>
+    <args4j.version>2.33</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
     <bouncycastle.version>1.53</bouncycastle.version>
     <openstack4j.version>3.0.2</openstack4j.version>
