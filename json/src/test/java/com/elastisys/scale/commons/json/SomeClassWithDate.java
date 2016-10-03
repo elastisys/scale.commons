@@ -1,15 +1,15 @@
 package com.elastisys.scale.commons.json;
 
-import java.util.Date;
+import org.joda.time.DateTime;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public class SomeClassWithDate {
     private final String a;
-    private final Date date;
+    private final DateTime date;
 
-    public SomeClassWithDate(String a, Date date) {
+    public SomeClassWithDate(String a, DateTime date) {
         this.a = a;
         this.date = date;
     }
@@ -18,7 +18,7 @@ public class SomeClassWithDate {
         return this.a;
     }
 
-    public Date getTime() {
+    public DateTime getTime() {
         return this.date;
     }
 

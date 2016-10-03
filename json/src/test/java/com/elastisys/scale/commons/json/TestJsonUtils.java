@@ -125,13 +125,13 @@ public class TestJsonUtils {
     }
 
     /**
-     * Verify that {@link Date} instances are converted to an UTC timestamp.
+     * Verify that {@link DateTime} instances are converted to an UTC timestamp.
      */
     @Test
     public void toJsonWithDate() {
         SomeClassWithDate object = new SomeClassWithDate("value",
-                UtcTime.parse("2013-07-01T12:00:00.000+02:00").toDate());
-        String expectedJson = "{\"a\":\"value\",\"date\":\"2013-07-01T12:00:00.000+0200\"}";
+                UtcTime.parse("2013-07-01T12:00:00.000+02:00"));
+        String expectedJson = "{\"a\":\"value\",\"date\":\"2013-07-01T10:00:00.000Z\"}";
         assertThat(JsonUtils.toJson(object).toString(), is(expectedJson));
     }
 
