@@ -21,7 +21,7 @@ public class TestIoUtils {
     @Test
     public void toStringOnInputStream() throws IOException {
         String streamContent = "A very\ninteresting string\nindeed.";
-        InputStream inputStream = new ByteArrayInputStream(new String(streamContent).getBytes());
+        InputStream inputStream = new ByteArrayInputStream(streamContent.getBytes());
         assertTrue(inputStream.available() > 0);
 
         String streamAsString = IoUtils.toString(inputStream, Charsets.UTF_8);
