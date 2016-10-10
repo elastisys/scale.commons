@@ -83,7 +83,7 @@ public class FileUtils {
     public static List<File> listDirectories(File directory) {
         checkNotNull(directory, "directory argument is null");
         checkArgument(directory.isDirectory(), "%s is not a directory", directory);
-        File[] directories = directory.listFiles((FileFilter) file -> file.isDirectory());
+        File[] directories = directory.listFiles(File::isDirectory);
         return Arrays.asList(directories);
     }
 
