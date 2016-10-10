@@ -87,10 +87,9 @@ public class RestClients {
         try {
             SSLContext clientCertSslContext = SslContextBuilder.newBuilder().clientAuthentication(keystore, password)
                     .setVerifyHostCert(false).build();
-            Client client = ClientBuilder.newBuilder().sslContext(clientCertSslContext)
+            return ClientBuilder.newBuilder().sslContext(clientCertSslContext)
                     .hostnameVerifier(SslUtils.allowAllHostNames()).register(GsonMessageBodyReader.class)
                     .register(GsonMessageBodyWriter.class).build();
-            return client;
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
