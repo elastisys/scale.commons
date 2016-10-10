@@ -38,7 +38,7 @@ public class StandardRestartableScheduledExecutorService implements RestartableS
      * a fixed number of {@link Thread}s in the {@link Thread} pool.
      * <p/>
      * On return, the created {@link RestartableScheduledExecutorService} will
-     * be in an unstarted state and needs to be explicity started via a call to
+     * be in an unstarted state and needs to be explicitly started via a call to
      * {@link #start()}.
      *
      * @param corePoolSize
@@ -54,7 +54,7 @@ public class StandardRestartableScheduledExecutorService implements RestartableS
      * a fixed number of {@link Thread}s in the {@link Thread} pool.
      * <p/>
      * On return, the created {@link RestartableScheduledExecutorService} will
-     * be in an unstarted state and needs to be explicity started via a call to
+     * be in an unstarted state and needs to be explicitly started via a call to
      * {@link #start()}.
      *
      * @param corePoolSize
