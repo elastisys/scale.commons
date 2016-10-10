@@ -22,7 +22,7 @@ public interface RestartableScheduledExecutorService extends ScheduledExecutorSe
      * to stopping the service have been removed and need to be added again if
      * desired.
      */
-    public void start();
+    void start();
 
     /**
      * Stops this {@link RestartableScheduledExecutorService}. Any running tasks
@@ -36,7 +36,7 @@ public interface RestartableScheduledExecutorService extends ScheduledExecutorSe
      * @throws InterruptedException
      *             if interrupted while waiting
      */
-    public void stop(int taskTerminationGracePeriod, TimeUnit unit) throws InterruptedException;
+    void stop(int taskTerminationGracePeriod, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns <code>true</code> if this
@@ -45,5 +45,5 @@ public interface RestartableScheduledExecutorService extends ScheduledExecutorSe
      *
      * @return <code>true</code> if started, <code>false</code> otherwise.
      */
-    public boolean isStarted();
+    boolean isStarted();
 }
