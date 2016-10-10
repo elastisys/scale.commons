@@ -37,11 +37,9 @@ public class RestClients {
      * @return The created {@link Client}.
      */
     public static Client httpsNoAuth() {
-        Client client = ClientBuilder.newBuilder().sslContext(SslUtils.trustAllCertsSslContext())
+        return ClientBuilder.newBuilder().sslContext(SslUtils.trustAllCertsSslContext())
                 .hostnameVerifier(SslUtils.allowAllHostNames()).register(GsonMessageBodyReader.class)
                 .register(GsonMessageBodyWriter.class).build();
-
-        return client;
     }
 
     /**
