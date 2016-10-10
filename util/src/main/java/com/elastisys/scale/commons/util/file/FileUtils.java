@@ -28,7 +28,7 @@ public class FileUtils {
      * <p/>
      * The method will make an attempt to create a file in the directory.
      *
-     * @param dir
+     * @param directory
      *            A directory.
      * @return
      * @throws IllegalArgumentException
