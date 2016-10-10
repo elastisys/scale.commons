@@ -69,9 +69,7 @@ public class JaxRsApplication extends Application {
         Set<Object> singletons = Sets.newHashSet();
 
         // registers all response handlers as singleton resources
-        for (Object handler : this.responseHandlers) {
-            singletons.add(handler);
-        }
+        singletons.addAll(this.responseHandlers);
 
         // can add additional resources, providers and features here as well
         // singletons.add(new RequestLogFilter());
