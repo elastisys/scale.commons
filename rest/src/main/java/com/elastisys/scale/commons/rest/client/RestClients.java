@@ -144,8 +144,7 @@ public class RestClients {
      * @return The created {@link Client}.
      */
     public static Client httpNoAuth() {
-        Client client = ClientBuilder.newBuilder().register(GsonMessageBodyReader.class)
+        return ClientBuilder.newBuilder().register(GsonMessageBodyReader.class)
                 .register(GsonMessageBodyWriter.class).build();
-        return client;
     }
 }
