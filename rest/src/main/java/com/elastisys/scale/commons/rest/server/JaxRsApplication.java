@@ -87,7 +87,7 @@ public class JaxRsApplication extends Application {
      */
     @Override
     public Set<Class<?>> getClasses() {
-        final Set<Class<?>> classes = new HashSet<Class<?>>();
+        final Set<Class<?>> classes = new HashSet<>();
 
         // support JSON serialization/deserialization of Java classes and
         // JsonObject
