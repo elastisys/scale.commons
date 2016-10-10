@@ -50,12 +50,9 @@ public class ExitHandler {
         } finally {
             // shut down in a separate thread (after some delay) to give server
             // a chance to respond to client
-            Executors.newSingleThreadExecutor().submit(new Runnable() {
-                @Override
-                public void run() {
-                    Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
-                    System.exit(0);
-                }
+            Executors.newSingleThreadExecutor().submit(() -> {
+                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+                System.exit(0);
             });
         }
     }
