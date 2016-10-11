@@ -37,11 +37,9 @@ public class RestClients {
      * @return The created {@link Client}.
      */
     public static Client httpsNoAuth() {
-        Client client = ClientBuilder.newBuilder().sslContext(SslUtils.trustAllCertsSslContext())
+        return ClientBuilder.newBuilder().sslContext(SslUtils.trustAllCertsSslContext())
                 .hostnameVerifier(SslUtils.allowAllHostNames()).register(GsonMessageBodyReader.class)
                 .register(GsonMessageBodyWriter.class).build();
-
-        return client;
     }
 
     /**
@@ -89,10 +87,9 @@ public class RestClients {
         try {
             SSLContext clientCertSslContext = SslContextBuilder.newBuilder().clientAuthentication(keystore, password)
                     .setVerifyHostCert(false).build();
-            Client client = ClientBuilder.newBuilder().sslContext(clientCertSslContext)
+            return ClientBuilder.newBuilder().sslContext(clientCertSslContext)
                     .hostnameVerifier(SslUtils.allowAllHostNames()).register(GsonMessageBodyReader.class)
                     .register(GsonMessageBodyWriter.class).build();
-            return client;
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
@@ -147,8 +144,7 @@ public class RestClients {
      * @return The created {@link Client}.
      */
     public static Client httpNoAuth() {
-        Client client = ClientBuilder.newBuilder().register(GsonMessageBodyReader.class)
+        return ClientBuilder.newBuilder().register(GsonMessageBodyReader.class)
                 .register(GsonMessageBodyWriter.class).build();
-        return client;
     }
 }

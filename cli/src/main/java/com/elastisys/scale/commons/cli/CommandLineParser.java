@@ -25,7 +25,7 @@ public class CommandLineParser<T extends CommandLineOptions> {
     /**
      * Creates a new {@link CommandLineParser} supporting the given options.
      *
-     * @param options
+     * @param optionsType
      *            The type of options handled by this parser. Note: the class
      *            must have a no-args default constructor.
      */

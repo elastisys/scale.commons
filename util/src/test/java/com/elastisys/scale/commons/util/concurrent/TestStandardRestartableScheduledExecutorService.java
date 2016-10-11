@@ -283,19 +283,10 @@ public class TestStandardRestartableScheduledExecutorService {
     }
 
     private Callable<Void> callable() {
-        return new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                return null;
-            }
-        };
+        return () -> null;
     }
 
     private static Runnable runnable() {
-        return new Runnable() {
-            @Override
-            public void run() {
-            }
-        };
+        return () -> {};
     }
 }

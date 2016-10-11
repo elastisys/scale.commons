@@ -28,7 +28,7 @@ public class TestWaiter {
 
     @Test(expected = NullPointerException.class)
     public void verifyThatNullValueCannotBeSet() {
-        Waiter<String> waiter = new Waiter<String>();
+        Waiter<String> waiter = new Waiter<>();
         waiter.set(null);
     }
 
@@ -41,9 +41,9 @@ public class TestWaiter {
     @Test
     public void verifyBlockingBehaviorWhenNoValueSet() throws Exception {
         String value = "value";
-        Waiter<String> waiter = new Waiter<String>();
+        Waiter<String> waiter = new Waiter<>();
 
-        Callable<String> awaiterTask = new ObjectAwaiterTask<String>(waiter);
+        Callable<String> awaiterTask = new ObjectAwaiterTask<>(waiter);
         Future<String> awaiterThread = executor.submit(awaiterTask);
 
         // value should not be immediately available. waiters block.
@@ -67,10 +67,10 @@ public class TestWaiter {
      */
     @Test
     public void verifyWaitersNotBlockingWhenInitialValueIsSet() throws Exception {
-        Waiter<String> waiter = new Waiter<String>("initial-value");
+        Waiter<String> waiter = new Waiter<>("initial-value");
 
         // value should be immediately available
-        Callable<String> awaiterTask = new ObjectAwaiterTask<String>(waiter);
+        Callable<String> awaiterTask = new ObjectAwaiterTask<>(waiter);
         Future<String> awaiterThread = executor.submit(awaiterTask);
         assertThat(awaiterThread.get(), is("initial-value"));
     }
@@ -82,7 +82,7 @@ public class TestWaiter {
      */
     @Test
     public void verifyThatNewValuesCanBeSet() throws Exception {
-        Waiter<String> waiter = new Waiter<String>("A");
+        Waiter<String> waiter = new Waiter<>("A");
 
         assertThat(waiter.await(), is("A"));
         waiter.set("B");

@@ -61,10 +61,7 @@ public class GsonMessageBodyReader<T> implements MessageBodyReader<T> {
                 throw new NoContentException("failed to deserialize JSON entity: " + "empty/null entity stream");
             }
             return JsonUtils.toObject(JsonUtils.parseJsonString(entity), type);
-        } catch (IllegalArgumentException e) {
-            // produce a 400 http response
-            throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(new ErrorType(e)).build());
-        } catch (JsonParseException e) {
+        } catch (IllegalArgumentException | JsonParseException e) {
             // produce a 400 http response
             throw new WebApplicationException(e, Response.status(Status.BAD_REQUEST).entity(new ErrorType(e)).build());
         }

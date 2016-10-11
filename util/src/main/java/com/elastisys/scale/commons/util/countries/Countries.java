@@ -527,7 +527,7 @@ public enum Countries {
     /** The country name (such as "United States") for the country. */
     private final String countryName;
 
-    private Countries(String countryName) {
+    Countries(String countryName) {
         this.countryName = countryName;
     }
 

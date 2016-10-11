@@ -123,7 +123,7 @@ public enum UsStates {
     /** The state name (such as "North Carolina"). */
     private final String stateName;
 
-    private UsStates(String stateName) {
+    UsStates(String stateName) {
         this.stateName = stateName;
     }
 

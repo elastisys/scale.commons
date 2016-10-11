@@ -69,9 +69,7 @@ public class JaxRsApplication extends Application {
         Set<Object> singletons = Sets.newHashSet();
 
         // registers all response handlers as singleton resources
-        for (Object handler : this.responseHandlers) {
-            singletons.add(handler);
-        }
+        singletons.addAll(this.responseHandlers);
 
         // can add additional resources, providers and features here as well
         // singletons.add(new RequestLogFilter());
@@ -87,7 +85,7 @@ public class JaxRsApplication extends Application {
      */
     @Override
     public Set<Class<?>> getClasses() {
-        final Set<Class<?>> classes = new HashSet<Class<?>>();
+        final Set<Class<?>> classes = new HashSet<>();
 
         // support JSON serialization/deserialization of Java classes and
         // JsonObject
