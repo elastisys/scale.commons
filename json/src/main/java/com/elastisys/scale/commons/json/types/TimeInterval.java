@@ -8,7 +8,7 @@ import com.elastisys.scale.commons.json.JsonUtils;
 import com.google.common.base.Objects;
 
 /**
- * Represents a duration of time. For example, "ten minutes".
+ * Represents a duration of time. For example, "10 minutes".
  */
 public class TimeInterval {
 
@@ -78,7 +78,7 @@ public class TimeInterval {
      * @return
      */
     public long getMillis() {
-        return TimeUnit.MILLISECONDS.convert(this.time, this.getUnit());
+        return TimeUnit.MILLISECONDS.convert(this.time, getUnit());
     }
 
     @Override
