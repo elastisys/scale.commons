@@ -1,10 +1,17 @@
 package com.elastisys.scale.commons.util.time;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Convenience methods for working with time.
@@ -28,7 +35,7 @@ public class TimeUtils {
      *
      */
     public static boolean equal(DateTime instant1, DateTime instant2) {
-        return (instant1 == instant2) || ((instant1 != null) && instant1.isEqual(instant2));
+        return instant1 == instant2 || instant1 != null && instant1.isEqual(instant2);
     }
 
     /**
@@ -50,5 +57,42 @@ public class TimeUtils {
                 .appendSuffix(" second", " seconds").toFormatter();
         new Period(duration.getStandardDays());
         return formatter.print(duration.toPeriod());
+    }
+
+    /**
+     * Splits a time interval into chunks no longer than the specified
+     * {@code maxDuration}. All returned time {@link Interval}s will be of
+     * length {@code maxDuration} except for the last interval which may be
+     * shorter.
+     *
+     * @param interval
+     * @param maxDuration
+     * @return
+     */
+    public static List<Interval> splitInterval(Interval interval, Duration maxDuration) {
+        Preconditions.checkArgument(interval != null, "no interval given");
+        Preconditions.checkArgument(maxDuration != null, "no maxDuration given");
+        Preconditions.checkArgument(maxDuration.getMillis() > 0, "maxDuration must be a positive value");
+
+        double totalDuration = interval.toDurationMillis();
+        double maxIntervalLength = maxDuration.getMillis();
+
+        long numSubIntervals = (long) Math.ceil(totalDuration / maxIntervalLength);
+
+        if (numSubIntervals == 0) {
+            // maxDuration shorter than interval => return source interval
+            return Arrays.asList(interval);
+        }
+
+        List<Interval> subIntervals = new ArrayList<>();
+        for (long i = 0; i < numSubIntervals; i++) {
+            DateTime intervalStart = interval.getStart().plus(maxDuration.getMillis() * i);
+            DateTime startPlusMaxDuration = intervalStart.plus(maxDuration);
+            // make sure we don't exceed the original interval end
+            DateTime intervalEnd = startPlusMaxDuration.isAfter(interval.getEnd()) ? interval.getEnd()
+                    : startPlusMaxDuration;
+            subIntervals.add(new Interval(intervalStart, intervalEnd));
+        }
+        return subIntervals;
     }
 }
