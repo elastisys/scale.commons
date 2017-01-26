@@ -256,6 +256,7 @@ public class Retryable<R> implements Callable<R> {
     }
 
     private void logResult(int attempts, Object lastResult) {
+
         if (LOG.isDebugEnabled()) {
             String resultString = asString(lastResult);
             if (resultString.length() > MAX_LOGGED_RESULT_STRING) {
@@ -277,7 +278,8 @@ public class Retryable<R> implements Callable<R> {
             return "null/void";
         }
         if (Throwable.class.isAssignableFrom(result.getClass())) {
-            return Throwable.class.cast(result).getMessage();
+            String message = Throwable.class.cast(result).getMessage();
+            return message != null ? message : "null";
         }
         return result.toString();
     }
