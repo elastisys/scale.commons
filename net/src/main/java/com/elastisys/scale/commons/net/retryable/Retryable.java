@@ -278,8 +278,9 @@ public class Retryable<R> implements Callable<R> {
             return "null/void";
         }
         if (Throwable.class.isAssignableFrom(result.getClass())) {
-            String message = Throwable.class.cast(result).getMessage();
-            return message != null ? message : "null";
+            Throwable exception = Throwable.class.cast(result);
+            String message = exception.getMessage();
+            return exception.getClass().getSimpleName() + ": " + (message != null ? message : "null");
         }
         return result.toString();
     }
