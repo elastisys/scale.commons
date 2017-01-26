@@ -1,6 +1,8 @@
 package com.elastisys.scale.commons.json.types;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.concurrent.TimeUnit;
@@ -47,6 +49,18 @@ public class TestTimeInterval {
     }
 
     @Test
+    public void getSeconds() {
+        assertThat(new TimeInterval(10L, "nanoseconds").getSeconds(), is(0L));
+
+        assertThat(new TimeInterval(10L, "microseconds").getSeconds(), is(0L));
+        assertThat(new TimeInterval(10L, "milliseconds").getSeconds(), is(0L));
+        assertThat(new TimeInterval(10L, "seconds").getSeconds(), is(10L));
+        assertThat(new TimeInterval(10L, "minutes").getSeconds(), is(10 * 60L));
+        assertThat(new TimeInterval(10L, "hours").getSeconds(), is(10 * 60 * 60L));
+        assertThat(new TimeInterval(10L, "days").getSeconds(), is(10 * 24 * 3600L));
+    }
+
+    @Test
     public void getMillis() {
         assertThat(new TimeInterval(10L, "nanoseconds").getMillis(), is(0L));
 
@@ -56,6 +70,42 @@ public class TestTimeInterval {
         assertThat(new TimeInterval(10L, "minutes").getMillis(), is(10 * 60 * 1000L));
         assertThat(new TimeInterval(10L, "hours").getMillis(), is(10 * 60 * 60 * 1000L));
         assertThat(new TimeInterval(10L, "days").getMillis(), is(10 * 24 * 3600 * 1000L));
+    }
+
+    @Test
+    public void getNanos() {
+        assertThat(new TimeInterval(10L, "nanoseconds").getNanos(), is(10L));
+
+        assertThat(new TimeInterval(10L, "microseconds").getNanos(), is(10L * 1000));
+        assertThat(new TimeInterval(10L, "milliseconds").getNanos(), is(10L * 1000 * 1000));
+        long SEC_NANOS = 1000000000;
+        assertThat(new TimeInterval(10L, "seconds").getNanos(), is(10 * SEC_NANOS));
+        assertThat(new TimeInterval(10L, "minutes").getNanos(), is(10 * 60 * SEC_NANOS));
+        assertThat(new TimeInterval(10L, "hours").getNanos(), is(10 * 60 * 60 * SEC_NANOS));
+        assertThat(new TimeInterval(10L, "days").getNanos(), is(10 * 24 * 3600 * SEC_NANOS));
+    }
+
+    /**
+     * Two TimeIntervals are considered equal if they represent the same
+     * duration (in milliseconds).
+     */
+    @Test
+    public void equality() {
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L * 1000 * 1000 * 1000, TimeUnit.NANOSECONDS));
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L * 1000 * 1000, TimeUnit.MICROSECONDS));
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L * 1000, TimeUnit.MILLISECONDS));
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L, TimeUnit.SECONDS));
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L, TimeUnit.MINUTES));
+        assertEquals(TimeInterval.seconds(0), new TimeInterval(0L, TimeUnit.HOURS));
+
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(3600L * 1000 * 1000 * 1000, TimeUnit.NANOSECONDS));
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(3600L * 1000 * 1000, TimeUnit.MICROSECONDS));
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(3600L * 1000, TimeUnit.MILLISECONDS));
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(3600L, TimeUnit.SECONDS));
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(60L, TimeUnit.MINUTES));
+        assertEquals(TimeInterval.seconds(3600), new TimeInterval(1L, TimeUnit.HOURS));
+
+        assertNotEquals(TimeInterval.seconds(1), new TimeInterval(1001L, TimeUnit.MILLISECONDS));
     }
 
     /**
@@ -91,4 +141,12 @@ public class TestTimeInterval {
         new TimeInterval(-1L, TimeUnit.SECONDS);
     }
 
+    /**
+     * Verify the behavior of the {@link TimeInterval#seconds(long)} factory
+     * method.
+     */
+    @Test
+    public void seconds() {
+        assertThat(TimeInterval.seconds(10), is(new TimeInterval(10L, TimeUnit.SECONDS)));
+    }
 }

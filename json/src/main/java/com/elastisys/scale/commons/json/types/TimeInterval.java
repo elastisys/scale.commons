@@ -77,8 +77,37 @@ public class TimeInterval {
      *
      * @return
      */
+    public long getSeconds() {
+        return TimeUnit.SECONDS.convert(this.time, getUnit());
+    }
+
+    /**
+     * Returns the {@link TimeInterval} length in milliseconds.
+     *
+     * @return
+     */
     public long getMillis() {
         return TimeUnit.MILLISECONDS.convert(this.time, getUnit());
+    }
+
+    /**
+     * Returns the {@link TimeInterval} length in milliseconds.
+     *
+     * @return
+     */
+    public long getNanos() {
+        return TimeUnit.NANOSECONDS.convert(this.time, getUnit());
+    }
+
+    /**
+     * Returns a {@link TimeInterval} that spans the given number of wallclock
+     * seconds.
+     *
+     * @param seconds
+     * @return
+     */
+    public static TimeInterval seconds(long seconds) {
+        return new TimeInterval(seconds, TimeUnit.SECONDS);
     }
 
     @Override
@@ -90,6 +119,12 @@ public class TimeInterval {
     public boolean equals(Object obj) {
         if (obj instanceof TimeInterval) {
             TimeInterval that = (TimeInterval) obj;
+            // two TimeIntervals are considered equal if they represent the same
+            // duration
+            if (this.time != null && this.unit != null && that.time != null && that.unit != null) {
+                return getNanos() == that.getNanos();
+            }
+            // if some fields are null, make a field-by-field comparison
             return Objects.equal(this.time, that.time) && Objects.equal(this.unit, that.unit);
         }
         return false;
