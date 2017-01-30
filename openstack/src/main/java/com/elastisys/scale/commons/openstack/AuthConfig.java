@@ -2,6 +2,7 @@ package com.elastisys.scale.commons.openstack;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.elastisys.scale.commons.json.JsonUtils;
 import com.google.common.base.Objects;
 
 /**
@@ -124,5 +125,10 @@ public class AuthConfig {
     @Override
     public int hashCode() {
         return Objects.hashCode(this.keystoneUrl, this.v2Credentials, this.v3Credentials);
+    }
+
+    @Override
+    public String toString() {
+        return JsonUtils.toPrettyString(JsonUtils.toJson(this));
     }
 }
