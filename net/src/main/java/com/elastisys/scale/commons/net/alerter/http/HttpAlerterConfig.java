@@ -183,20 +183,20 @@ public class HttpAlerterConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getSeverityFilter(), this.destinationUrls, getAuth(), this.getConnectTimeout(),
-                this.getSocketTimeout());
+        return Objects.hashCode(getSeverityFilter(), this.destinationUrls, getAuth(), getConnectTimeout(),
+                getSocketTimeout());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof HttpAlerterConfig) {
             HttpAlerterConfig that = (HttpAlerterConfig) obj;
-            return Objects.equal(this.getSeverityFilter(), that.getSeverityFilter())
+            return Objects.equal(getSeverityFilter(), that.getSeverityFilter())
                     && Objects.equal(this.destinationUrls, that.destinationUrls)
-                    && Objects.equal(this.getAuth(), that.getAuth())
-                    && Objects.equal(this.getSeverityFilter(), that.getSeverityFilter())
-                    && Objects.equal(this.getConnectTimeout(), that.getConnectTimeout())
-                    && Objects.equal(this.getSocketTimeout(), that.getSocketTimeout());
+                    && Objects.equal(getAuth(), that.getAuth())
+                    && Objects.equal(getSeverityFilter(), that.getSeverityFilter())
+                    && Objects.equal(getConnectTimeout(), that.getConnectTimeout())
+                    && Objects.equal(getSocketTimeout(), that.getSocketTimeout());
         }
         return false;
     }
@@ -209,12 +209,17 @@ public class HttpAlerterConfig {
      * @throws IllegalArgumentException
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.destinationUrls != null, "http alerter: missing destinationUrls");
+        checkArgument(this.destinationUrls != null, "httpAlerter: missing destinationUrls");
         for (String url : this.destinationUrls) {
-            checkArgument(url != null, "http alerter: URL cannot be null");
-            checkArgument(ValidHttpUrl.isValid(url), "illegal URL '%s'", url);
+            checkArgument(url != null, "httpAlerter: URL cannot be null");
+            checkArgument(ValidHttpUrl.isValid(url), "httpAlerter: illegal URL '%s'", url);
         }
-        this.getAuth().validate();
-        this.getSeverityFilter();
+        try {
+            getAuth().validate();
+            getSeverityFilter();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("httpAlerter: " + e.getMessage(), e);
+        }
+
     }
 }

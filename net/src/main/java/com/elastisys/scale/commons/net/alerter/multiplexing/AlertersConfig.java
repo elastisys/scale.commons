@@ -123,43 +123,31 @@ public class AlertersConfig {
      * @throws IllegalArgumentException
      */
     public void validate() throws IllegalArgumentException {
-        for (SmtpAlerterConfig smtpAlerterConfig : getSmtpAlerters()) {
-            try {
-                smtpAlerterConfig.validate();
-            } catch (Exception e) {
-                throw new IllegalArgumentException(
-                        String.format("illegal alerters configuration: smtp alerter: %s", e.getMessage()), e);
-            }
-        }
-        for (HttpAlerterConfig httpAlerterConfig : getHttpAlerters()) {
-            try {
-                httpAlerterConfig.validate();
-            } catch (Exception e) {
-                throw new IllegalArgumentException(
-                        String.format("illegal alerters configuration: http alerter: %s", e.getMessage()), e);
-            }
-        }
         try {
+            for (SmtpAlerterConfig smtpAlerterConfig : getSmtpAlerters()) {
+                smtpAlerterConfig.validate();
+            }
+            for (HttpAlerterConfig httpAlerterConfig : getHttpAlerters()) {
+                httpAlerterConfig.validate();
+            }
             getDuplicateSuppression().validate();
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    String.format("illegal alerters configuration: duplicate suppression: %s", e.getMessage()), e);
+            throw new IllegalArgumentException("alerter: " + e.getMessage(), e);
         }
 
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getSmtpAlerters(), this.getHttpAlerters(), this.getDuplicateSuppression());
+        return Objects.hashCode(getSmtpAlerters(), getHttpAlerters(), getDuplicateSuppression());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof AlertersConfig) {
             AlertersConfig that = (AlertersConfig) obj;
-            return equal(this.getSmtpAlerters(), that.getSmtpAlerters())
-                    && equal(this.getHttpAlerters(), that.getHttpAlerters())
-                    && equal(this.getDuplicateSuppression(), that.getDuplicateSuppression());
+            return equal(getSmtpAlerters(), that.getSmtpAlerters()) && equal(getHttpAlerters(), that.getHttpAlerters())
+                    && equal(getDuplicateSuppression(), that.getDuplicateSuppression());
         }
         return false;
     }

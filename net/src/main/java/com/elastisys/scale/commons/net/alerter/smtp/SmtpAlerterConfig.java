@@ -126,7 +126,7 @@ public class SmtpAlerterConfig {
             SmtpAlerterConfig that = (SmtpAlerterConfig) obj;
             return Objects.equal(this.recipients, that.recipients) && Objects.equal(this.sender, that.sender)
                     && Objects.equal(this.subject, that.subject)
-                    && Objects.equal(this.getSeverityFilter(), that.getSeverityFilter())
+                    && Objects.equal(getSeverityFilter(), that.getSeverityFilter())
                     && Objects.equal(this.smtpClientConfig, that.smtpClientConfig);
         }
         return false;
@@ -140,16 +140,21 @@ public class SmtpAlerterConfig {
      * @throws IllegalArgumentException
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.subject != null, "missing subject");
-        checkArgument(this.recipients != null, "missing recipients list");
+        checkArgument(this.subject != null, "smtpAlerter: missing subject");
+        checkArgument(this.recipients != null, "smtpAlerter: missing recipients");
         for (String recipient : this.recipients) {
-            checkArgument(recipient != null, "recipient cannot be null");
-            checkArgument(ValidEmailAddress.isValid(recipient), "illegal email address '%s'", recipient);
+            checkArgument(recipient != null, "smtpAlerter: recipients: recipient cannot be null");
+            checkArgument(ValidEmailAddress.isValid(recipient), "smtpAlerter: recipients: illegal email address '%s'",
+                    recipient);
         }
-        checkArgument(this.sender != null, "missing sender");
-        checkArgument(ValidEmailAddress.isValid(this.sender), "illegal sender address '%s'", this.sender);
+        checkArgument(this.sender != null, "smtpAlerter: missing sender");
+        checkArgument(ValidEmailAddress.isValid(this.sender), "smtpAlerter: illegal sender address '%s'", this.sender);
         getSeverityFilter();
-        checkArgument(this.smtpClientConfig != null, "missing smtpClientConfig");
-        this.smtpClientConfig.validate();
+        checkArgument(this.smtpClientConfig != null, "smtpAlerter: missing smtpClientConfig");
+        try {
+            this.smtpClientConfig.validate();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("smtpAlerter: " + e.getMessage(), e);
+        }
     }
 }

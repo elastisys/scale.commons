@@ -2,6 +2,8 @@ package com.elastisys.scale.commons.net.alerter.http;
 
 import java.util.Objects;
 
+import javax.naming.ConfigurationException;
+
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
@@ -75,8 +77,7 @@ public class HttpAuthConfig {
                 getCertificateCredentials().get().validate();
             }
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    String.format("invalid authentication configuration: %s", e.getMessage()), e);
+            throw new IllegalArgumentException("auth: " + e.getMessage(), e);
         }
     }
 

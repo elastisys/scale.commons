@@ -1,9 +1,10 @@
 package com.elastisys.scale.commons.net.smtp;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 /**
  * Represents SMTP client connection settings.
@@ -178,19 +179,19 @@ public class SmtpClientConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.smtpHost, this.getSmtpPort(), this.authentication, this.isUseSsl(),
-                this.getConnectionTimeout(), this.getSocketTimeout());
+        return Objects.hashCode(this.smtpHost, getSmtpPort(), this.authentication, isUseSsl(), getConnectionTimeout(),
+                getSocketTimeout());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SmtpClientConfig) {
             SmtpClientConfig that = (SmtpClientConfig) obj;
-            return Objects.equal(this.smtpHost, that.smtpHost) && Objects.equal(this.getSmtpPort(), that.getSmtpPort())
+            return Objects.equal(this.smtpHost, that.smtpHost) && Objects.equal(getSmtpPort(), that.getSmtpPort())
                     && Objects.equal(this.authentication, that.authentication)
-                    && Objects.equal(this.isUseSsl(), that.isUseSsl())
-                    && Objects.equal(this.getConnectionTimeout(), that.getConnectionTimeout())
-                    && Objects.equal(this.getSocketTimeout(), that.getSocketTimeout());
+                    && Objects.equal(isUseSsl(), that.isUseSsl())
+                    && Objects.equal(getConnectionTimeout(), that.getConnectionTimeout())
+                    && Objects.equal(getSocketTimeout(), that.getSocketTimeout());
         }
         return super.equals(obj);
     }
@@ -203,20 +204,24 @@ public class SmtpClientConfig {
      * @throws IllegalArgumentException
      */
     public void validate() throws IllegalArgumentException {
-        Preconditions.checkArgument(this.smtpHost != null, "missing smtpHost");
-        Preconditions.checkArgument(this.getSmtpPort() > 0, "smtpPort cannot be negative");
-        Preconditions.checkArgument(this.getConnectionTimeout() >= 0, "negative connectionTimeout");
-        Preconditions.checkArgument(this.getSocketTimeout() >= 0, "negative socketTimeout");
+        checkArgument(this.smtpHost != null, "smtpClientConfig: missing smtpHost");
+        checkArgument(getSmtpPort() > 0, "smtpClientConfig: smtpPort cannot be negative");
+        checkArgument(getConnectionTimeout() >= 0, "smtpClientConfig: negative connectionTimeout");
+        checkArgument(getSocketTimeout() >= 0, "smtpClientConfig: negative socketTimeout");
+
         if (this.authentication != null) {
-            this.authentication.validate();
+            try {
+                this.authentication.validate();
+            } catch (Exception e) {
+                throw new IllegalArgumentException("smtpClientConfig: authentication: " + e.getMessage(), e);
+            }
         }
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("smtpHost", this.smtpHost).add("smtpPort", this.getSmtpPort())
-                .add("useSsl", this.isUseSsl()).add("authentication", this.authentication)
-                .add("connectionTimeout", this.getConnectionTimeout()).add("socketTimeout", this.getSocketTimeout())
-                .toString();
+        return MoreObjects.toStringHelper(this).add("smtpHost", this.smtpHost).add("smtpPort", getSmtpPort())
+                .add("useSsl", isUseSsl()).add("authentication", this.authentication)
+                .add("connectionTimeout", getConnectionTimeout()).add("socketTimeout", getSocketTimeout()).toString();
     }
 }

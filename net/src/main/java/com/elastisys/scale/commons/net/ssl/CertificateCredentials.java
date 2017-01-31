@@ -145,7 +145,7 @@ public class CertificateCredentials {
     public boolean equals(Object obj) {
         if (obj instanceof CertificateCredentials) {
             CertificateCredentials that = (CertificateCredentials) obj;
-            return Objects.equal(this.getKeystoreType(), that.getKeystoreType())
+            return Objects.equal(getKeystoreType(), that.getKeystoreType())
                     && Objects.equal(this.keystorePath, that.keystorePath)
                     && Objects.equal(this.keystorePassword, that.keystorePassword)
                     && Objects.equal(this.keyPassword, that.keyPassword);
@@ -162,9 +162,9 @@ public class CertificateCredentials {
      *             If any configuration field is missing.
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.keystorePath != null, "certificate credentials missing keystore path");
-        checkArgument(new File(this.keystorePath).isFile(), "certificate credentials keystore path '%s' is not a file",
+        checkArgument(this.keystorePath != null, "certificateCredentials: missing keystore path");
+        checkArgument(new File(this.keystorePath).isFile(), "certificateCredentials: keystore path '%s' is not a file",
                 this.keystorePath);
-        checkArgument(this.keystorePassword != null, "certificate credentials missing keystore password");
+        checkArgument(this.keystorePassword != null, "certificateCredentials: missing keystore password");
     }
 }

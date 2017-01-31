@@ -55,7 +55,7 @@ public class SmtpClientAuthentication {
      * @throws IllegalArgumentException
      */
     public void validate() throws IllegalArgumentException {
-        Preconditions.checkArgument(this.username != null, "missing username");
-        Preconditions.checkArgument(this.password != null, "missing password");
+        Preconditions.checkArgument(this.username != null, "authentication: missing username");
+        Preconditions.checkArgument(this.password != null, "authentication: missing password");
     }
 }

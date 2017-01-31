@@ -57,8 +57,8 @@ public class BasicCredentials {
      *             If any configuration field is missing.
      */
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.username != null, "basic credentials missing username");
-        checkArgument(this.password != null, "basic credentials missing password");
+        checkArgument(this.username != null, "basicCredentials: missing username");
+        checkArgument(this.password != null, "basicCredentials: missing password");
     }
 
     @Override
