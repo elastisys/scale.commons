@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- Usage: As per the general contract of Maven builds a full build that compiles, 
     runs tests, packages and installs build artifacts (jar files) in the local Maven 
     repository can be executed via: mvn clean install. To generate a project site with 
@@ -66,8 +67,8 @@
     <gson.version>2.3.1</gson.version>
     <slf4j.version>1.7.7</slf4j.version>
     <logback.version>1.1.2</logback.version>
-    <joda.time.version>2.6</joda.time.version>
-    <quarts.version>2.2.1</quarts.version>
+    <joda.time.version>2.9.7</joda.time.version>
+    <cron-utils.version>5.0.5</cron-utils.version>
     <commons.math.version>3.3</commons.math.version>
     <jsch.version>0.1.51</jsch.version>
     <args4j.version>2.33</args4j.version>
@@ -98,16 +99,16 @@
         <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-multibindings</artifactId>
         <version>${guice.version}</version>
-      </dependency>      
+      </dependency>
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
         <version>${joda.time.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.quartz-scheduler</groupId>
-        <artifactId>quartz</artifactId>
-        <version>${quarts.version}</version>
+        <groupId>com.cronutils</groupId>
+        <artifactId>cron-utils</artifactId>
+        <version>${cron-utils.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -138,13 +139,13 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-    <!-- capture java.util.logging with slf4j. Requires a bridge handler to be programatically 
-      installed. See http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html -->
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>      
+      <!-- capture java.util.logging with slf4j. Requires a bridge handler to be 
+        programatically installed. See http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
@@ -253,7 +254,7 @@
         <artifactId>openstack4j-jersey2</artifactId>
         <version>${openstack4j.version}</version>
       </dependency>
-      
+
       <!-- Test dependencies -->
       <dependency>
         <groupId>junit</groupId>
@@ -450,7 +451,7 @@
         </configuration>
       </plugin>
       <!-- reports test coverage of unit tests -->
-      <!-- Note: cobertura doesn't work with Java7, unless -XX:-UseSplitVerifier
+      <!-- Note: cobertura doesn't work with Java7, unless -XX:-UseSplitVerifier 
         is given as JVM argument to surefire test plugin -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -471,8 +472,8 @@
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.10</version>
         <configuration>
-          <!-- make sure project-specific checkstyle rules are picked up from
-            the buildtools module -->
+          <!-- make sure project-specific checkstyle rules are picked up from the 
+            buildtools module -->
           <configLocation>checkstyle/checkstyle-rules.xml</configLocation>
         </configuration>
       </plugin>
