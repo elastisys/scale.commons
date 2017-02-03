@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AlertersConfig {
     /** Default duplicate suppression. */
-    public static final TimeInterval DEFAULT_DUPLICATE_SUPPRESSION = new TimeInterval(5L, TimeUnit.MINUTES);
+    public static final TimeInterval DEFAULT_DUPLICATE_SUPPRESSION = new TimeInterval(2L, TimeUnit.HOURS);
 
     /** A list of configured SMTP email {@link Alerter}s. */
     @SerializedName("smtp")
