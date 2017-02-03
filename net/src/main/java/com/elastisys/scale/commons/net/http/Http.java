@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
@@ -77,7 +78,8 @@ public class Http {
      */
     public HttpRequestResponse execute(HttpRequestBase request) throws HttpResponseException, IOException {
 
-        try (CloseableHttpClient client = this.clientBuilder.build()) {
+        CloseableHttpClient client = this.clientBuilder.build();
+        try {
             CloseableHttpResponse httpResponse = null;
             try {
                 this.logger.debug(format("sending request (%s)", request));
@@ -97,6 +99,8 @@ public class Http {
                                 responseCode, responseBody));
             }
             return response;
+        } finally {
+            HttpClientUtils.closeQuietly(client);
         }
     }
 }

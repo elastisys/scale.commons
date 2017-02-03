@@ -11,6 +11,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
@@ -73,19 +74,22 @@ public class HttpRequestResponse {
      * @throws IOException
      */
     public HttpRequestResponse(CloseableHttpResponse httpResponse, Charset fallbackCharset) throws IOException {
-        this.statusCode = httpResponse.getStatusLine().getStatusCode();
-        this.headers = Lists.newArrayList(httpResponse.getAllHeaders());
-        Charset responseCharset = determineCharset(httpResponse);
-        Charset charset = responseCharset == null ? fallbackCharset : responseCharset;
+        try {
+            this.statusCode = httpResponse.getStatusLine().getStatusCode();
+            this.headers = Lists.newArrayList(httpResponse.getAllHeaders());
+            Charset responseCharset = determineCharset(httpResponse);
+            Charset charset = responseCharset == null ? fallbackCharset : responseCharset;
 
-        // http response may not contain a message body, for example on 204 (No
-        // Content) responses
-        if (httpResponse.getEntity() != null) {
-            this.responseBody = EntityUtils.toString(httpResponse.getEntity(), charset);
-        } else {
-            this.responseBody = null;
+            // http response may not contain a message body, for example on 204
+            // (No Content) responses
+            if (httpResponse.getEntity() != null) {
+                this.responseBody = EntityUtils.toString(httpResponse.getEntity(), charset);
+            } else {
+                this.responseBody = null;
+            }
+        } finally {
+            HttpClientUtils.closeQuietly(httpResponse);
         }
-        httpResponse.close();
     }
 
     /**
