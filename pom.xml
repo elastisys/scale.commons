@@ -22,7 +22,6 @@
 
 
   <modules>
-    <module>buildtools</module>
     <module>json</module>
     <module>net</module>
     <module>rest</module>
