@@ -50,4 +50,45 @@ public class TestUrlUtils {
         assertThat(UrlUtils.encodeHttpUrl(unencodedUrl).toString(), is(expectedEncodedUrl));
 
     }
+
+    @Test
+    public void basenameOnUrl() {
+        String url = "https://www.googleapis.com/compute/v1/projects/elastisys-cloud/zones/europe-west1-b";
+        assertThat(UrlUtils.basename(url), is("europe-west1-b"));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void basenameOnNull() {
+        UrlUtils.basename(null);
+    }
+
+    @Test
+    public void basenameOnEmptyString() {
+        assertThat(UrlUtils.basename(""), is(""));
+    }
+
+    @Test
+    public void basenameOnPathLessUrl() {
+        assertThat(UrlUtils.basename("https://www.googleapis.com"), is("www.googleapis.com"));
+    }
+
+    @Test
+    public void basenameOnPathLessUrl2() {
+        assertThat(UrlUtils.basename("https://www.googleapis.com/"), is(""));
+    }
+
+    @Test
+    public void basenameOnAbsolutePath() {
+        assertThat(UrlUtils.basename("/home/foo/bar"), is("bar"));
+    }
+
+    @Test
+    public void basenameOnEmptyPath() {
+        assertThat(UrlUtils.basename(""), is(""));
+    }
+
+    @Test
+    public void basenameOnRootPath() {
+        assertThat(UrlUtils.basename("/"), is(""));
+    }
 }
