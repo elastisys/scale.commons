@@ -55,7 +55,6 @@
     <joda.time.version>2.9.7</joda.time.version>
     <cron-utils.version>5.0.5</cron-utils.version>
     <commons.math.version>3.3</commons.math.version>
-    <jsch.version>0.1.51</jsch.version>
     <args4j.version>2.33</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
     <bouncycastle.version>1.53</bouncycastle.version>
