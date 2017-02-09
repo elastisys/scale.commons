@@ -148,13 +148,6 @@
         <version>${gson.version}</version>
       </dependency>
 
-      <!-- Needed for ssh access to nodes -->
-      <dependency>
-        <groupId>com.jcraft</groupId>
-        <artifactId>jsch</artifactId>
-        <version>${jsch.version}</version>
-      </dependency>
-
       <!-- JAX-RS API -->
       <dependency>
         <groupId>javax.ws.rs</groupId>
