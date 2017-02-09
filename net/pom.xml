@@ -25,11 +25,6 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
     </dependency>
-    <!-- Needed for SSH access to machines. -->
-    <dependency>
-      <groupId>com.jcraft</groupId>
-      <artifactId>jsch</artifactId>
-    </dependency>
     <!-- required to send emails -->
     <dependency>
       <groupId>org.apache.commons</groupId>
