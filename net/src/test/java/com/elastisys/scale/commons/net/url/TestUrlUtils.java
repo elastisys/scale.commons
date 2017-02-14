@@ -3,6 +3,8 @@ package com.elastisys.scale.commons.net.url;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.net.URL;
+
 import org.junit.Test;
 
 /**
@@ -91,4 +93,21 @@ public class TestUrlUtils {
     public void basenameOnRootPath() {
         assertThat(UrlUtils.basename("/"), is(""));
     }
+
+    @Test
+    public void urlOnLegalInput() throws Exception {
+        assertThat(UrlUtils.url("http://host"), is(new URL("http://host")));
+        assertThat(UrlUtils.url("https://host"), is(new URL("https://host")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void urlOnIllegalProtocol() throws Exception {
+        UrlUtils.url("tcp://host");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void urlOnMalformedUrl() throws Exception {
+        UrlUtils.url("http ://host");
+    }
+
 }
