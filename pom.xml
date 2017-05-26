@@ -41,7 +41,7 @@
   </scm>
 
   <properties>
-    <guava.version>18.0</guava.version>
+    <guava.version>20.0</guava.version>
     <guice.version>4.1.0</guice.version>
     <apache.httpclient.version>4.5.3</apache.httpclient.version>
     <jetty.version>9.4.0.v20161208</jetty.version>
