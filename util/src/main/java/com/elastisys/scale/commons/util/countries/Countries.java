@@ -510,17 +510,20 @@ public enum Countries {
     ZIMBABWE("Zimbabwe");
 
     /**
-     * Tracks all known countries keyed by country display name in lower case
-     * (such as 'united states') and mapped to a {@link Locale} for that
-     * country.
+     * Tracks all known countries keyed by country display name (in english and
+     * lower case), such as 'united states', and mapped to a {@link Locale} for
+     * that country.
      */
     private final static Map<String, Locale> COUNTRIES = new HashMap<>();
 
     static {
+        // build the map of countries
         String[] countryCodes = Locale.getISOCountries();
         for (String countryCode : countryCodes) {
             Locale locale = new Locale.Builder().setRegion(countryCode).build();
-            COUNTRIES.put(locale.getDisplayCountry().toLowerCase(), locale);
+            // note: use US locale to get the country name in English
+            String countryName = locale.getDisplayCountry(Locale.US).toLowerCase();
+            COUNTRIES.put(countryName, locale);
         }
     }
 
