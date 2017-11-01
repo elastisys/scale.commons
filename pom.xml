@@ -58,7 +58,7 @@
     <args4j.version>2.33</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
     <bouncycastle.version>1.53</bouncycastle.version>
-    <openstack4j.version>3.0.3</openstack4j.version>
+    <openstack4j.version>3.1.0</openstack4j.version>
 
     <!-- test dependencies -->
     <junit.version>4.12</junit.version>
