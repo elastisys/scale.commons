@@ -18,35 +18,38 @@ public class TestApiAccessConfig {
         String region = "RegionOne";
         Integer connectTimeout = 10000;
         Integer socketTimeout = 15000;
-        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region, connectTimeout, socketTimeout);
+        boolean logHttpRequests = true;
+        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region, connectTimeout, socketTimeout, logHttpRequests);
         config.validate();
 
         assertThat(config.getAuth(), is(v2Auth()));
         assertThat(config.getRegion(), is(region));
         assertThat(config.getConnectionTimeout(), is(connectTimeout));
         assertThat(config.getSocketTimeout(), is(socketTimeout));
+        assertThat(config.shouldLogHttpRequests(), is(true));
 
         // v3 auth
-        config = new ApiAccessConfig(v3Auth(), region, connectTimeout, socketTimeout);
+        config = new ApiAccessConfig(v3Auth(), region, connectTimeout, socketTimeout, logHttpRequests);
         config.validate();
 
         assertThat(config.getAuth(), is(v3Auth()));
         assertThat(config.getRegion(), is(region));
         assertThat(config.getConnectionTimeout(), is(connectTimeout));
         assertThat(config.getSocketTimeout(), is(socketTimeout));
+        assertThat(config.shouldLogHttpRequests(), is(true));
     }
 
     /** Verify that default values are provided for optional parameters. */
     @Test
     public void createWithDefaults() {
         String region = "RegionOne";
-        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region, null, null);
+        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region);
         config.validate();
 
         // verify defaults
         assertThat(config.getConnectionTimeout(), is(ApiAccessConfig.DEFAULT_CONNECTION_TIMEOUT));
         assertThat(config.getSocketTimeout(), is(ApiAccessConfig.DEFAULT_SOCKET_TIMEOUT));
-
+        assertThat(config.shouldLogHttpRequests(), is(false));
     }
 
     /** Config must specify authentication details. */

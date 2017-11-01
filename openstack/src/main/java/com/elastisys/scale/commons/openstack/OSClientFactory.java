@@ -15,6 +15,7 @@ import org.openstack4j.openstack.internal.OSClientSession.OSClientSessionV2;
 import org.openstack4j.openstack.internal.OSClientSession.OSClientSessionV3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
  * A factory for creating authenticated {@link OSClient} objects ready for use.
@@ -75,6 +76,16 @@ public class OSClientFactory {
 
         this.apiAccessConfig = apiAccessConfig;
         this.clientBuilder = clientBuilder;
+
+        if (apiAccessConfig.shouldLogHttpRequests()) {
+            LOG.debug("setting up HTTP request logging");
+            // enable logging of each http request from openstack4j
+            OSFactory.enableHttpLoggingFilter(true);
+            // Install slf4j logging bridge to capture java.util.logging output
+            // from the openstack4j. NOTE: the logger appears to be named 'os'.
+            SLF4JBridgeHandler.removeHandlersForRootLogger();
+            SLF4JBridgeHandler.install();
+        }
     }
 
     /**

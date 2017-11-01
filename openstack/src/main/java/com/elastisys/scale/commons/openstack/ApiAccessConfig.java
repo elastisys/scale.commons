@@ -3,6 +3,7 @@ package com.elastisys.scale.commons.openstack;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.elastisys.scale.commons.json.JsonUtils;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
@@ -53,6 +54,13 @@ public class ApiAccessConfig {
     private final Integer socketTimeout;
 
     /**
+     * Indicates if HTTP requests are to be logged. If <code>true</code>, each
+     * HTTP request will be logged (using a logger named {@code os}). Default:
+     * <code>false</code>.
+     */
+    private final boolean logHttpRequests;
+
+    /**
      * Creates a new {@link ApiAccessConfig}.
      *
      * @param auth
@@ -89,10 +97,42 @@ public class ApiAccessConfig {
      *            {@value #DEFAULT_SOCKET_TIMEOUT} ms.
      */
     public ApiAccessConfig(AuthConfig auth, String region, Integer connectionTimeout, Integer socketTimeout) {
+        this(auth, region, connectionTimeout, socketTimeout, false);
+        validate();
+    }
+
+    /**
+     * Creates a new {@link ApiAccessConfig}.
+     *
+     * @param auth
+     *            Declares how to authenticate with the OpenStack identity
+     *            service (Keystone).
+     * @param region
+     *            The particular OpenStack region (out of the ones available in
+     *            Keystone's service catalog) to connect to. For example,
+     *            {@code RegionOne}.
+     * @param connectionTimeout
+     *            The timeout in milliseconds until a connection is established.
+     *            May be <code>null</code>. Default:
+     *            {@value #DEFAULT_CONNECTION_TIMEOUT} ms.
+     * @param socketTimeout
+     *            The socket timeout ({@code SO_TIMEOUT}) in milliseconds, which
+     *            is the timeout for waiting for data or, put differently, a
+     *            maximum period inactivity between two consecutive data
+     *            packets. May be <code>null</code>. Default:
+     *            {@value #DEFAULT_SOCKET_TIMEOUT} ms.
+     * @param logHttpRequests
+     *            Indicates if HTTP requests are to be logged. If
+     *            <code>true</code>, each HTTP request will be logged (using a
+     *            logger named {@code os}). Default: <code>false</code>.
+     */
+    public ApiAccessConfig(AuthConfig auth, String region, Integer connectionTimeout, Integer socketTimeout,
+            boolean logHttpRequests) {
         this.auth = auth;
         this.region = region;
         this.connectionTimeout = connectionTimeout;
         this.socketTimeout = socketTimeout;
+        this.logHttpRequests = logHttpRequests;
         validate();
     }
 
@@ -138,6 +178,16 @@ public class ApiAccessConfig {
     }
 
     /**
+     * Indicates if HTTP requests should be logged. If <code>true</code>, each
+     * HTTP request will be logged (using a logger named {@code os}).
+     *
+     * @return
+     */
+    public boolean shouldLogHttpRequests() {
+        return this.logHttpRequests;
+    }
+
+    /**
      * Performs basic validation of this configuration. Throws an
      * {@link IllegalArgumentException} on failure to validate the
      * configuration.
@@ -168,4 +218,8 @@ public class ApiAccessConfig {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return JsonUtils.toString(JsonUtils.toJson(this));
+    }
 }

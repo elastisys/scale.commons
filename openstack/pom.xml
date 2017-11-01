@@ -32,6 +32,13 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <!-- capture java.util.logging with slf4j. Requires a bridge handler to be programatically 
+      installed. See http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+    
 
     <!-- Test dependencies -->
     <dependency>
