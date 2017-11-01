@@ -2,6 +2,8 @@ package com.elastisys.scale.commons.openstack;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -11,66 +13,108 @@ import org.junit.Test;
 public class TestApiAccessConfig {
 
     @Test
-    public void creation() {
-        // explicit floating IP assignment
-        AuthConfig auth = new AuthConfig("https://keystone.host:5000/v3/", null,
-                new AuthV3Credentials(new Scope("domain_id", null), "user_id", "pass"));
+    public void basicSanity() {
+        // v2 auth
         String region = "RegionOne";
-        ApiAccessConfig config = new ApiAccessConfig(auth, region);
-        assertThat(config.getAuth(), is(auth));
-        assertThat(config.getRegion(), is(region));
+        Integer connectTimeout = 10000;
+        Integer socketTimeout = 15000;
+        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region, connectTimeout, socketTimeout);
+        config.validate();
 
-        // explicit connection timeouts
-        int connectionTimeout = 5000;
-        int socketTimeout = 7000;
-        config = new ApiAccessConfig(auth, region, connectionTimeout, socketTimeout);
-        assertThat(config.getConnectionTimeout(), is(connectionTimeout));
+        assertThat(config.getAuth(), is(v2Auth()));
+        assertThat(config.getRegion(), is(region));
+        assertThat(config.getConnectionTimeout(), is(connectTimeout));
         assertThat(config.getSocketTimeout(), is(socketTimeout));
 
-        // default floating IP assignment (true)
-        config = new ApiAccessConfig(auth, region, null, null);
-        assertThat(config.getAuth(), is(auth));
+        // v3 auth
+        config = new ApiAccessConfig(v3Auth(), region, connectTimeout, socketTimeout);
+        config.validate();
+
+        assertThat(config.getAuth(), is(v3Auth()));
         assertThat(config.getRegion(), is(region));
-        // default connection timeouts
+        assertThat(config.getConnectionTimeout(), is(connectTimeout));
+        assertThat(config.getSocketTimeout(), is(socketTimeout));
+    }
+
+    /** Verify that default values are provided for optional parameters. */
+    @Test
+    public void createWithDefaults() {
+        String region = "RegionOne";
+        ApiAccessConfig config = new ApiAccessConfig(v2Auth(), region, null, null);
+        config.validate();
+
+        // verify defaults
         assertThat(config.getConnectionTimeout(), is(ApiAccessConfig.DEFAULT_CONNECTION_TIMEOUT));
         assertThat(config.getSocketTimeout(), is(ApiAccessConfig.DEFAULT_SOCKET_TIMEOUT));
+
     }
 
     /** Config must specify authentication details. */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void missingAuth() {
         AuthConfig auth = null;
         String region = "RegionOne";
-        new ApiAccessConfig(auth, region, null, null);
+        try {
+            new ApiAccessConfig(auth, region, null, null);
+            fail("expected to fail");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("no auth"));
+        }
     }
 
     /** Config must specify region to operate against. */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void missingRegion() {
-        AuthConfig auth = new AuthConfig("https://keystone.host:5000/v3/", null,
-                new AuthV3Credentials(new Scope("domain_id", null), "user_id", "pass"));
+        AuthConfig auth = v3Auth();
         String region = null;
-        new ApiAccessConfig(auth, region, null, null);
+        try {
+            new ApiAccessConfig(auth, region, null, null);
+            fail("expected to fail");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("missing region"));
+        }
     }
 
     /**
      * Connection timeout must be positive.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalConnectionTimeout() {
-        AuthConfig authConfig = new AuthConfig("https://keystone.host:5000/v3/", null,
-                new AuthV3Credentials(new Scope("domain_id", null), "user_id", "pass"));
-        new ApiAccessConfig(authConfig, "region", 0, 10000).validate();
+        try {
+            new ApiAccessConfig(v2Auth(), "region", 0, 10000).validate();
+            fail("expected to fail");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("connectionTimeout"));
+        }
     }
 
     /**
      * Socket timeout must be positive.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalSocketTimeout() {
-        AuthConfig authConfig = new AuthConfig("https://keystone.host:5000/v3/", null,
-                new AuthV3Credentials(new Scope("domain_id", null), "user_id", "pass"));
-        new ApiAccessConfig(authConfig, "region", 10000, -1).validate();
+        try {
+            new ApiAccessConfig(v2Auth(), "region", 10000, 0).validate();
+            fail("expected to fail");
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().contains("socketTimeout"));
+        }
+    }
+
+    private static final AuthConfig v2Auth() {
+        return new AuthConfig("https//keystone.host:5000/v3", v2Credentials(), null);
+    }
+
+    private static final AuthConfig v3Auth() {
+        return new AuthConfig("https//keystone.host:5000/v3", null, v3Credentials());
+    }
+
+    private static AuthV2Credentials v2Credentials() {
+        return new AuthV2Credentials("tenant", "user", "password");
+    }
+
+    private static AuthV3Credentials v3Credentials() {
+        return new AuthV3Credentials("userId", null, null, null, "password", "projectId", null, null, null);
     }
 
 }

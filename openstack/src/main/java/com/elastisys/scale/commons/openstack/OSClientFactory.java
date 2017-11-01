@@ -5,6 +5,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import org.openstack4j.api.OSClient;
 import org.openstack4j.api.OSClient.OSClientV2;
 import org.openstack4j.api.OSClient.OSClientV3;
+import org.openstack4j.api.client.IOSClientBuilder.V2;
+import org.openstack4j.api.client.IOSClientBuilder.V3;
 import org.openstack4j.core.transport.Config;
 import org.openstack4j.model.common.Identifier;
 import org.openstack4j.openstack.OSFactory;
@@ -26,10 +28,10 @@ public class OSClientFactory {
     private final ApiAccessConfig apiAccessConfig;
 
     /**
-     * The {@link OSClientCreator} used to instantiate {@link OSClient}s for
+     * The {@link OSClientBuilder} used to instantiate {@link OSClient}s for
      * different auth schemes.
      */
-    private final OSClientCreator creator;
+    private final OSClientBuilder clientBuilder;
 
     /**
      * An authenticated client that, after initialization, will serve as a
@@ -54,7 +56,7 @@ public class OSClientFactory {
      *            with and communicate over the OpenStack API.
      */
     public OSClientFactory(ApiAccessConfig apiAccessConfig) {
-        this(apiAccessConfig, new StandardOSClientCreator(apiAccessConfig.getConnectionTimeout(),
+        this(apiAccessConfig, new StandardOSClientBuilder(apiAccessConfig.getConnectionTimeout(),
                 apiAccessConfig.getSocketTimeout()));
     }
 
@@ -66,13 +68,13 @@ public class OSClientFactory {
      *            with and communicate over the OpenStack API.
      *
      */
-    public OSClientFactory(ApiAccessConfig apiAccessConfig, OSClientCreator creator) {
+    public OSClientFactory(ApiAccessConfig apiAccessConfig, OSClientBuilder clientBuilder) {
         checkArgument(apiAccessConfig != null, "no apiAccessConfig given");
-        checkArgument(creator != null, "no creator given");
+        checkArgument(clientBuilder != null, "no clientBuilder given");
         apiAccessConfig.validate();
 
         this.apiAccessConfig = apiAccessConfig;
-        this.creator = creator;
+        this.clientBuilder = clientBuilder;
     }
 
     /**
@@ -138,20 +140,25 @@ public class OSClientFactory {
 
         if (auth.isV2Auth()) {
             AuthV2Credentials v2Creds = auth.getV2Credentials();
-            return this.creator.fromV2Auth(auth.getKeystoneUrl(), v2Creds.getTenantName(), v2Creds.getUserName(),
-                    v2Creds.getPassword());
+            return this.clientBuilder.v2Auth().keyStoneUrl(auth.getKeystoneUrl()).tenantName(v2Creds.getTenantName())
+                    .credentials(v2Creds.getUserName(), v2Creds.getPassword()).createAuthenticated();
         } else {
+            OSClientV3Builder v3Builder = this.clientBuilder.v3Auth().keyStoneUrl(auth.getKeystoneUrl());
+
             AuthV3Credentials v3Creds = auth.getV3Credentials();
-            checkArgument(v3Creds.isDomainScoped() ^ v3Creds.isProjectScoped(),
-                    "version 3 type credentials msut be either domain- or project-scoped");
-            if (v3Creds.isDomainScoped()) {
-                return this.creator.fromDomainScopedV3Auth(auth.getKeystoneUrl(), v3Creds.getScope().getDomainId(),
-                        v3Creds.getUserId(), v3Creds.getPassword());
+
+            if (v3Creds.getUserId() != null) {
+                v3Builder.credentials(v3Creds.getUserId(), v3Creds.getPassword());
             } else {
-                // project scoped v3 auth
-                return this.creator.fromProjectScopedV3Auth(auth.getKeystoneUrl(), v3Creds.getScope().getProjectId(),
-                        v3Creds.getUserId(), v3Creds.getPassword());
+                v3Builder.credentials(v3Creds.getUserName(), v3Creds.getUserDomain(), v3Creds.getPassword());
             }
+
+            if (v3Creds.getProjectId() != null) {
+                v3Builder.project(v3Creds.getProjectId());
+            } else {
+                v3Builder.project(v3Creds.getProjectName(), v3Creds.getProjectDomain());
+            }
+            return v3Builder.createAuthenticated();
         }
     }
 
@@ -166,21 +173,43 @@ public class OSClientFactory {
     }
 
     /**
-     * {@link OSClient} creation methods for different kinds of authentication
-     * schemes.
+     * {@link OSClientBuilder} creation methods for different kinds of
+     * authentication schemes.
      */
-    interface OSClientCreator {
-        OSClientV2 fromV2Auth(String keystoneUrl, String tenantName, String user, String password);
+    interface OSClientBuilder {
+        OSClientV2Builder v2Auth();
 
-        OSClientV3 fromProjectScopedV3Auth(String keystoneUrl, String projectId, String userId, String password);
+        OSClientV3Builder v3Auth();
+    }
 
-        OSClientV3 fromDomainScopedV3Auth(String keystoneUrl, String domainId, String userId, String password);
+    interface OSClientV2Builder {
+        OSClientV2Builder keyStoneUrl(String keystoneUrl);
+
+        OSClientV2Builder tenantName(String tenantName);
+
+        OSClientV2Builder credentials(String userName, String password);
+
+        OSClientV2 createAuthenticated();
+    }
+
+    interface OSClientV3Builder {
+        OSClientV3Builder keyStoneUrl(String keystoneUrl);
+
+        OSClientV3Builder credentials(String userId, String password);
+
+        OSClientV3Builder credentials(String userName, Domain userDomain, String password);
+
+        OSClientV3Builder project(String projectId);
+
+        OSClientV3Builder project(String projectName, Domain projectDomain);
+
+        OSClientV3 createAuthenticated();
     }
 
     /**
      * Default {@link OSClientCreator} implementation.
      */
-    private static class StandardOSClientCreator implements OSClientCreator {
+    private static class StandardOSClientBuilder implements OSClientBuilder {
 
         /**
          * The timeout in milliseconds until a connection is established.
@@ -206,15 +235,9 @@ public class OSClientFactory {
          *            differently, a maximum period inactivity between two
          *            consecutive data packets).
          */
-        public StandardOSClientCreator(int connectionTimeout, int socketTimeout) {
+        public StandardOSClientBuilder(int connectionTimeout, int socketTimeout) {
             this.connectionTimeout = connectionTimeout;
             this.socketTimeout = socketTimeout;
-        }
-
-        @Override
-        public OSClientV2 fromV2Auth(String keystoneUrl, String tenantName, String user, String password) {
-            return OSFactory.builderV2().withConfig(clientConfig()).endpoint(keystoneUrl).credentials(user, password)
-                    .tenantName(tenantName).authenticate();
         }
 
         private Config clientConfig() {
@@ -222,16 +245,92 @@ public class OSClientFactory {
         }
 
         @Override
-        public OSClientV3 fromProjectScopedV3Auth(String keystoneUrl, String projectId, String userId,
-                String password) {
-            return OSFactory.builderV3().withConfig(clientConfig()).endpoint(keystoneUrl).credentials(userId, password)
-                    .scopeToProject(Identifier.byId(projectId), Identifier.byId(projectId)).authenticate();
+        public OSClientV2Builder v2Auth() {
+            return new StandardOSClientV2Builder(OSFactory.builderV2().withConfig(clientConfig()));
         }
 
         @Override
-        public OSClientV3 fromDomainScopedV3Auth(String keystoneUrl, String domainId, String userId, String password) {
-            return OSFactory.builderV3().withConfig(clientConfig()).endpoint(keystoneUrl).credentials(userId, password)
-                    .scopeToDomain(Identifier.byId(domainId)).authenticate();
+        public OSClientV3Builder v3Auth() {
+            return new StandardOSClientV3Builder(OSFactory.builderV3().withConfig(clientConfig()));
         }
+
+    }
+
+    private static class StandardOSClientV2Builder implements OSClientV2Builder {
+
+        private final V2 factory;
+
+        public StandardOSClientV2Builder(V2 factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public OSClientV2Builder keyStoneUrl(String keystoneUrl) {
+            this.factory.endpoint(keystoneUrl);
+            return this;
+        }
+
+        @Override
+        public OSClientV2Builder tenantName(String tenantName) {
+            this.factory.tenantName(tenantName);
+            return this;
+        }
+
+        @Override
+        public OSClientV2Builder credentials(String userName, String password) {
+            this.factory.credentials(userName, password);
+            return this;
+        }
+
+        @Override
+        public OSClientV2 createAuthenticated() {
+            return this.factory.authenticate();
+        }
+
+    }
+
+    private static class StandardOSClientV3Builder implements OSClientV3Builder {
+
+        private final V3 factory;
+
+        public StandardOSClientV3Builder(V3 factory) {
+            this.factory = factory;
+        }
+
+        @Override
+        public OSClientV3Builder keyStoneUrl(String keystoneUrl) {
+            this.factory.endpoint(keystoneUrl);
+            return this;
+        }
+
+        @Override
+        public OSClientV3Builder credentials(String userId, String password) {
+            this.factory.credentials(userId, password);
+            return this;
+        }
+
+        @Override
+        public OSClientV3Builder credentials(String userName, Domain userDomain, String password) {
+            this.factory.credentials(userName, password, userDomain.toIdentifier());
+            return this;
+        }
+
+        @Override
+        public OSClientV3Builder project(String projectId) {
+            this.factory.scopeToProject(Identifier.byId(projectId));
+            return this;
+        }
+
+        @Override
+        public OSClientV3Builder project(String projectName, Domain projectDomain) {
+            this.factory.scopeToProject(Identifier.byName(projectName), projectDomain.toIdentifier());
+            return this;
+        }
+
+        @Override
+        public OSClientV3 createAuthenticated() {
+            return this.factory.authenticate();
+        }
+
     }
 }

@@ -98,8 +98,10 @@ public class AuthConfig {
     public void validate() throws IllegalArgumentException {
         try {
             checkArgument(this.keystoneUrl != null, "no keystoneUrl given");
+            checkArgument(this.v2Credentials != null || this.v3Credentials != null,
+                    "neither v2Credentials nor v3Credentials were given");
             checkArgument(this.v2Credentials != null ^ this.v3Credentials != null,
-                    "*either* v2Credentials or v3Credentials must be given");
+                    "either v2Credentials or v3Credentials must be given, noto both");
             if (this.v2Credentials != null) {
                 this.v2Credentials.validate();
             }
