@@ -17,12 +17,7 @@ public class StopStrategies {
      * @return
      */
     public static StopStrategy never() {
-        return new StopStrategy() {
-            @Override
-            public boolean giveUp(int failedAttempts, long elapsedTimeInMillis) {
-                return false;
-            }
-        };
+        return (failedAttempts, elapsedTimeInMillis) -> false;
     }
 
     /**
@@ -35,13 +30,10 @@ public class StopStrategies {
      *            The unit of the duration.
      * @return
      */
-    public static StopStrategy afterTime(final int maxElapsedTime, final TimeUnit unit) {
-        return new StopStrategy() {
-            @Override
-            public boolean giveUp(int failedAttempts, long elapsedTimeInMillis) {
-                long maxInMillis = TimeUnit.MILLISECONDS.convert(maxElapsedTime, unit);
-                return elapsedTimeInMillis > maxInMillis;
-            }
+    public static StopStrategy afterTime(final long maxElapsedTime, final TimeUnit unit) {
+        return (failedAttempts, elapsedTimeInMillis) -> {
+            long maxInMillis = TimeUnit.MILLISECONDS.convert(maxElapsedTime, unit);
+            return elapsedTimeInMillis > maxInMillis;
         };
     }
 
@@ -54,11 +46,6 @@ public class StopStrategies {
      * @return
      */
     public static StopStrategy afterAttempts(final int maxAttempts) {
-        return new StopStrategy() {
-            @Override
-            public boolean giveUp(int failedAttempts, long elapsedTimeInMillis) {
-                return failedAttempts >= maxAttempts;
-            }
-        };
+        return (failedAttempts, elapsedTimeInMillis) -> failedAttempts >= maxAttempts;
     }
 }

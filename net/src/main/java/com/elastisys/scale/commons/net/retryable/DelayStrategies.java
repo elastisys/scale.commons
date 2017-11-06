@@ -19,11 +19,8 @@ public class DelayStrategies {
      * @return
      */
     public static DelayStrategy noDelay() {
-        return new DelayStrategy() {
-            @Override
-            public void introduceDelay(int failedAttempts, long elapsedTimeMillis) {
-                // introduce no delay: do nothing
-            }
+        return (failedAttempts, elapsedTimeMillis) -> {
+            // introduce no delay: do nothing
         };
     }
 
@@ -37,13 +34,8 @@ public class DelayStrategies {
      *            The unit of the duration.
      * @return
      */
-    public static DelayStrategy fixed(final int duration, final TimeUnit unit) {
-        return new DelayStrategy() {
-            @Override
-            public void introduceDelay(int failedAttempts, long elapsedTimeMillis) {
-                Uninterruptibles.sleepUninterruptibly(duration, unit);
-            }
-        };
+    public static DelayStrategy fixed(final long duration, final TimeUnit unit) {
+        return (failedAttempts, elapsedTimeMillis) -> Uninterruptibles.sleepUninterruptibly(duration, unit);
     }
 
     /**
@@ -64,13 +56,10 @@ public class DelayStrategies {
      *            The unit of the duration.
      * @return
      */
-    public static DelayStrategy exponentialBackoff(final int initialDelay, final TimeUnit unit) {
-        return new DelayStrategy() {
-            @Override
-            public void introduceDelay(int failedAttempts, long elapsedTimeMillis) {
-                int sleepTime = initialDelay * (1 << (failedAttempts - 1));
-                Uninterruptibles.sleepUninterruptibly(sleepTime, unit);
-            }
+    public static DelayStrategy exponentialBackoff(final long initialDelay, final TimeUnit unit) {
+        return (failedAttempts, elapsedTimeMillis) -> {
+            long sleepTime = initialDelay * (1 << failedAttempts - 1);
+            Uninterruptibles.sleepUninterruptibly(sleepTime, unit);
         };
     }
 

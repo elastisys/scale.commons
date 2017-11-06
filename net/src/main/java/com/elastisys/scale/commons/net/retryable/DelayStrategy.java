@@ -16,5 +16,5 @@ public interface DelayStrategy {
      * @param elapsedTimeMillis
      *            The elapsed time in milliseconds since the first attempt.
      */
-    void introduceDelay(int failedAttempts, long elapsedTimeMillis);
+    void introduceDelay(long failedAttempts, long elapsedTimeMillis);
 }

@@ -20,6 +20,6 @@ public interface StopStrategy {
      *            The time in milliseconds since the first attempt.
      * @return A boolean indicating if it is time to give up.
      */
-    boolean giveUp(int failedAttempts, long elapsedTimeInMillis);
+    boolean giveUp(long failedAttempts, long elapsedTimeInMillis);
 
 }
