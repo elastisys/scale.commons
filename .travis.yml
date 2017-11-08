@@ -1,5 +1,7 @@
 language: java
 sudo: false # faster builds
+jdk:
+  - openjdk8
 
 after_success:
   # run jacoco test coverage report and upload to codecov.io
