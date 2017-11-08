@@ -1,6 +1,6 @@
 
 
-[![Build Status](https://api.travis-ci.org/elastisys/scale.commons.svg?branch=master)](https://api.travis-ci.org/elastisys/scale.commons)
+[![Build Status](https://travis-ci.org/elastisys/scale.commons.svg?branch=master)](https://travis-ci.org/elastisys/scale.commons)
 [![Coverage](https://codecov.io/gh/elastisys/scale.commons/branch/master/graph/badge.svg)](https://codecov.io/gh/elastisys/scale.commons)
 
 
