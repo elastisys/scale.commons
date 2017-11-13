@@ -73,7 +73,7 @@ public class TimeInterval {
     }
 
     /**
-     * Returns the {@link TimeInterval} length in milliseconds.
+     * Returns the {@link TimeInterval} length in seconds.
      *
      * @return
      */
@@ -91,7 +91,7 @@ public class TimeInterval {
     }
 
     /**
-     * Returns the {@link TimeInterval} length in milliseconds.
+     * Returns the {@link TimeInterval} length in nanoseconds.
      *
      * @return
      */
