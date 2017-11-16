@@ -62,6 +62,7 @@ public class CommandLineParser<T extends CommandLineOptions> {
             parser.parseArgument(args);
         } catch (CmdLineException e) {
             System.err.println("error: " + e.getMessage());
+            System.err.println();
             parser.printUsage(System.err);
             System.exit(-1);
         }
@@ -80,6 +81,8 @@ public class CommandLineParser<T extends CommandLineOptions> {
             options.validate();
         } catch (IllegalArgumentException e) {
             System.err.println("error: invalid options: " + e.getMessage());
+            System.err.println();
+            parser.printUsage(System.err);
             System.exit(-1);
         }
 
