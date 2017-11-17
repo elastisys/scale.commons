@@ -1,17 +1,15 @@
 package com.elastisys.scale.commons.util.diff;
 
+import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 /**
  * Compares two sets of objects, a source set and a destination set, and
  * determines which objects need to be added and removed to go from the source
  * set to the destination set.
- *
- *
  */
 public class SetDiff<T> {
 
@@ -30,9 +28,9 @@ public class SetDiff<T> {
      *            the empty set.
      */
     public SetDiff(Set<T> sourceSet, Set<T> destinationSet) {
-        ImmutableSet<T> emptySet = ImmutableSet.of();
-        this.sourceSet = Optional.fromNullable(sourceSet).or(emptySet);
-        this.destinationSet = Optional.fromNullable(destinationSet).or(emptySet);
+        Set<T> emptySet = Collections.emptySet();
+        this.sourceSet = Optional.ofNullable(sourceSet).orElse(emptySet);
+        this.destinationSet = Optional.ofNullable(destinationSet).orElse(emptySet);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.elastisys.scale.commons.net.alerter.filtering;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 
@@ -32,22 +32,22 @@ public class FilteringAlerter implements Alerter {
      * An identity function that considers two {@link Alert}s to be equal if
      * they share a common topic.
      */
-    public static final Function<Alert, String> TOPIC_IDENTITY_FUNCTION = (alert -> String
-            .valueOf(Objects.hashCode(alert.getTopic())));
+    public static final Function<Alert, String> TOPIC_IDENTITY_FUNCTION = alert -> String
+            .valueOf(Objects.hash(alert.getTopic()));
 
     /**
      * An identity function that considers two {@link Alert}s to be equal if
      * they share a common topic and message.
      */
-    public static final Function<Alert, String> TOPIC_MSG_IDENTITY_FUNCTION = (alert -> String
-            .valueOf(Objects.hashCode(alert.getTopic(), alert.getMessage())));
+    public static final Function<Alert, String> TOPIC_MSG_IDENTITY_FUNCTION = alert -> String
+            .valueOf(Objects.hash(alert.getTopic(), alert.getMessage()));
 
     /**
      * An identity function that considers two {@link Alert}s to be equal if
      * they share a common topic, message and metadata tags.
      */
-    public static final Function<Alert, String> TOPIC_MSG_TAGS_IDENTITY_FUNCTION = (alert -> String
-            .valueOf(Objects.hashCode(alert.getTopic(), alert.getMessage(), alert.getMetadata())));
+    public static final Function<Alert, String> TOPIC_MSG_TAGS_IDENTITY_FUNCTION = alert -> String
+            .valueOf(Objects.hash(alert.getTopic(), alert.getMessage(), alert.getMetadata()));
 
     /**
      * The default {@link Alert} identity function. Two {@link Alert}s are
@@ -211,15 +211,15 @@ public class FilteringAlerter implements Alerter {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.alerter, this.suppressionTime);
+        return Objects.hash(this.alerter, this.suppressionTime);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof FilteringAlerter) {
             FilteringAlerter that = (FilteringAlerter) obj;
-            return Objects.equal(this.alerter, that.alerter)
-                    && Objects.equal(this.suppressionTime, that.suppressionTime);
+            return Objects.equals(this.alerter, that.alerter)
+                    && Objects.equals(this.suppressionTime, that.suppressionTime);
 
         }
         return false;

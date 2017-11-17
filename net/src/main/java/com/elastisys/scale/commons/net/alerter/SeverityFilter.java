@@ -1,8 +1,7 @@
 package com.elastisys.scale.commons.net.alerter;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Objects;
 
 /**
  * A {@link SeverityFilter} is used by an {@link Alerter} to suppress certain
@@ -75,13 +74,13 @@ public class SeverityFilter {
     public boolean equals(Object obj) {
         if (obj instanceof SeverityFilter) {
             SeverityFilter other = (SeverityFilter) obj;
-            return Objects.equal(this.filterExpression, other.filterExpression);
+            return Objects.equals(this.filterExpression, other.filterExpression);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.filterExpression);
+        return Objects.hash(this.filterExpression);
     }
 }

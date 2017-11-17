@@ -5,6 +5,7 @@ import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -17,7 +18,6 @@ import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerter;
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
-import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
@@ -99,15 +99,15 @@ public class HttpAlerter implements Alerter {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.config, this.standardMetadata);
+        return Objects.hash(this.config, this.standardMetadata);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof HttpAlerter) {
             HttpAlerter that = (HttpAlerter) obj;
-            return Objects.equal(this.config, that.config)
-                    && Objects.equal(this.standardMetadata, that.standardMetadata);
+            return Objects.equals(this.config, that.config)
+                    && Objects.equals(this.standardMetadata, that.standardMetadata);
 
         }
         return false;

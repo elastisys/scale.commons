@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.http.client.methods.HttpGet;
 import org.eclipse.jetty.server.Server;
@@ -18,7 +19,6 @@ import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.base.Optional;
 
 /**
  * Tests the {@link AuthenticatedHttpClient} class against a HTTPS server set up
@@ -87,7 +87,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringNoAuth {
      */
     @Test
     public void basicCredentialsClient() throws IOException {
-        Optional<CertificateCredentials> absent = Optional.absent();
+        Optional<CertificateCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(Optional.of(trustedPasswordCredentials), absent);
 
         HttpRequestResponse response = client.execute(new HttpGet(url("/")));
@@ -101,7 +101,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringNoAuth {
      */
     @Test
     public void certCredentialsClient() throws IOException {
-        Optional<BasicCredentials> absent = Optional.absent();
+        Optional<BasicCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent, Optional.of(certCredentials));
 
         HttpRequestResponse response = client.execute(new HttpGet(url("/")));

@@ -3,6 +3,7 @@ package com.elastisys.scale.commons.net.http.client;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -14,7 +15,6 @@ import com.elastisys.scale.commons.net.http.HttpBuilder;
 import com.elastisys.scale.commons.net.http.HttpRequestResponse;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
-import com.google.common.base.Optional;
 
 /**
  * Performs HTTP requests that may optionally authenticate using Basic
@@ -48,8 +48,7 @@ public class AuthenticatedHttpClient {
      * any authentication and that uses default socket and connection timeouts.
      */
     public AuthenticatedHttpClient() {
-        this(LOG, Optional.<BasicCredentials>absent(), Optional.<CertificateCredentials>absent(),
-                DEFAULT_CONNECTION_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
+        this(LOG, Optional.empty(), Optional.empty(), DEFAULT_CONNECTION_TIMEOUT, DEFAULT_SOCKET_TIMEOUT);
     }
 
     /**

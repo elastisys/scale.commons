@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.net.alerter.http;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.Servlet;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 
 /**
  * A {@link Servlet} used in tests that saves a list of all received POST
@@ -28,7 +28,7 @@ public class WebhookServlet extends HttpServlet {
     static final Logger logger = LoggerFactory.getLogger(WebhookServlet.class);
 
     private final int responseCode;
-    private final List<Alert> receivedAlerts = Lists.newArrayList();
+    private final List<Alert> receivedAlerts = new ArrayList<>();
 
     /**
      * @param responseCode

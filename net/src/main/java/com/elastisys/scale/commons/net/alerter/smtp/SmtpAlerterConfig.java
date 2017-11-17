@@ -3,14 +3,14 @@ package com.elastisys.scale.commons.net.alerter.smtp;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.net.validate.ValidEmailAddress;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 /**
  * Common email send settings for the {@link SmtpAlerter}.
@@ -103,7 +103,7 @@ public class SmtpAlerterConfig {
      * @return
      */
     public SeverityFilter getSeverityFilter() {
-        return new SeverityFilter(Optional.fromNullable(this.severityFilter).or(DEFAULT_SEVERITY_FILTER));
+        return new SeverityFilter(Optional.ofNullable(this.severityFilter).orElse(DEFAULT_SEVERITY_FILTER));
     }
 
     /**
@@ -117,17 +117,18 @@ public class SmtpAlerterConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.recipients, this.sender, this.subject, getSeverityFilter(), this.smtpClientConfig);
+        return Objects.hash(this.recipients, this.sender, this.subject, getSeverityFilter(), this.smtpClientConfig);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SmtpAlerterConfig) {
             SmtpAlerterConfig that = (SmtpAlerterConfig) obj;
-            return Objects.equal(this.recipients, that.recipients) && Objects.equal(this.sender, that.sender)
-                    && Objects.equal(this.subject, that.subject)
-                    && Objects.equal(getSeverityFilter(), that.getSeverityFilter())
-                    && Objects.equal(this.smtpClientConfig, that.smtpClientConfig);
+            return Objects.equals(this.recipients, that.recipients) //
+                    && Objects.equals(this.sender, that.sender) //
+                    && Objects.equals(this.subject, that.subject) //
+                    && Objects.equals(getSeverityFilter(), that.getSeverityFilter()) //
+                    && Objects.equals(this.smtpClientConfig, that.smtpClientConfig);
         }
         return false;
     }

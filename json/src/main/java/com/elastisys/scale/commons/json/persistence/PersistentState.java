@@ -1,12 +1,12 @@
 package com.elastisys.scale.commons.json.persistence;
 
 import java.io.File;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.util.file.FileUtils;
 import com.google.common.base.Charsets;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -111,7 +111,7 @@ public class PersistentState<T> {
      * @return
      */
     public Optional<T> get() {
-        return Optional.fromNullable(this.state);
+        return Optional.ofNullable(this.state);
     }
 
     private T recover() {
@@ -152,14 +152,14 @@ public class PersistentState<T> {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.state);
+        return Objects.hash(this.state);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PersistentState) {
             PersistentState<T> that = (PersistentState<T>) obj;
-            return Objects.equal(this.state, that.state);
+            return Objects.equals(this.state, that.state);
         }
         return false;
     }

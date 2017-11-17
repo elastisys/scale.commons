@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.rest.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,8 +11,6 @@ import javax.ws.rs.core.Application;
 
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyWriter;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
 /**
@@ -45,7 +45,7 @@ public class JaxRsApplication extends Application {
      *            The response handler web resources.
      */
     public JaxRsApplication(Object... responseHandlers) {
-        this.responseHandlers = Lists.newArrayList(responseHandlers);
+        this.responseHandlers = new ArrayList<>(Arrays.asList(responseHandlers));
     }
 
     /**
@@ -66,7 +66,7 @@ public class JaxRsApplication extends Application {
      */
     @Override
     public Set<Object> getSingletons() {
-        Set<Object> singletons = Sets.newHashSet();
+        Set<Object> singletons = new HashSet<>();
 
         // registers all response handlers as singleton resources
         singletons.addAll(this.responseHandlers);

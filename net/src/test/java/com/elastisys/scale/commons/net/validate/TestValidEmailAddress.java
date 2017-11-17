@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import java.util.function.Predicate;
 
-import com.google.common.base.Predicate;
+import org.junit.Test;
 
 /**
  * Exercises the {@link ValidEmailAddress} {@link Predicate}.
@@ -33,7 +33,7 @@ public class TestValidEmailAddress {
         // make sure that same result is obtained no matter if static function
         // or object is called on
         boolean functionResult = ValidEmailAddress.isValid(emailAddress);
-        boolean objectResult = new ValidEmailAddress().apply(emailAddress);
+        boolean objectResult = new ValidEmailAddress().test(emailAddress);
         assertEquals("calls on function and object gave different results!", functionResult, objectResult);
         return objectResult;
     }

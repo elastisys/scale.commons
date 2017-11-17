@@ -1,13 +1,13 @@
 package com.elastisys.scale.commons.net.alerter.http;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.naming.ConfigurationException;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
 import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
-import com.google.common.base.Optional;
 
 /**
  * Authentiaction configuration for a {@link HttpAlerter}.
@@ -47,7 +47,7 @@ public class HttpAuthConfig {
      * @return
      */
     public Optional<BasicCredentials> getBasicCredentials() {
-        return Optional.fromNullable(this.basicCredentials);
+        return Optional.ofNullable(this.basicCredentials);
     }
 
     /**
@@ -56,7 +56,7 @@ public class HttpAuthConfig {
      * @return
      */
     public Optional<CertificateCredentials> getCertificateCredentials() {
-        return Optional.fromNullable(this.certificateCredentials);
+        return Optional.ofNullable(this.certificateCredentials);
     }
 
     /**

@@ -7,15 +7,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
+import java.util.Optional;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
 
 /**
  * A builder class that can be used to construct {@link SSLContext}s for SSL
@@ -32,7 +30,7 @@ public class SslContextBuilder {
      * {@link KeyManagerFactory} acting as the source of authentication keys in
      * case client certificate authentication is requested.
      */
-    private Optional<KeyManagerFactory> keyManagerFactory = Optional.absent();
+    private Optional<KeyManagerFactory> keyManagerFactory = Optional.empty();
 
     /**
      * <code>true</code> if server authentication is requested,
@@ -47,7 +45,7 @@ public class SslContextBuilder {
      * "http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html#CustomizingStores">
      * JSSE</a>).
      */
-    private Optional<KeyStore> trustStore = Optional.absent();
+    private Optional<KeyStore> trustStore = Optional.empty();
 
     private SslContextBuilder() {
     }
@@ -97,7 +95,7 @@ public class SslContextBuilder {
             sslContext.init(keyManagers, trustManagers, new SecureRandom());
             return sslContext;
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -108,7 +106,7 @@ public class SslContextBuilder {
      * @return
      */
     public SslContextBuilder noClientAuthentication() {
-        this.keyManagerFactory = Optional.absent();
+        this.keyManagerFactory = Optional.empty();
         return this;
     }
 
@@ -181,7 +179,7 @@ public class SslContextBuilder {
      */
     public SslContextBuilder serverAuthTrustStore(KeyStore trustStore)
             throws NoSuchAlgorithmException, KeyStoreException {
-        this.trustStore = Optional.fromNullable(trustStore);
+        this.trustStore = Optional.ofNullable(trustStore);
         return this;
     }
 

@@ -1,11 +1,11 @@
 package com.elastisys.scale.commons.openstack;
 
-import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 /**
  * Configuration object for an {@link OSClientFactory}, which declares how to
@@ -163,7 +163,7 @@ public class ApiAccessConfig {
      * @return
      */
     public Integer getConnectionTimeout() {
-        return Optional.fromNullable(this.connectionTimeout).or(DEFAULT_CONNECTION_TIMEOUT);
+        return Optional.ofNullable(this.connectionTimeout).orElse(DEFAULT_CONNECTION_TIMEOUT);
     }
 
     /**
@@ -174,7 +174,7 @@ public class ApiAccessConfig {
      * @return
      */
     public Integer getSocketTimeout() {
-        return Optional.fromNullable(this.socketTimeout).or(DEFAULT_SOCKET_TIMEOUT);
+        return Optional.ofNullable(this.socketTimeout).orElse(DEFAULT_SOCKET_TIMEOUT);
     }
 
     /**
@@ -204,16 +204,17 @@ public class ApiAccessConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.auth, this.region, getConnectionTimeout(), getSocketTimeout());
+        return Objects.hash(this.auth, this.region, getConnectionTimeout(), getSocketTimeout());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ApiAccessConfig) {
             ApiAccessConfig that = (ApiAccessConfig) obj;
-            return equal(this.auth, that.auth) && equal(this.region, that.region)
-                    && equal(getConnectionTimeout(), that.getConnectionTimeout())
-                    && equal(getSocketTimeout(), that.getSocketTimeout());
+            return Objects.equals(this.auth, that.auth) //
+                    && Objects.equals(this.region, that.region) //
+                    && Objects.equals(getConnectionTimeout(), that.getConnectionTimeout()) //
+                    && Objects.equals(getSocketTimeout(), that.getSocketTimeout());
         }
         return false;
     }

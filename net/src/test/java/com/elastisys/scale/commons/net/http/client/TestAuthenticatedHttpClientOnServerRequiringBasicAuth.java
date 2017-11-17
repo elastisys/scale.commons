@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
@@ -20,7 +21,6 @@ import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.base.Optional;
 
 /**
  * Tests that exercise the {@link AuthenticatedHttpClient} class against a HTTPS
@@ -96,7 +96,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
      */
     @Test
     public void authenticateWithTrustedUser() throws IOException {
-        Optional<CertificateCredentials> absent = Optional.absent();
+        Optional<CertificateCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(Optional.of(trustedPasswordCredentials), absent);
 
         HttpRequestResponse response = client.execute(new HttpGet(url("/")));
@@ -109,7 +109,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringBasicAuth {
      */
     @Test
     public void authenticateWithUntrustedUser() throws IOException {
-        Optional<CertificateCredentials> absent = Optional.absent();
+        Optional<CertificateCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(Optional.of(untrustedPasswordCredentials), absent);
 
         try {

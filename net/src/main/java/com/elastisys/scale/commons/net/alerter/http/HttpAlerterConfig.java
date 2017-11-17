@@ -3,13 +3,13 @@ package com.elastisys.scale.commons.net.alerter.http;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.validate.ValidHttpUrl;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -134,7 +134,7 @@ public class HttpAlerterConfig {
      * @return
      */
     public SeverityFilter getSeverityFilter() {
-        return new SeverityFilter(Optional.fromNullable(this.severityFilter).or(DEFAULT_SEVERITY_FILTER));
+        return new SeverityFilter(Optional.ofNullable(this.severityFilter).orElse(DEFAULT_SEVERITY_FILTER));
     }
 
     /**
@@ -154,7 +154,7 @@ public class HttpAlerterConfig {
      */
     public HttpAuthConfig getAuth() {
         // if unset, return an auth config with no auth credentials
-        return Optional.fromNullable(this.auth).or(new HttpAuthConfig(null, null));
+        return Optional.ofNullable(this.auth).orElse(new HttpAuthConfig(null, null));
     }
 
     /**
@@ -165,7 +165,7 @@ public class HttpAlerterConfig {
      * @return
      */
     public int getConnectTimeout() {
-        return Optional.fromNullable(this.connectTimeout).or(DEFAULT_CONNECTION_TIMEOUT);
+        return Optional.ofNullable(this.connectTimeout).orElse(DEFAULT_CONNECTION_TIMEOUT);
     }
 
     /**
@@ -178,12 +178,12 @@ public class HttpAlerterConfig {
      * @return
      */
     public int getSocketTimeout() {
-        return Optional.fromNullable(this.socketTimeout).or(DEFAULT_SOCKET_TIMEOUT);
+        return Optional.ofNullable(this.socketTimeout).orElse(DEFAULT_SOCKET_TIMEOUT);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getSeverityFilter(), this.destinationUrls, getAuth(), getConnectTimeout(),
+        return Objects.hash(getSeverityFilter(), this.destinationUrls, getAuth(), getConnectTimeout(),
                 getSocketTimeout());
     }
 
@@ -191,12 +191,12 @@ public class HttpAlerterConfig {
     public boolean equals(Object obj) {
         if (obj instanceof HttpAlerterConfig) {
             HttpAlerterConfig that = (HttpAlerterConfig) obj;
-            return Objects.equal(getSeverityFilter(), that.getSeverityFilter())
-                    && Objects.equal(this.destinationUrls, that.destinationUrls)
-                    && Objects.equal(getAuth(), that.getAuth())
-                    && Objects.equal(getSeverityFilter(), that.getSeverityFilter())
-                    && Objects.equal(getConnectTimeout(), that.getConnectTimeout())
-                    && Objects.equal(getSocketTimeout(), that.getSocketTimeout());
+            return Objects.equals(getSeverityFilter(), that.getSeverityFilter())
+                    && Objects.equals(this.destinationUrls, that.destinationUrls)
+                    && Objects.equals(getAuth(), that.getAuth())
+                    && Objects.equals(getSeverityFilter(), that.getSeverityFilter())
+                    && Objects.equals(getConnectTimeout(), that.getConnectTimeout())
+                    && Objects.equals(getSocketTimeout(), that.getSocketTimeout());
         }
         return false;
     }
@@ -220,6 +220,5 @@ public class HttpAlerterConfig {
         } catch (Exception e) {
             throw new IllegalArgumentException("httpAlerter: " + e.getMessage(), e);
         }
-
     }
 }

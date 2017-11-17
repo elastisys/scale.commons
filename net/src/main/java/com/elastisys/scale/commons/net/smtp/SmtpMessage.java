@@ -2,7 +2,10 @@ package com.elastisys.scale.commons.net.smtp;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -10,9 +13,6 @@ import javax.mail.internet.InternetAddress;
 import org.joda.time.DateTime;
 
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 
 /**
  * Represents an simple, text-based, (SMTP) email message to be sent.
@@ -57,7 +57,7 @@ public class SmtpMessage {
         checkArgument(sender != null, "missing sender address");
 
         try {
-            this.to = Lists.newArrayList();
+            this.to = new ArrayList<>();
             for (String recipient : recipients) {
                 checkArgument(recipient != null, "recipient address cannot be null");
                 this.to.add(new InternetAddress(recipient, true));
@@ -68,7 +68,7 @@ public class SmtpMessage {
         }
         this.subject = subject;
         this.content = content;
-        this.dateSent = Optional.fromNullable(dateSent).or(UtcTime.now());
+        this.dateSent = Optional.ofNullable(dateSent).orElse(UtcTime.now());
         validate();
     }
 
@@ -132,16 +132,18 @@ public class SmtpMessage {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.to, this.from, this.subject, this.content, this.dateSent);
+        return Objects.hash(this.to, this.from, this.subject, this.content, this.dateSent);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SmtpMessage) {
             SmtpMessage that = (SmtpMessage) obj;
-            return Objects.equal(this.to, that.to) && Objects.equal(this.from, that.from)
-                    && Objects.equal(this.subject, that.subject) && Objects.equal(this.content, that.content)
-                    && Objects.equal(this.dateSent, that.dateSent);
+            return Objects.equals(this.to, that.to) //
+                    && Objects.equals(this.from, that.from) //
+                    && Objects.equals(this.subject, that.subject) //
+                    && Objects.equals(this.content, that.content) //
+                    && Objects.equals(this.dateSent, that.dateSent);
         }
         return super.equals(obj);
     }

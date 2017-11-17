@@ -1,9 +1,8 @@
 package com.elastisys.scale.commons.json;
 
-import org.joda.time.DateTime;
+import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+import org.joda.time.DateTime;
 
 public class SomeClassWithDate {
     private final String a;
@@ -26,13 +25,13 @@ public class SomeClassWithDate {
     public boolean equals(Object obj) {
         if (obj instanceof SomeClassWithDate) {
             SomeClassWithDate that = (SomeClassWithDate) obj;
-            return Objects.equal(this.a, that.a) && Objects.equal(this.date, that.date);
+            return Objects.equals(this.a, that.a) && Objects.equals(this.date, that.date);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("a", this.a).add("time", this.date).toString();
+        return JsonUtils.toString(JsonUtils.toJson(this));
     }
 }

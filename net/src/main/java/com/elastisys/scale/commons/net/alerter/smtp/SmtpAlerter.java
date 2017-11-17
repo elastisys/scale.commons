@@ -3,6 +3,7 @@ package com.elastisys.scale.commons.net.alerter.smtp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,6 @@ import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.smtp.SmtpMessage;
 import com.elastisys.scale.commons.net.smtp.SmtpSender;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
@@ -114,15 +114,15 @@ public class SmtpAlerter implements Alerter {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.config, this.standardMetadata);
+        return Objects.hash(this.config, this.standardMetadata);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SmtpAlerter) {
             SmtpAlerter that = (SmtpAlerter) obj;
-            return Objects.equal(this.config, that.config)
-                    && Objects.equal(this.standardMetadata, that.standardMetadata);
+            return Objects.equals(this.config, that.config)
+                    && Objects.equals(this.standardMetadata, that.standardMetadata);
 
         }
         return false;

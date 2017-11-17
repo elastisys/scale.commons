@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import com.elastisys.scale.commons.json.SomeClassWithTimestamp;
 import com.elastisys.scale.commons.json.SomeNestedClass;
 import com.elastisys.scale.commons.util.file.FileUtils;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.reflect.TypeToken;
 
@@ -37,7 +37,7 @@ public class TestPersistentState {
     @Test
     public void firstTimeUse() {
         PersistentState<String> state = new PersistentState<>(STORAGE_LOCATION, String.class);
-        Optional<String> absent = Optional.absent();
+        Optional<String> absent = Optional.empty();
         assertThat(state.get(), is(absent));
     }
 
@@ -48,7 +48,7 @@ public class TestPersistentState {
     @Test
     public void initializeStateStorageOnCreation() {
         assertFalse(STORAGE_LOCATION.exists());
-        PersistentState<Integer> state = new PersistentState<>(STORAGE_LOCATION, Integer.class);
+        new PersistentState<>(STORAGE_LOCATION, Integer.class);
 
         // after creation, the storage file should be initialized
         assertTrue(STORAGE_LOCATION.isFile());
@@ -62,7 +62,7 @@ public class TestPersistentState {
     @Test
     public void storeStateOnUpdate() {
         PersistentState<Integer> state = new PersistentState<>(STORAGE_LOCATION, Integer.class);
-        assertThat(state.get(), is(Optional.<Integer>absent()));
+        assertThat(state.get(), is(Optional.empty()));
 
         // after creation, the storage file should be initialized
         assertTrue(STORAGE_LOCATION.isFile());
@@ -78,7 +78,7 @@ public class TestPersistentState {
     @Test
     public void storeAndRecoverNumber() {
         PersistentState<Double> state = new PersistentState<>(STORAGE_LOCATION, Double.class);
-        assertThat(state.get(), is(Optional.<Double>absent()));
+        assertThat(state.get(), is(Optional.empty()));
 
         // store
         state.update(10.0);
@@ -91,7 +91,7 @@ public class TestPersistentState {
     @Test
     public void storeAndRecoverString() {
         PersistentState<String> state = new PersistentState<>(STORAGE_LOCATION, String.class);
-        assertThat(state.get(), is(Optional.<String>absent()));
+        assertThat(state.get(), is(Optional.empty()));
 
         // store
         state.update("secret message!");
@@ -107,7 +107,7 @@ public class TestPersistentState {
     @Test
     public void storeAndRecoverObject() {
         PersistentState<SomeNestedClass> state = new PersistentState<>(STORAGE_LOCATION, SomeNestedClass.class);
-        assertThat(state.get(), is(Optional.<SomeNestedClass>absent()));
+        assertThat(state.get(), is(Optional.empty()));
 
         // store
         Map<String, DateTime> timestamps = ImmutableMap.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
@@ -131,7 +131,7 @@ public class TestPersistentState {
         };
 
         PersistentState<Map<String, DateTime>> state = new PersistentState<>(STORAGE_LOCATION, stringDateMap);
-        assertThat(state.get(), is(Optional.<Map<String, DateTime>>absent()));
+        assertThat(state.get(), is(Optional.empty()));
 
         // store
         Map<String, DateTime> timestamps = ImmutableMap.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
@@ -170,7 +170,7 @@ public class TestPersistentState {
     @Test
     public void saveAbsentState() {
         PersistentState<String> state = new PersistentState<>(STORAGE_LOCATION, String.class);
-        Optional<String> absent = Optional.absent();
+        Optional<String> absent = Optional.empty();
         assertThat(state.get(), is(absent));
         state.save();
     }

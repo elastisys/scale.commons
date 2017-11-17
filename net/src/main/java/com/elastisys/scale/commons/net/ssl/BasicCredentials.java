@@ -2,8 +2,9 @@ package com.elastisys.scale.commons.net.ssl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Objects;
+
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
-import com.google.common.base.Objects;
 
 /**
  * Represents client credentials for
@@ -11,7 +12,6 @@ import com.google.common.base.Objects;
  * autentication</a>.
  *
  * @see AuthenticatedHttpClient
- *
  */
 public class BasicCredentials {
     /** The user name. */
@@ -45,7 +45,7 @@ public class BasicCredentials {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.username, this.password);
+        return Objects.hash(this.username, this.password);
     }
 
     /**
@@ -65,7 +65,8 @@ public class BasicCredentials {
     public boolean equals(Object obj) {
         if (obj instanceof BasicCredentials) {
             BasicCredentials that = (BasicCredentials) obj;
-            return Objects.equal(this.username, that.username) && Objects.equal(this.password, that.password);
+            return Objects.equals(this.username, that.username) //
+                    && Objects.equals(this.password, that.password);
         }
         return false;
     }

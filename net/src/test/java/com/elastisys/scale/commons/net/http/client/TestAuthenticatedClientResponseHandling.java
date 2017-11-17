@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.HttpGet;
@@ -19,11 +20,9 @@ import org.junit.Test;
 import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.http.HttpRequestResponse;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
-import com.elastisys.scale.commons.net.ssl.CertificateCredentials;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.base.Optional;
 
 /**
  * Exercises the response handling of the {@link AuthenticatedHttpClient} class.
@@ -154,9 +153,8 @@ public class TestAuthenticatedClientResponseHandling {
     }
 
     private AuthenticatedHttpClient client(String username, String password) {
-        Optional<CertificateCredentials> absent = Optional.absent();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(
-                Optional.of(new BasicCredentials(username, password)), absent);
+                Optional.of(new BasicCredentials(username, password)), Optional.empty());
         return client;
     }
 }

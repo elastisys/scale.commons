@@ -3,10 +3,10 @@ package com.elastisys.scale.commons.net.ssl;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 /**
  * Represents client credentials for certificate-based SSL authentication (as
@@ -106,7 +106,7 @@ public class CertificateCredentials {
     public KeyStoreType getKeystoreType() {
         // in case the object was parsed from JSON, it may be that keystoreType
         // is null
-        return Optional.fromNullable(this.keystoreType).or(DEFAULT_KEYSTORE_TYPE);
+        return Optional.ofNullable(this.keystoreType).orElse(DEFAULT_KEYSTORE_TYPE);
     }
 
     /**
@@ -133,22 +133,22 @@ public class CertificateCredentials {
      * @return
      */
     public String getKeyPassword() {
-        return Optional.fromNullable(this.keyPassword).or(this.keystorePassword);
+        return Optional.ofNullable(this.keyPassword).orElse(this.keystorePassword);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getKeystoreType(), this.keystorePath, this.keystorePassword, this.keyPassword);
+        return Objects.hash(getKeystoreType(), this.keystorePath, this.keystorePassword, this.keyPassword);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof CertificateCredentials) {
             CertificateCredentials that = (CertificateCredentials) obj;
-            return Objects.equal(getKeystoreType(), that.getKeystoreType())
-                    && Objects.equal(this.keystorePath, that.keystorePath)
-                    && Objects.equal(this.keystorePassword, that.keystorePassword)
-                    && Objects.equal(this.keyPassword, that.keyPassword);
+            return Objects.equals(getKeystoreType(), that.getKeystoreType())
+                    && Objects.equals(this.keystorePath, that.keystorePath)
+                    && Objects.equals(this.keystorePassword, that.keystorePassword)
+                    && Objects.equals(this.keyPassword, that.keyPassword);
         }
         return false;
     }

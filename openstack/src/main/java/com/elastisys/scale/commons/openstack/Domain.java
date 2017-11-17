@@ -58,7 +58,7 @@ public class Domain {
 
     /**
      * Returns <code>true</code> if this domain is specified by id.
-     * 
+     *
      * @return
      */
     public boolean isTypeID() {

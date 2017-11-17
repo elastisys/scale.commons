@@ -4,12 +4,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Optional;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -52,7 +52,7 @@ public class AlertBuilder {
         checkArgument(this.severity != null, "severity is required");
         checkArgument(this.message != null, "message is required");
 
-        this.timestamp = Optional.fromNullable(this.timestamp).or(UtcTime.now());
+        this.timestamp = Optional.ofNullable(this.timestamp).orElse(UtcTime.now());
 
         return new Alert(this.topic, this.severity, this.timestamp, this.message, this.details, this.metadata);
     }

@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.server;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +25,6 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
-
 /**
  * A flexible Builder for creating an embedded Jetty {@link Server} that
  * publishes one or more {@link Servlet}s.
@@ -39,9 +39,6 @@ import com.google.common.collect.Lists;
  * pattern.
  *
  * @see BaseServerBuilder
- *
- *
- *
  */
 public class ServletServerBuilder {
     static Logger LOG = LoggerFactory.getLogger(ServletServerBuilder.class);
@@ -52,7 +49,7 @@ public class ServletServerBuilder {
      */
     private BaseServerBuilder baseServerBuilder;
 
-    private List<ServletDefinition> servletDefinitions = Lists.newArrayList();
+    private List<ServletDefinition> servletDefinitions = new ArrayList<>();
 
     /**
      * Constructs a new {@link ServletServerBuilder}.
@@ -162,7 +159,7 @@ public class ServletServerBuilder {
         ConstraintMapping mapping = new ConstraintMapping();
         mapping.setConstraint(constraint);
         mapping.setPathSpec("/*");
-        securityHandler.setConstraintMappings(Lists.newArrayList(mapping));
+        securityHandler.setConstraintMappings(Arrays.asList(mapping));
 
         return securityHandler;
     }

@@ -1,9 +1,9 @@
 package com.elastisys.scale.commons.net.validate;
 
+import java.util.function.Predicate;
+
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-
-import com.google.common.base.Predicate;
 
 /**
  * {@link Predicate} that determines if an email address is valid.
@@ -19,11 +19,11 @@ public class ValidEmailAddress implements Predicate<String> {
      *         <code>false</code> otherwise.
      */
     public static boolean isValid(String emailAddress) {
-        return new ValidEmailAddress().apply(emailAddress);
+        return new ValidEmailAddress().test(emailAddress);
     }
 
     @Override
-    public boolean apply(String emailAddress) {
+    public boolean test(String emailAddress) {
         try {
             InternetAddress address = new InternetAddress(emailAddress);
             address.validate();

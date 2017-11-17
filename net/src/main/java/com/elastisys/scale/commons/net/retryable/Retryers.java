@@ -6,8 +6,7 @@ import static com.elastisys.scale.commons.net.retryable.StopStrategies.afterAtte
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import com.google.common.base.Predicate;
+import java.util.function.Predicate;
 
 /**
  * A collection of useful {@link Retryable} factory methods.

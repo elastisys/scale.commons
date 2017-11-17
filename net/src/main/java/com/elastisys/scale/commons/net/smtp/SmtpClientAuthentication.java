@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.net.smtp;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -35,14 +36,15 @@ public class SmtpClientAuthentication {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.username, this.password);
+        return Objects.hash(this.username, this.password);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof SmtpClientAuthentication) {
             SmtpClientAuthentication that = (SmtpClientAuthentication) obj;
-            return Objects.equal(this.username, that.username) && Objects.equal(this.password, that.password);
+            return Objects.equals(this.username, that.username) //
+                    && Objects.equals(this.password, that.password);
         }
         return super.equals(obj);
     }

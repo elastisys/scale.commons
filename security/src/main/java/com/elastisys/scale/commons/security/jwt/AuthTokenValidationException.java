@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.security.jwt;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 /**
  * Thrown on failure to validate an authentication token.
@@ -46,8 +46,9 @@ public class AuthTokenValidationException extends Exception {
     public boolean equals(Object obj) {
         if (obj instanceof AuthTokenValidationException) {
             AuthTokenValidationException that = (AuthTokenValidationException) obj;
-            return Objects.equal(this.getMessage(), that.getMessage())
-                    && Objects.equal(this.getCause(), that.getCause()) && Objects.equal(this.detail, that.detail);
+            return Objects.equals(getMessage(), that.getMessage()) //
+                    && Objects.equals(getCause(), that.getCause()) //
+                    && Objects.equals(this.detail, that.detail);
 
         }
         return false;

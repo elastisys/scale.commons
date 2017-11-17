@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.net.ssl.SSLException;
 
@@ -24,7 +25,6 @@ import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.base.Optional;
 
 /**
  * Tests that exercise the {@link AuthenticatedHttpClient} class against a HTTPS
@@ -123,7 +123,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
      */
     @Test
     public void callWithTrustedClientPkcs12Cert() throws IOException {
-        Optional<BasicCredentials> absent = Optional.absent();
+        Optional<BasicCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent, Optional.of(trustedClientPkcs12Cert));
 
         HttpRequestResponse response = client.execute(new HttpGet(url("/")));
@@ -137,7 +137,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
      */
     @Test
     public void callWithTrustedClientJksCert() throws IOException {
-        Optional<BasicCredentials> absent = Optional.absent();
+        Optional<BasicCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent, Optional.of(trustedClientJksCert));
 
         HttpRequestResponse response = client.execute(new HttpGet(url("/")));
@@ -151,7 +151,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
      */
     @Test
     public void callWithUntrustedClientPkcs12Cert() throws IOException {
-        Optional<BasicCredentials> absent = Optional.absent();
+        Optional<BasicCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent, Optional.of(untrustedClientPkcs12Cert));
 
         try {
@@ -168,7 +168,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
      */
     @Test
     public void callWithUntrustedClientJksCert() throws IOException {
-        Optional<BasicCredentials> absent = Optional.absent();
+        Optional<BasicCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(absent, Optional.of(untrustedClientJksCert));
 
         try {
@@ -186,7 +186,7 @@ public class TestAuthenticatedHttpClientOnServerRequiringCertAuth {
     @Test
     public void callWithoutClientCertificate() throws IOException {
         BasicCredentials basicCredentials = new BasicCredentials("johndoe", "secret");
-        Optional<CertificateCredentials> absent = Optional.absent();
+        Optional<CertificateCredentials> absent = Optional.empty();
         AuthenticatedHttpClient client = new AuthenticatedHttpClient(Optional.of(basicCredentials), absent);
 
         try {

@@ -2,8 +2,9 @@ package com.elastisys.scale.commons.openstack;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Objects;
+
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Objects;
 
 /**
  * A configuration that declares how to authenticate the user to OpenStack's
@@ -117,16 +118,16 @@ public class AuthConfig {
     public boolean equals(Object obj) {
         if (obj instanceof AuthConfig) {
             AuthConfig that = (AuthConfig) obj;
-            return Objects.equal(this.keystoneUrl, that.keystoneUrl)
-                    && Objects.equal(this.v2Credentials, that.v2Credentials)
-                    && Objects.equal(this.v3Credentials, that.v3Credentials);
+            return Objects.equals(this.keystoneUrl, that.keystoneUrl)
+                    && Objects.equals(this.v2Credentials, that.v2Credentials)
+                    && Objects.equals(this.v3Credentials, that.v3Credentials);
         }
         return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.keystoneUrl, this.v2Credentials, this.v3Credentials);
+        return Objects.hash(this.keystoneUrl, this.v2Credentials, this.v3Credentials);
     }
 
     @Override

@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.net.ssl.SSLException;
 
@@ -25,7 +26,6 @@ import com.elastisys.scale.commons.net.ssl.KeyStoreType;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.base.Optional;
 
 /**
  * Tests that exercise the {@link AuthenticatedHttpClient} class against a HTTPS

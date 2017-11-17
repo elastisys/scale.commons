@@ -2,10 +2,8 @@ package com.elastisys.scale.commons.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
-import com.google.common.io.Closer;
 
 public class ServerSocketUtils {
 
@@ -23,25 +21,13 @@ public class ServerSocketUtils {
      *             if no free ports were found
      */
     public static List<Integer> findUnusedPorts(int numPorts) throws RuntimeException {
-        Closer closer = Closer.create();
-        List<Integer> freePorts = Lists.newArrayListWithCapacity(numPorts);
-        try {
-            // collect free port sockets
-            for (int i = 0; i < numPorts; i++) {
-                try {
-                    ServerSocket serverSocket = new ServerSocket(0);
-                    closer.register(serverSocket);
-                    freePorts.add(serverSocket.getLocalPort());
-                } catch (IOException e) {
-                    throw new RuntimeException("failed to find free ports: " + e.getMessage(), e);
-                }
-            }
-        } finally {
-            // release sockets
-            try {
-                closer.close();
+        List<Integer> freePorts = new ArrayList<>(numPorts);
+        // collect free port sockets
+        for (int i = 0; i < numPorts; i++) {
+            try (ServerSocket serverSocket = new ServerSocket(0)) {
+                freePorts.add(serverSocket.getLocalPort());
             } catch (IOException e) {
-                throw new RuntimeException("failed to close probed port: " + e.getMessage(), e);
+                throw new RuntimeException("failed to find free ports: " + e.getMessage(), e);
             }
         }
         return freePorts;

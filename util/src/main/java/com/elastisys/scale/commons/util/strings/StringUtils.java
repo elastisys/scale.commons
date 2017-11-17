@@ -2,15 +2,13 @@ package com.elastisys.scale.commons.util.strings;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.function.Function;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
 /**
  * Convenience methods for working with {@link String}s.
- * 
- * 
  */
 public class StringUtils {
 
@@ -20,7 +18,7 @@ public class StringUtils {
 
     /**
      * Performs multiple string substitutions in a {@link String}.
-     * 
+     *
      * @param string
      * @param substitutions
      *            A {@link Map} of substitutions to make in the form of
@@ -33,7 +31,7 @@ public class StringUtils {
     public static String replaceAll(String string, Map<String, String> substitutions) {
         for (Entry<String, String> substitution : substitutions.entrySet()) {
             String pattern = substitution.getKey();
-            String replacement = Optional.fromNullable(substitution.getValue()).or("null");
+            String replacement = Optional.ofNullable(substitution.getValue()).orElse("null");
             string = string.replace(pattern, replacement);
         }
         return string;
@@ -42,7 +40,7 @@ public class StringUtils {
     /**
      * Returns a {@link Function} that prepends a string prefix to every
      * {@link String} it receives as input.
-     * 
+     *
      * @param prefix
      * @return
      */
@@ -53,8 +51,6 @@ public class StringUtils {
     /**
      * A {@link Function} that prepends a string prefix to every {@link String}
      * it receives as input.
-     * 
-     * 
      */
     public static class StringPrependFunction implements Function<String, String> {
 
@@ -62,7 +58,7 @@ public class StringUtils {
 
         /**
          * Creates a {@link StringPrependFunction}.
-         * 
+         *
          * @param prefix
          *            The string to prepend to input {@link String}s.
          */

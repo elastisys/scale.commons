@@ -2,16 +2,15 @@ package com.elastisys.scale.commons.net.retryable;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Sets;
 
 /**
  * A {@link Callable} that repeatedly invokes a wrapped {@link Callable} until
@@ -108,13 +107,13 @@ public class Retryable<R> implements Callable<R> {
         this.name = task.getClass().getSimpleName();
 
         // default is to accept any response
-        this.successfulResponse = Predicates.alwaysTrue();
+        this.successfulResponse = x -> true;
         // default: retry forever
         this.stopStrategy = StopStrategies.never();
         // default: no delay between attempts
         this.delayStrategy = DelayStrategies.noDelay();
         // default: no suppressed errors
-        this.suppressedErrors = Sets.newHashSet();
+        this.suppressedErrors = new HashSet<>();
     };
 
     /**
@@ -211,7 +210,7 @@ public class Retryable<R> implements Callable<R> {
                     this.attempts++;
                     R response = this.task.call();
                     lastResult = response;
-                    if (this.successfulResponse.apply(response)) {
+                    if (this.successfulResponse.test(response)) {
                         return response;
                     }
                 } catch (Exception e) {

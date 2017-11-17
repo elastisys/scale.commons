@@ -1,12 +1,13 @@
 package com.elastisys.scale.commons.rest.auth;
 
+import java.util.Objects;
+
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 
 import com.elastisys.scale.commons.json.types.ErrorType;
-import com.google.common.base.Objects;
 
 public class IsError extends TypeSafeMatcher<ErrorType> {
 
@@ -18,7 +19,7 @@ public class IsError extends TypeSafeMatcher<ErrorType> {
 
     @Override
     public boolean matchesSafely(ErrorType other) {
-        return Objects.equal(this.message, other.getMessage());
+        return Objects.equals(this.message, other.getMessage());
     }
 
     @Override

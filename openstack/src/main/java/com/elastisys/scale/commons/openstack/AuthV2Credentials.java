@@ -2,7 +2,7 @@ package com.elastisys.scale.commons.openstack;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 /**
  * Password-credentials for authenticating using version 2 of the <a href=
@@ -72,15 +72,16 @@ public class AuthV2Credentials {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.tenantName, this.userName, this.password);
+        return Objects.hash(this.tenantName, this.userName, this.password);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof AuthV2Credentials) {
             AuthV2Credentials that = (AuthV2Credentials) obj;
-            return Objects.equal(this.tenantName, that.tenantName) && Objects.equal(this.userName, that.userName)
-                    && Objects.equal(this.password, that.password);
+            return Objects.equals(this.tenantName, that.tenantName) //
+                    && Objects.equals(this.userName, that.userName) //
+                    && Objects.equals(this.password, that.password);
 
         }
         return false;

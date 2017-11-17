@@ -8,13 +8,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 
 /**
  * Verifies the behavior of the {@link StringUtils} class.
- * 
- * 
  */
 public class TestStringUtils {
 

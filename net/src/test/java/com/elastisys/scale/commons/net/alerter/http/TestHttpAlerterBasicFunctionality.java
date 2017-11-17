@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,6 @@ import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.server.ServletDefinition;
 import com.elastisys.scale.commons.server.ServletServerBuilder;
 import com.elastisys.scale.commons.server.SslKeyStoreType;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -93,7 +93,7 @@ public class TestHttpAlerterBasicFunctionality {
         Alert alert5 = AlertBuilder.create().topic("topic5").severity(AlertSeverity.ERROR)
                 .timestamp(new DateTime(5, DateTimeZone.UTC)).message("error message").build();
         // alert with metadata
-        Map<String, JsonElement> metadata = Maps.newHashMap();
+        Map<String, JsonElement> metadata = new HashMap<>();
         metadata.put("key1", JsonUtils.toJson("value1"));
         Alert alert6 = AlertBuilder.create().topic("topic6").severity(AlertSeverity.FATAL)
                 .timestamp(new DateTime(6, DateTimeZone.UTC)).message("fatal message")
@@ -122,7 +122,7 @@ public class TestHttpAlerterBasicFunctionality {
     @Test
     public void testDeliveryWithStandadMetadataTags() {
         // create alerter with standard metadata tags
-        Map<String, JsonElement> standardMetadata = Maps.newHashMap();
+        Map<String, JsonElement> standardMetadata = new HashMap<>();
         standardMetadata.put("key1", JsonUtils.toJson("value1"));
         JsonObject value2 = JsonUtils.parseJsonString("{'x': true, 'y': 'z'}").getAsJsonObject();
         standardMetadata.put("key2", value2);
@@ -137,7 +137,7 @@ public class TestHttpAlerterBasicFunctionality {
         assertThat(webhook.getReceivedMessages().get(0), is(expectedAlert));
 
         // send alert with some extra metadata tags
-        Map<String, JsonElement> extraMetadata = Maps.newHashMap();
+        Map<String, JsonElement> extraMetadata = new HashMap<>();
         extraMetadata.put("key3", JsonUtils.toJson("value3"));
         alert = new Alert("topic1", AlertSeverity.INFO, new DateTime(2, DateTimeZone.UTC), "info message", null,
                 extraMetadata);

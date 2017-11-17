@@ -2,6 +2,7 @@ package com.elastisys.scale.commons.net.alerter.multiplexing;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 
 /**
  * A simple embedded HTTP server that keeps track (in memory) of all requests it
@@ -44,7 +43,7 @@ public class RequestLoggingHttpServer implements Closeable {
      */
     public RequestLoggingHttpServer(String contextPath, int port) {
         this.httpPort = port;
-        this.postedMessages = Lists.newLinkedList();
+        this.postedMessages = new LinkedList<>();
 
         this.server = new Server(this.httpPort);
         this.server.setHandler(new LoggingRequestHandler(this.postedMessages));
@@ -74,9 +73,9 @@ public class RequestLoggingHttpServer implements Closeable {
     @Override
     public void close() throws IOException {
         try {
-            this.stop();
+            stop();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

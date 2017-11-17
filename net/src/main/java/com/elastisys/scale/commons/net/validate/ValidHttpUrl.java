@@ -3,8 +3,8 @@ package com.elastisys.scale.commons.net.validate;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.function.Predicate;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -24,11 +24,11 @@ public class ValidHttpUrl implements Predicate<String> {
      *         otherwise.
      */
     public static boolean isValid(String url) {
-        return new ValidHttpUrl().apply(url);
+        return new ValidHttpUrl().test(url);
     }
 
     @Override
-    public boolean apply(String url) {
+    public boolean test(String url) {
         try {
             URL urlInstance = new URL(url);
             return ALLOWED_PROTOCOLS.contains(urlInstance.getProtocol());

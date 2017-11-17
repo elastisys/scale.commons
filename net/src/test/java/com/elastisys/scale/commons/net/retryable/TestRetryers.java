@@ -1,6 +1,5 @@
 package com.elastisys.scale.commons.net.retryable;
 
-import static com.google.common.base.Predicates.equalTo;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -8,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 
@@ -157,5 +157,9 @@ public class TestRetryers {
             }
             return this.attempts;
         }
+    }
+
+    private static Predicate<Integer> equalTo(int value) {
+        return x -> x == value;
     }
 }

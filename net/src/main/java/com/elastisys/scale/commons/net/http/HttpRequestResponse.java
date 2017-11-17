@@ -3,7 +3,9 @@ package com.elastisys.scale.commons.net.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,8 +18,6 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 
 /**
@@ -76,7 +76,7 @@ public class HttpRequestResponse {
     public HttpRequestResponse(CloseableHttpResponse httpResponse, Charset fallbackCharset) throws IOException {
         try {
             this.statusCode = httpResponse.getStatusLine().getStatusCode();
-            this.headers = Lists.newArrayList(httpResponse.getAllHeaders());
+            this.headers = Arrays.asList(httpResponse.getAllHeaders());
             Charset responseCharset = determineCharset(httpResponse);
             Charset charset = responseCharset == null ? fallbackCharset : responseCharset;
 

@@ -4,7 +4,6 @@ import static com.elastisys.scale.commons.net.retryable.DelayStrategies.exponent
 import static com.elastisys.scale.commons.net.retryable.DelayStrategies.fixed;
 import static com.elastisys.scale.commons.net.retryable.StopStrategies.afterAttempts;
 import static com.elastisys.scale.commons.net.retryable.StopStrategies.afterTime;
-import static com.google.common.base.Predicates.equalTo;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,11 +14,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.Callables;
 
@@ -247,7 +246,7 @@ public class TestRetryable {
         // make sure that the total exponential back-off wait time adds up to
         // the expected value
         // 10 attempts => 9 retry delays => 2^9 - 1 = 511 ms.
-        long expectedDelay = (2L << 9 - 1);
+        long expectedDelay = 2L << 9 - 1;
         long margin = 40L;
         assertTrue(Range.closed(expectedDelay, expectedDelay + margin)
                 .contains(retryable.getTimer().elapsed(MILLISECONDS)));
@@ -325,4 +324,7 @@ public class TestRetryable {
         }
     }
 
+    private static Predicate<Integer> equalTo(int value) {
+        return x -> x == value;
+    }
 }

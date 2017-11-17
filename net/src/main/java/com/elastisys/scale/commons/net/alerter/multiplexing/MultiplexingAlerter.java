@@ -1,5 +1,7 @@
 package com.elastisys.scale.commons.net.alerter.multiplexing;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,9 +19,6 @@ import com.elastisys.scale.commons.net.alerter.http.HttpAlerter;
 import com.elastisys.scale.commons.net.alerter.http.HttpAlerterConfig;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerter;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerterConfig;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
@@ -117,14 +116,14 @@ public class MultiplexingAlerter implements Alerter {
             LOG.debug("no alert handlers registered.");
             return;
         }
-        Map<String, JsonElement> standardTags = ImmutableMap.of();
+        Map<String, JsonElement> standardTags = Collections.emptyMap();
         if (standardAlertMetadataTags != null) {
             standardTags = standardAlertMetadataTags;
         }
 
         LOG.debug("alerters set up with duplicate suppression: {}", alertersConfig.getDuplicateSuppression());
 
-        List<Alerter> newAlerters = Lists.newArrayList();
+        List<Alerter> newAlerters = new ArrayList<>();
         // add SMTP alerters
         List<SmtpAlerterConfig> smtpAlerters = alertersConfig.getSmtpAlerters();
         LOG.debug("adding {} SMTP alerter(s)", smtpAlerters.size());
@@ -171,7 +170,7 @@ public class MultiplexingAlerter implements Alerter {
      * @return
      */
     List<Alerter> alerters() {
-        return ImmutableList.copyOf(this.alerters);
+        return Collections.unmodifiableList(this.alerters);
     }
 
 }

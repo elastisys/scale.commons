@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.json;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 
 public class SomeClass {
     private final String a;
@@ -23,7 +23,7 @@ public class SomeClass {
     public boolean equals(Object obj) {
         if (obj instanceof SomeClass) {
             SomeClass that = (SomeClass) obj;
-            return Objects.equal(this.a, that.a) && Objects.equal(this.b, that.b);
+            return Objects.equals(this.a, that.a) && Objects.equals(this.b, that.b);
         }
         return false;
     }

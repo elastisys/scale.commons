@@ -2,10 +2,10 @@ package com.elastisys.scale.commons.json.types;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Objects;
 
 /**
  * Represents a duration of time. For example, "10 minutes".
@@ -112,7 +112,7 @@ public class TimeInterval {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.time, this.unit);
+        return Objects.hash(this.time, this.unit);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class TimeInterval {
                 return getNanos() == that.getNanos();
             }
             // if some fields are null, make a field-by-field comparison
-            return Objects.equal(this.time, that.time) && Objects.equal(this.unit, that.unit);
+            return Objects.equals(this.time, that.time) && Objects.equals(this.unit, that.unit);
         }
         return false;
     }

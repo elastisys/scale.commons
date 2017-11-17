@@ -2,9 +2,10 @@ package com.elastisys.scale.commons.net.smtp;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 
 /**
  * Represents SMTP client connection settings.
@@ -136,7 +137,7 @@ public class SmtpClientConfig {
      * @return the smtpPort
      */
     public Integer getSmtpPort() {
-        return Optional.fromNullable(this.smtpPort).or(DEFAULT_SMTP_PORT);
+        return Optional.ofNullable(this.smtpPort).orElse(DEFAULT_SMTP_PORT);
     }
 
     /**
@@ -156,7 +157,7 @@ public class SmtpClientConfig {
      * @return
      */
     public boolean isUseSsl() {
-        return Optional.fromNullable(this.useSsl).or(false);
+        return Optional.ofNullable(this.useSsl).orElse(false);
     }
 
     /**
@@ -165,7 +166,7 @@ public class SmtpClientConfig {
      * @return
      */
     public Integer getConnectionTimeout() {
-        return Optional.fromNullable(this.connectionTimeout).or(DEFAULT_CONNECTION_TIMEOUT);
+        return Optional.ofNullable(this.connectionTimeout).orElse(DEFAULT_CONNECTION_TIMEOUT);
     }
 
     /**
@@ -174,12 +175,12 @@ public class SmtpClientConfig {
      * @return
      */
     public Integer getSocketTimeout() {
-        return Optional.fromNullable(this.socketTimeout).or(DEFAULT_SOCKET_TIMEOUT);
+        return Optional.ofNullable(this.socketTimeout).orElse(DEFAULT_SOCKET_TIMEOUT);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.smtpHost, getSmtpPort(), this.authentication, isUseSsl(), getConnectionTimeout(),
+        return Objects.hash(this.smtpHost, getSmtpPort(), this.authentication, isUseSsl(), getConnectionTimeout(),
                 getSocketTimeout());
     }
 
@@ -187,11 +188,12 @@ public class SmtpClientConfig {
     public boolean equals(Object obj) {
         if (obj instanceof SmtpClientConfig) {
             SmtpClientConfig that = (SmtpClientConfig) obj;
-            return Objects.equal(this.smtpHost, that.smtpHost) && Objects.equal(getSmtpPort(), that.getSmtpPort())
-                    && Objects.equal(this.authentication, that.authentication)
-                    && Objects.equal(isUseSsl(), that.isUseSsl())
-                    && Objects.equal(getConnectionTimeout(), that.getConnectionTimeout())
-                    && Objects.equal(getSocketTimeout(), that.getSocketTimeout());
+            return Objects.equals(this.smtpHost, that.smtpHost) //
+                    && Objects.equals(getSmtpPort(), that.getSmtpPort()) //
+                    && Objects.equals(this.authentication, that.authentication) //
+                    && Objects.equals(isUseSsl(), that.isUseSsl()) //
+                    && Objects.equals(getConnectionTimeout(), that.getConnectionTimeout()) //
+                    && Objects.equals(getSocketTimeout(), that.getSocketTimeout());
         }
         return super.equals(obj);
     }

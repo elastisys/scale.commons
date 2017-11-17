@@ -1,10 +1,9 @@
 package com.elastisys.scale.commons.json;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.joda.time.DateTime;
-
-import com.google.common.base.Objects;
 
 public class SomeNestedClass {
     private final int primitiveValue;
@@ -49,9 +48,10 @@ public class SomeNestedClass {
     public boolean equals(Object obj) {
         if (obj instanceof SomeNestedClass) {
             SomeNestedClass that = (SomeNestedClass) obj;
-            return Objects.equal(this.primitiveValue, that.primitiveValue) && Objects.equal(this.string, that.string)
-                    && Objects.equal(this.timestamps, that.timestamps)
-                    && Objects.equal(this.nestedObject, that.nestedObject);
+            return Objects.equals(this.primitiveValue, that.primitiveValue) //
+                    && Objects.equals(this.string, that.string) //
+                    && Objects.equals(this.timestamps, that.timestamps) //
+                    && Objects.equals(this.nestedObject, that.nestedObject);
 
         }
         return false;

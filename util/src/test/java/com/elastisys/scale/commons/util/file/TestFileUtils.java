@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +16,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 
 /**
@@ -98,7 +98,8 @@ public class TestFileUtils {
         Files.touch(file3);
 
         // verify directory content
-        List<File> dirEntries = Lists.newArrayList(Files.fileTreeTraverser().preOrderTraversal(rootDir));
+        List<File> dirEntries = new ArrayList<>();
+        Files.fileTreeTraverser().preOrderTraversal(rootDir).forEach(dirEntries::add);
         Collections.sort(dirEntries);
         assertThat(dirEntries, is(asList(rootDir, dir1, file1, dir2, file2, dir3, file3)));
 
@@ -153,7 +154,7 @@ public class TestFileUtils {
     /**
      * Removes a directory and all its content, and recreates an empty directory
      * with the same name/path.
-     * 
+     *
      * @param dir
      * @throws IOException
      */

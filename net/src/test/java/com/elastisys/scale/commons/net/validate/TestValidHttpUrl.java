@@ -40,7 +40,7 @@ public class TestValidHttpUrl {
         // make sure that same result is obtained no matter if static function
         // or object is called on
         boolean functionResult = ValidHttpUrl.isValid(url);
-        boolean objectResult = new ValidHttpUrl().apply(url);
+        boolean objectResult = new ValidHttpUrl().test(url);
         assertEquals("calls on function and object gave different results!", functionResult, objectResult);
         return objectResult;
     }

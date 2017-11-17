@@ -1,9 +1,9 @@
 package com.elastisys.scale.commons.net.alerter.multiplexing;
 
-import static com.google.common.base.Objects.equal;
-
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import com.elastisys.scale.commons.json.JsonUtils;
@@ -13,8 +13,6 @@ import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.net.alerter.filtering.FilteringAlerter;
 import com.elastisys.scale.commons.net.alerter.http.HttpAlerterConfig;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerterConfig;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -114,7 +112,7 @@ public class AlertersConfig {
      * @return
      */
     public TimeInterval getDuplicateSuppression() {
-        return Optional.fromNullable(this.duplicateSuppression).or(DEFAULT_DUPLICATE_SUPPRESSION);
+        return Optional.ofNullable(this.duplicateSuppression).orElse(DEFAULT_DUPLICATE_SUPPRESSION);
     }
 
     /**
@@ -139,15 +137,16 @@ public class AlertersConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getSmtpAlerters(), getHttpAlerters(), getDuplicateSuppression());
+        return Objects.hash(getSmtpAlerters(), getHttpAlerters(), getDuplicateSuppression());
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof AlertersConfig) {
             AlertersConfig that = (AlertersConfig) obj;
-            return equal(getSmtpAlerters(), that.getSmtpAlerters()) && equal(getHttpAlerters(), that.getHttpAlerters())
-                    && equal(getDuplicateSuppression(), that.getDuplicateSuppression());
+            return Objects.equals(getSmtpAlerters(), that.getSmtpAlerters()) //
+                    && Objects.equals(getHttpAlerters(), that.getHttpAlerters()) //
+                    && Objects.equals(getDuplicateSuppression(), that.getDuplicateSuppression());
         }
         return false;
     }

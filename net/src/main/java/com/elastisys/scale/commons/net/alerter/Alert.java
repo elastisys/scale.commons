@@ -4,13 +4,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+import com.elastisys.scale.commons.json.JsonUtils;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -94,7 +94,7 @@ public class Alert {
         this.timestamp = timestamp;
         this.message = message;
         this.details = details;
-        this.metadata = Maps.newTreeMap();
+        this.metadata = new TreeMap<>();
         this.metadata.putAll(metadata);
     }
 
@@ -179,7 +179,7 @@ public class Alert {
      * @return A field-by-field copy with additional metadata tags.
      */
     public Alert withMetadata(Map<String, JsonElement> additionalTags) {
-        Map<String, JsonElement> extendedTags = Maps.newHashMap(getMetadata());
+        Map<String, JsonElement> extendedTags = new HashMap<>(getMetadata());
         extendedTags.putAll(additionalTags);
 
         return new Alert(this.topic, this.severity, this.timestamp, this.message, this.details, extendedTags);
@@ -187,23 +187,24 @@ public class Alert {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("topic", this.topic).add("severity", this.severity)
-                .add("timestamp", this.timestamp).add("message", this.message).add("details", this.details)
-                .add("metadata", this.metadata).toString();
+        return JsonUtils.toString(JsonUtils.toJson(this));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.topic, this.severity, this.timestamp, this.message, this.details, this.metadata);
+        return Objects.hash(this.topic, this.severity, this.timestamp, this.message, this.details, this.metadata);
     }
 
     @Override
     public boolean equals(Object other) {
         if (other instanceof Alert) {
             Alert that = (Alert) other;
-            return Objects.equal(this.topic, that.topic) && Objects.equal(this.severity, that.severity)
-                    && Objects.equal(this.timestamp, that.timestamp) && Objects.equal(this.message, that.message)
-                    && Objects.equal(this.details, that.details) && Objects.equal(this.metadata, that.metadata);
+            return Objects.equals(this.topic, that.topic) //
+                    && Objects.equals(this.severity, that.severity) //
+                    && Objects.equals(this.timestamp, that.timestamp) //
+                    && Objects.equals(this.message, that.message) //
+                    && Objects.equals(this.details, that.details) //
+                    && Objects.equals(this.metadata, that.metadata);
         } else {
             return false;
         }

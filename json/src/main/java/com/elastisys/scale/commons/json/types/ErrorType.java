@@ -1,7 +1,8 @@
 package com.elastisys.scale.commons.json.types;
 
+import java.util.Objects;
+
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Objects;
 import com.google.common.base.Throwables;
 
 /**
@@ -95,14 +96,14 @@ public class ErrorType {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.message, this.detail);
+        return Objects.hash(this.message, this.detail);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ErrorType) {
             ErrorType other = (ErrorType) obj;
-            return Objects.equal(this.message, other.message) && Objects.equal(this.detail, other.detail);
+            return Objects.equals(this.message, other.message) && Objects.equals(this.detail, other.detail);
         }
         return false;
     }
