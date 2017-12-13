@@ -33,7 +33,7 @@ public class Retryers {
      *            The maximum number of attempts.
      * @return The constructed {@link Retryable}.
      */
-    public static <R> Retryable<R> fixedDelayRetryer(String name, Callable<R> callable, int fixedDelay, TimeUnit unit,
+    public static <R> Retryable<R> fixedDelayRetryer(String name, Callable<R> callable, long fixedDelay, TimeUnit unit,
             int maxAttempts) {
 
         return new Retryable<>(callable).name(name).delay(fixed(fixedDelay, unit)).stop(afterAttempts(maxAttempts))
@@ -61,7 +61,7 @@ public class Retryers {
      *            considered successful.
      * @return The constructed {@link Retryable}.
      */
-    public static <R> Retryable<R> fixedDelayRetryer(String name, Callable<R> callable, int fixedDelay, TimeUnit unit,
+    public static <R> Retryable<R> fixedDelayRetryer(String name, Callable<R> callable, long fixedDelay, TimeUnit unit,
             int maxAttempts, Predicate<R> responsePredicate) {
 
         return new Retryable<>(callable).name(name).delay(fixed(fixedDelay, unit)).stop(afterAttempts(maxAttempts))
@@ -87,7 +87,7 @@ public class Retryers {
      *            The maximum number of attempts.
      * @return The constructed {@link Retryable}.
      */
-    public static <R> Retryable<R> exponentialBackoffRetryer(String name, Callable<R> callable, int initialDelay,
+    public static <R> Retryable<R> exponentialBackoffRetryer(String name, Callable<R> callable, long initialDelay,
             TimeUnit unit, int maxAttempts) {
 
         return new Retryable<>(callable).name(name).delay(exponentialBackoff(initialDelay, unit))
@@ -116,7 +116,7 @@ public class Retryers {
      *            considered successful.
      * @return The constructed {@link Retryable}.
      */
-    public static <R> Retryable<R> exponentialBackoffRetryer(String name, Callable<R> callable, int initialDelay,
+    public static <R> Retryable<R> exponentialBackoffRetryer(String name, Callable<R> callable, long initialDelay,
             TimeUnit unit, int maxAttempts, Predicate<R> responsePredicate) {
 
         return new Retryable<>(callable).name(name).delay(exponentialBackoff(initialDelay, unit))
