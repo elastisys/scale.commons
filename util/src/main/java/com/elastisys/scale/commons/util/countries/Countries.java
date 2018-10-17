@@ -6,6 +6,11 @@ import java.util.Map;
 
 /**
  * Enumeration for the countries of the world.
+ * <p/>
+ * NOTE: since countries may change with every Java release the enumeration
+ * constants may need to be updated. To generate a new list of country
+ * enumeration constants, simply run the {@link #main(String[])} method of this
+ * class.
  */
 public enum Countries {
     /** The country of Andorra. */
@@ -14,16 +19,14 @@ public enum Countries {
     UNITED_ARAB_EMIRATES("United Arab Emirates"),
     /** The country of Afghanistan. */
     AFGHANISTAN("Afghanistan"),
-    /** The country of Antigua and Barbuda. */
-    ANTIGUA_AND_BARBUDA("Antigua and Barbuda"),
+    /** The country of Antigua & Barbuda. */
+    ANTIGUA_AND_BARBUDA("Antigua & Barbuda"),
     /** The country of Anguilla. */
     ANGUILLA("Anguilla"),
     /** The country of Albania. */
     ALBANIA("Albania"),
     /** The country of Armenia. */
     ARMENIA("Armenia"),
-    /** The country of Netherlands Antilles. */
-    NETHERLANDS_ANTILLES("Netherlands Antilles"),
     /** The country of Angola. */
     ANGOLA("Angola"),
     /** The country of Antarctica. */
@@ -42,8 +45,8 @@ public enum Countries {
     ÅLAND_ISLANDS("Åland Islands"),
     /** The country of Azerbaijan. */
     AZERBAIJAN("Azerbaijan"),
-    /** The country of Bosnia and Herzegovina. */
-    BOSNIA_AND_HERZEGOVINA("Bosnia and Herzegovina"),
+    /** The country of Bosnia & Herzegovina. */
+    BOSNIA_AND_HERZEGOVINA("Bosnia & Herzegovina"),
     /** The country of Barbados. */
     BARBADOS("Barbados"),
     /** The country of Bangladesh. */
@@ -60,16 +63,16 @@ public enum Countries {
     BURUNDI("Burundi"),
     /** The country of Benin. */
     BENIN("Benin"),
-    /** The country of Saint Barthélemy. */
-    SAINT_BARTHÉLEMY("Saint Barthélemy"),
+    /** The country of St. Barthélemy. */
+    ST_BARTHELEMY("St. Barthélemy"),
     /** The country of Bermuda. */
     BERMUDA("Bermuda"),
     /** The country of Brunei. */
     BRUNEI("Brunei"),
     /** The country of Bolivia. */
     BOLIVIA("Bolivia"),
-    /** The country of Bonaire, Sint Eustatius and Saba. */
-    BONAIRE_SINT_EUSTATIUS_AND_SABA("Bonaire, Sint Eustatius and Saba"),
+    /** The country of Caribbean Netherlands. */
+    CARIBBEAN_NETHERLANDS("Caribbean Netherlands"),
     /** The country of Brazil. */
     BRAZIL("Brazil"),
     /** The country of Bahamas. */
@@ -86,18 +89,18 @@ public enum Countries {
     BELIZE("Belize"),
     /** The country of Canada. */
     CANADA("Canada"),
-    /** The country of Cocos Islands. */
-    COCOS_ISLANDS("Cocos Islands"),
-    /** The country of The Democratic Republic Of Congo. */
-    THE_DEMOCRATIC_REPUBLIC_OF_CONGO("The Democratic Republic Of Congo"),
+    /** The country of Cocos (Keeling) Islands. */
+    COCOS_KEELING_ISLANDS("Cocos (Keeling) Islands"),
+    /** The country of Congo - Kinshasa. */
+    CONGO_KINSHASA("Congo - Kinshasa"),
     /** The country of Central African Republic. */
     CENTRAL_AFRICAN_REPUBLIC("Central African Republic"),
-    /** The country of Congo. */
-    CONGO("Congo"),
+    /** The country of Congo - Brazzaville. */
+    CONGO_BRAZZAVILLE("Congo - Brazzaville"),
     /** The country of Switzerland. */
     SWITZERLAND("Switzerland"),
-    /** The country of Côte d'Ivoire. */
-    COTE_D_IVOIRE("Côte d'Ivoire"),
+    /** The country of Côte d’Ivoire. */
+    COTE_DIVOIRE("Côte d’Ivoire"),
     /** The country of Cook Islands. */
     COOK_ISLANDS("Cook Islands"),
     /** The country of Chile. */
@@ -188,8 +191,8 @@ public enum Countries {
     EQUATORIAL_GUINEA("Equatorial Guinea"),
     /** The country of Greece. */
     GREECE("Greece"),
-    /** The country of South Georgia And The South Sandwich Islands. */
-    SOUTH_GEORGIA_AND_THE_SOUTH_SANDWICH_ISLANDS("South Georgia And The South Sandwich Islands"),
+    /** The country of South Georgia & South Sandwich Islands. */
+    SOUTH_GEORGIA_AND_SOUTH_SANDWICH_ISLANDS("South Georgia & South Sandwich Islands"),
     /** The country of Guatemala. */
     GUATEMALA("Guatemala"),
     /** The country of Guam. */
@@ -198,10 +201,10 @@ public enum Countries {
     GUINEA_BISSAU("Guinea-Bissau"),
     /** The country of Guyana. */
     GUYANA("Guyana"),
-    /** The country of Hong Kong. */
-    HONG_KONG("Hong Kong"),
-    /** The country of Heard Island And McDonald Islands. */
-    HEARD_ISLAND_AND_MCDONALD_ISLANDS("Heard Island And McDonald Islands"),
+    /** The country of Hong Kong SAR China. */
+    HONG_KONG_SAR_CHINA("Hong Kong SAR China"),
+    /** The country of Heard & McDonald Islands. */
+    HEARD_AND_MCDONALD_ISLANDS("Heard & McDonald Islands"),
     /** The country of Honduras. */
     HONDURAS("Honduras"),
     /** The country of Croatia. */
@@ -216,8 +219,8 @@ public enum Countries {
     IRELAND("Ireland"),
     /** The country of Israel. */
     ISRAEL("Israel"),
-    /** The country of Isle Of Man. */
-    ISLE_OF_MAN("Isle Of Man"),
+    /** The country of Isle of Man. */
+    ISLE_OF_MAN("Isle of Man"),
     /** The country of India. */
     INDIA("India"),
     /** The country of British Indian Ocean Territory. */
@@ -248,8 +251,8 @@ public enum Countries {
     KIRIBATI("Kiribati"),
     /** The country of Comoros. */
     COMOROS("Comoros"),
-    /** The country of Saint Kitts And Nevis. */
-    SAINT_KITTS_AND_NEVIS("Saint Kitts And Nevis"),
+    /** The country of St. Kitts & Nevis. */
+    ST_KITTS_AND_NEVIS("St. Kitts & Nevis"),
     /** The country of North Korea. */
     NORTH_KOREA("North Korea"),
     /** The country of South Korea. */
@@ -264,8 +267,8 @@ public enum Countries {
     LAOS("Laos"),
     /** The country of Lebanon. */
     LEBANON("Lebanon"),
-    /** The country of Saint Lucia. */
-    SAINT_LUCIA("Saint Lucia"),
+    /** The country of St. Lucia. */
+    ST_LUCIA("St. Lucia"),
     /** The country of Liechtenstein. */
     LIECHTENSTEIN("Liechtenstein"),
     /** The country of Sri Lanka. */
@@ -290,8 +293,8 @@ public enum Countries {
     MOLDOVA("Moldova"),
     /** The country of Montenegro. */
     MONTENEGRO("Montenegro"),
-    /** The country of Saint Martin. */
-    SAINT_MARTIN("Saint Martin"),
+    /** The country of St. Martin. */
+    ST_MARTIN("St. Martin"),
     /** The country of Madagascar. */
     MADAGASCAR("Madagascar"),
     /** The country of Marshall Islands. */
@@ -300,12 +303,12 @@ public enum Countries {
     MACEDONIA("Macedonia"),
     /** The country of Mali. */
     MALI("Mali"),
-    /** The country of Myanmar. */
-    MYANMAR("Myanmar"),
+    /** The country of Myanmar (Burma). */
+    MYANMAR_BURMA("Myanmar (Burma)"),
     /** The country of Mongolia. */
     MONGOLIA("Mongolia"),
-    /** The country of Macao. */
-    MACAO("Macao"),
+    /** The country of Macau SAR China. */
+    MACAU_SAR_CHINA("Macau SAR China"),
     /** The country of Northern Mariana Islands. */
     NORTHERN_MARIANA_ISLANDS("Northern Mariana Islands"),
     /** The country of Martinique. */
@@ -368,14 +371,14 @@ public enum Countries {
     PAKISTAN("Pakistan"),
     /** The country of Poland. */
     POLAND("Poland"),
-    /** The country of Saint Pierre And Miquelon. */
-    SAINT_PIERRE_AND_MIQUELON("Saint Pierre And Miquelon"),
-    /** The country of Pitcairn. */
-    PITCAIRN("Pitcairn"),
+    /** The country of St. Pierre & Miquelon. */
+    ST_PIERRE_AND_MIQUELON("St. Pierre & Miquelon"),
+    /** The country of Pitcairn Islands. */
+    PITCAIRN_ISLANDS("Pitcairn Islands"),
     /** The country of Puerto Rico. */
     PUERTO_RICO("Puerto Rico"),
-    /** The country of Palestine. */
-    PALESTINE("Palestine"),
+    /** The country of Palestinian Territories. */
+    PALESTINIAN_TERRITORIES("Palestinian Territories"),
     /** The country of Portugal. */
     PORTUGAL("Portugal"),
     /** The country of Palau. */
@@ -384,8 +387,8 @@ public enum Countries {
     PARAGUAY("Paraguay"),
     /** The country of Qatar. */
     QATAR("Qatar"),
-    /** The country of Reunion. */
-    REUNION("Reunion"),
+    /** The country of Réunion. */
+    RÉUNION("Réunion"),
     /** The country of Romania. */
     ROMANIA("Romania"),
     /** The country of Serbia. */
@@ -406,12 +409,12 @@ public enum Countries {
     SWEDEN("Sweden"),
     /** The country of Singapore. */
     SINGAPORE("Singapore"),
-    /** The country of Saint Helena. */
-    SAINT_HELENA("Saint Helena"),
+    /** The country of St. Helena. */
+    ST_HELENA("St. Helena"),
     /** The country of Slovenia. */
     SLOVENIA("Slovenia"),
-    /** The country of Svalbard And Jan Mayen. */
-    SVALBARD_AND_JAN_MAYEN("Svalbard And Jan Mayen"),
+    /** The country of Svalbard & Jan Mayen. */
+    SVALBARD_AND_JAN_MAYEN("Svalbard & Jan Mayen"),
     /** The country of Slovakia. */
     SLOVAKIA("Slovakia"),
     /** The country of Sierra Leone. */
@@ -426,18 +429,18 @@ public enum Countries {
     SURINAME("Suriname"),
     /** The country of South Sudan. */
     SOUTH_SUDAN("South Sudan"),
-    /** The country of Sao Tome And Principe. */
-    SAO_TOME_AND_PRINCIPE("Sao Tome And Principe"),
+    /** The country of São Tomé & Príncipe. */
+    SÃO_TOMÉ_AND_PRÍNCIPE("São Tomé & Príncipe"),
     /** The country of El Salvador. */
     EL_SALVADOR("El Salvador"),
-    /** The country of Sint Maarten (Dutch part). */
-    SINT_MAARTEN_DUTCH_PART("Sint Maarten (Dutch part)"),
+    /** The country of Sint Maarten. */
+    SINT_MAARTEN("Sint Maarten"),
     /** The country of Syria. */
     SYRIA("Syria"),
     /** The country of Swaziland. */
     SWAZILAND("Swaziland"),
-    /** The country of Turks And Caicos Islands. */
-    TURKS_AND_CAICOS_ISLANDS("Turks And Caicos Islands"),
+    /** The country of Turks & Caicos Islands. */
+    TURKS_AND_CAICOS_ISLANDS("Turks & Caicos Islands"),
     /** The country of Chad. */
     CHAD("Chad"),
     /** The country of French Southern Territories. */
@@ -460,8 +463,8 @@ public enum Countries {
     TONGA("Tonga"),
     /** The country of Turkey. */
     TURKEY("Turkey"),
-    /** The country of Trinidad and Tobago. */
-    TRINIDAD_AND_TOBAGO("Trinidad and Tobago"),
+    /** The country of Trinidad & Tobago. */
+    TRINIDAD_AND_TOBAGO("Trinidad & Tobago"),
     /** The country of Tuvalu. */
     TUVALU("Tuvalu"),
     /** The country of Taiwan. */
@@ -472,30 +475,30 @@ public enum Countries {
     UKRAINE("Ukraine"),
     /** The country of Uganda. */
     UGANDA("Uganda"),
-    /** The country of United States Minor Outlying Islands. */
-    UNITED_STATES_MINOR_OUTLYING_ISLANDS("United States Minor Outlying Islands"),
+    /** The country of U.S. Outlying Islands. */
+    US_OUTLYING_ISLANDS("U.S. Outlying Islands"),
     /** The country of United States. */
     UNITED_STATES("United States"),
     /** The country of Uruguay. */
     URUGUAY("Uruguay"),
     /** The country of Uzbekistan. */
     UZBEKISTAN("Uzbekistan"),
-    /** The country of Vatican. */
-    VATICAN("Vatican"),
-    /** The country of Saint Vincent And The Grenadines. */
-    SAINT_VINCENT_AND_THE_GRENADINES("Saint Vincent And The Grenadines"),
+    /** The country of Vatican City. */
+    VATICAN_CITY("Vatican City"),
+    /** The country of St. Vincent & Grenadines. */
+    ST_VINCENT_AND_GRENADINES("St. Vincent & Grenadines"),
     /** The country of Venezuela. */
     VENEZUELA("Venezuela"),
     /** The country of British Virgin Islands. */
     BRITISH_VIRGIN_ISLANDS("British Virgin Islands"),
     /** The country of U.S. Virgin Islands. */
-    U_S_VIRGIN_ISLANDS("U.S. Virgin Islands"),
+    US_VIRGIN_ISLANDS("U.S. Virgin Islands"),
     /** The country of Vietnam. */
     VIETNAM("Vietnam"),
     /** The country of Vanuatu. */
     VANUATU("Vanuatu"),
-    /** The country of Wallis And Futuna. */
-    WALLIS_AND_FUTUNA("Wallis And Futuna"),
+    /** The country of Wallis & Futuna. */
+    WALLIS_AND_FUTUNA("Wallis & Futuna"),
     /** The country of Samoa. */
     SAMOA("Samoa"),
     /** The country of Yemen. */
@@ -556,5 +559,33 @@ public enum Countries {
      */
     public static boolean countryExists(String countryDisplayName) {
         return COUNTRIES.containsKey(countryDisplayName.toLowerCase());
+    }
+
+    /**
+     * Main method, only included to allow simple re-generation of the
+     * enumeration constants in this enum for a new Java release.
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        String[] isoCountries = Locale.getISOCountries();
+        for (int i = 0; i < isoCountries.length; i++) {
+            String countryCode = isoCountries[i];
+            Locale locale = new Locale.Builder().setRegion(countryCode).build();
+            // note: use US locale to get the country name in English
+            String countryName = locale.getDisplayCountry(Locale.US).toLowerCase();
+            countryName = locale.getDisplayCountry(Locale.US);
+            String enumConstant = countryName.toUpperCase().replaceAll(" ", "_").replaceAll("&", "AND")
+                    .replaceAll("\\.", "").replaceAll("\\-", "_").replaceAll("\\(", "").replaceAll("\\)", "")
+                    .replaceAll("_+", "_");
+
+            System.out.println("/** The country of " + countryName + ". */");
+            System.out.print(enumConstant + "(\"" + countryName + "\")");
+            if (i < isoCountries.length - 1) {
+                System.out.println(",");
+            } else {
+                System.out.println(";");
+            }
+        }
     }
 }
