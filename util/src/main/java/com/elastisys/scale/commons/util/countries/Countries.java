@@ -1,8 +1,8 @@
 package com.elastisys.scale.commons.util.countries;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * Enumeration for the countries of the world.
@@ -64,7 +64,7 @@ public enum Countries {
     /** The country of Benin. */
     BENIN("Benin"),
     /** The country of St. Barthélemy. */
-    ST_BARTHELEMY("St. Barthélemy"),
+    ST_BARTHÉLEMY("St. Barthélemy"),
     /** The country of Bermuda. */
     BERMUDA("Bermuda"),
     /** The country of Brunei. */
@@ -513,20 +513,13 @@ public enum Countries {
     ZIMBABWE("Zimbabwe");
 
     /**
-     * Tracks all known countries keyed by country display name (in english and
-     * lower case), such as 'united states', and mapped to a {@link Locale} for
-     * that country.
+     * A {@link Set} containing the display name (in lower case) of each enum
+     * value.
      */
-    private final static Map<String, Locale> COUNTRIES = new HashMap<>();
-
+    private final static Set<String> COUNTRIES = new HashSet<>();
     static {
-        // build the map of countries
-        String[] countryCodes = Locale.getISOCountries();
-        for (String countryCode : countryCodes) {
-            Locale locale = new Locale.Builder().setRegion(countryCode).build();
-            // note: use US locale to get the country name in English
-            String countryName = locale.getDisplayCountry(Locale.US).toLowerCase();
-            COUNTRIES.put(countryName, locale);
+        for (Countries country : values()) {
+            COUNTRIES.add(country.getCountryName().toLowerCase());
         }
     }
 
@@ -558,7 +551,7 @@ public enum Countries {
      *         otherwise.
      */
     public static boolean countryExists(String countryDisplayName) {
-        return COUNTRIES.containsKey(countryDisplayName.toLowerCase());
+        return COUNTRIES.contains(countryDisplayName.toLowerCase());
     }
 
     /**
