@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <!-- Usage: As per the general contract of Maven builds a full build that compiles, 
-    runs tests, packages and installs build artifacts (jar files) in the local Maven 
-    repository can be executed via: mvn clean install. To generate a project site with 
-    various reports use the Maven site plugin: mvn clean install && mvn site && mvn site:stage 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- Usage: As per the general contract of Maven builds a full build that compiles,
+    runs tests, packages and installs build artifacts (jar files) in the local Maven
+    repository can be executed via: mvn clean install. To generate a project site with
+    various reports use the Maven site plugin: mvn clean install && mvn site && mvn site:stage
     -DstagingDirectory=<devsite> See the Maven site plugin for more details: http://maven.apache.org/plugins/maven-site-plugin/usage.html -->
 
   <modelVersion>4.0.0</modelVersion>
@@ -47,7 +49,13 @@
     <jetty.version>9.4.12.v20180830</jetty.version>
     <jaxrs.version>2.0.1</jaxrs.version>
     <servlet.api.version>3.1.0</servlet.api.version>
+
     <jersey.version>2.25.1</jersey.version>
+    <jaxb.api.version>2.3.0</jaxb.api.version>
+    <jaxb.core.version>2.3.0</jaxb.core.version>
+    <jaxb.impl.version>2.3.0</jaxb.impl.version>
+    <javax.activation.version>1.1.1</javax.activation.version>
+
     <commons.mail.version>1.4</commons.mail.version>
     <gson.version>2.8.0</gson.version>
     <slf4j.version>1.7.22</slf4j.version>
@@ -123,7 +131,7 @@
         <artifactId>jcl-over-slf4j</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      <!-- capture java.util.logging with slf4j. Requires a bridge handler to be 
+      <!-- capture java.util.logging with slf4j. Requires a bridge handler to be
         programatically installed. See http://www.slf4j.org/api/org/slf4j/bridge/SLF4JBridgeHandler.html -->
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -166,6 +174,35 @@
         <artifactId>jersey-client</artifactId>
         <version>${jersey.version}</version>
       </dependency>
+      <!-- After Java 9, JAXB is no longer in the standard the java.se module. It
+        is needed by jersey-client. -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb.api.version}</version>
+      </dependency>
+      <!-- After Java 9, JAXB is no longer in the standard the java.se module. It
+        is needed by jersey-client. -->
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>${jaxb.impl.version}</version>
+      </dependency>
+      <!-- After Java 9, JAXB is no longer in the standard the java.se module. It
+        is needed by jersey-client. -->
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${jaxb.core.version}</version>
+      </dependency>
+      <!-- After Java 9, javax.activation is no longer in the standard the java.se
+        module. It is needed by jersey-client. -->
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>${javax.activation.version}</version>
+      </dependency>
+
 
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -291,13 +328,13 @@
 
   <build>
     <plugins>
-      
-      <!-- Always include dependency licenses in target/third-party-licenses-->
+
+      <!-- Always include dependency licenses in target/third-party-licenses -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
       </plugin>
-      
+
     </plugins>
   </build>
 </project>
