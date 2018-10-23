@@ -33,6 +33,7 @@
     <module>security</module>
     <module>openstack</module>
     <module>cli</module>
+    <module>eventbus</module>
   </modules>
 
   <!-- Location of Git repository. Used to tag releases. -->
@@ -63,6 +64,7 @@
     <joda.time.version>2.9.7</joda.time.version>
     <cron-utils.version>5.0.5</cron-utils.version>
     <commons.math.version>3.3</commons.math.version>
+    <commons.lang.version>3.8.1</commons.lang.version>
     <args4j.version>2.33</args4j.version>
     <jose4j.version>0.4.4</jose4j.version>
     <bouncycastle.version>1.53</bouncycastle.version>
@@ -119,6 +121,13 @@
         <artifactId>commons-math3</artifactId>
         <version>${commons.math.version}</version>
       </dependency>
+      <!-- Class reflection utilities -->
+      <dependency>
+	<groupId>org.apache.commons</groupId>
+	<artifactId>commons-lang3</artifactId>
+	<version>${commons.lang.version}</version>
+      </dependency>
+
       <!-- logging -->
       <dependency>
         <groupId>org.slf4j</groupId>
