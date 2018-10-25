@@ -17,8 +17,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import com.google.common.base.Throwables;
-
 public class SslUtils {
     /**
      * Creates a promiscuous {@link HostnameVerifier} that accepts all host
@@ -112,7 +110,7 @@ public class SslUtils {
             keyStore.load(keyStoreStream, keyStorePassword.toCharArray());
             return keyStore;
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -5,10 +5,11 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableMap;
+import com.elastisys.scale.commons.util.collection.Maps;
 
 /**
  * Verifies the behavior of the {@link StringUtils} class.
@@ -18,25 +19,25 @@ public class TestStringUtils {
     @Test
     public void testReplaceAll() {
         // no replacements
-        Map<String, String> substitutions = ImmutableMap.of();
+        Map<String, String> substitutions = Maps.of();
         String replaced = StringUtils.replaceAll("a string with ${var1} missing ${var2}", substitutions);
         assertThat(replaced, is("a string with ${var1} missing ${var2}"));
 
         // one matching replacement
-        substitutions = ImmutableMap.of(//
+        substitutions = Maps.of(//
                 "${var1}", "several");
         replaced = StringUtils.replaceAll("a string with ${var1} missing ${var2}", substitutions);
         assertThat(replaced, is("a string with several missing ${var2}"));
 
         // one substitution matching, one substitution not matching
-        substitutions = ImmutableMap.of(//
+        substitutions = Maps.of(//
                 "${var1}", "several", //
                 "${var3}", "no match");
         replaced = StringUtils.replaceAll("a string with ${var1} missing ${var2}", substitutions);
         assertThat(replaced, is("a string with several missing ${var2}"));
 
         // two substitutions matching
-        substitutions = ImmutableMap.of(//
+        substitutions = Maps.of(//
                 "${var1}", "several", //
                 "${var2}", "values");
         replaced = StringUtils.replaceAll("a string with ${var1} missing ${var2}", substitutions);

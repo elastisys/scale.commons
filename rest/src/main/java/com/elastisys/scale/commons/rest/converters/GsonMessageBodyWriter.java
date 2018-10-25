@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Produces;
@@ -19,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Charsets;
 
 /**
  * A {@link MessageBodyWriter} that can serialize arbitrary Java class instances
@@ -58,6 +58,6 @@ public class GsonMessageBodyWriter<T> implements MessageBodyWriter<T> {
     }
 
     private byte[] serialize(T t) {
-        return JsonUtils.toPrettyString(JsonUtils.toJson(t)).getBytes(Charsets.UTF_8);
+        return JsonUtils.toPrettyString(JsonUtils.toJson(t)).getBytes(StandardCharsets.UTF_8);
     }
 }

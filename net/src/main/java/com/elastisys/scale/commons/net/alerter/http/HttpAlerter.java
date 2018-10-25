@@ -12,14 +12,14 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.Subscriber;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerter;
 import com.elastisys.scale.commons.net.http.client.AuthenticatedHttpClient;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
 
 /**
@@ -63,7 +63,7 @@ public class HttpAlerter implements Alerter {
         this.standardMetadata = standardMetadata;
     }
 
-    @Subscribe
+    @Subscriber
     @Override
     public void handleAlert(Alert alert) throws RuntimeException {
         // apply severity filter

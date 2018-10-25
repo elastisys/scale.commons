@@ -1,8 +1,7 @@
 package com.elastisys.scale.commons.net.http.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.http.client.HttpResponseException;
@@ -115,7 +114,7 @@ public class AuthenticatedHttpClient {
      */
     public AuthenticatedHttpClient(Logger logger, Optional<BasicCredentials> basicCredentials,
             Optional<CertificateCredentials> certificateCredentials, int connectTimeout, int socketTimeout) {
-        checkNotNull(logger, "null logger provided");
+        Objects.requireNonNull(logger, "null logger provided");
         HttpBuilder httpBuilder = Http.builder().logger(logger);
         if (basicCredentials.isPresent()) {
             httpBuilder.clientBasicAuth(basicCredentials.get());

@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.net.alerter;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.TreeMap;
 import org.joda.time.DateTime;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.collect.ImmutableMap;
+import com.elastisys.scale.commons.util.collection.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -83,11 +83,11 @@ public class Alert {
      */
     public Alert(String topic, AlertSeverity severity, DateTime timestamp, String message, String details,
             Map<String, JsonElement> metadata) {
-        checkNotNull(topic, "topic cannot be null");
-        checkNotNull(severity, "severity cannot be null");
-        checkNotNull(timestamp, "timestamp cannot be null");
-        checkNotNull(message, "message cannot be null");
-        checkNotNull(metadata, "metadata cannot be null");
+        requireNonNull(topic, "topic cannot be null");
+        requireNonNull(severity, "severity cannot be null");
+        requireNonNull(timestamp, "timestamp cannot be null");
+        requireNonNull(message, "message cannot be null");
+        requireNonNull(metadata, "metadata cannot be null");
 
         this.topic = topic;
         this.severity = severity;
@@ -167,7 +167,7 @@ public class Alert {
      * @return A field-by-field copy with an additional tag.
      */
     public Alert withMetadata(String tag, JsonElement value) {
-        return withMetadata(ImmutableMap.of(tag, value));
+        return withMetadata(Maps.of(tag, value));
     }
 
     /**

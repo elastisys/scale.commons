@@ -1,14 +1,14 @@
 package com.elastisys.scale.commons.json.schema;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import com.elastisys.scale.commons.util.io.IoUtils;
 import com.google.gson.JsonObject;
 
 /**
@@ -91,8 +91,8 @@ public class JsonValidator {
      */
     private static String loadTv4Lib() throws RuntimeException {
         try {
-            return Resources.toString(Resources.getResource(TINY_JSON_VALIDATOR_PATH), Charsets.UTF_8);
-        } catch (IOException e) {
+            return IoUtils.toString(TINY_JSON_VALIDATOR_PATH, StandardCharsets.UTF_8);
+        } catch (Exception e) {
             throw new RuntimeException("failed to load tv4 (tiny json validator) JavaScript library: " + e.getMessage(),
                     e);
         }

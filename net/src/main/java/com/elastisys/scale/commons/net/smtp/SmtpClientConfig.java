@@ -1,11 +1,11 @@
 package com.elastisys.scale.commons.net.smtp;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import com.google.common.base.MoreObjects;
+import com.elastisys.scale.commons.json.JsonUtils;
 
 /**
  * Represents SMTP client connection settings.
@@ -222,8 +222,6 @@ public class SmtpClientConfig {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("smtpHost", this.smtpHost).add("smtpPort", getSmtpPort())
-                .add("useSsl", isUseSsl()).add("authentication", this.authentication)
-                .add("connectionTimeout", getConnectionTimeout()).add("socketTimeout", getSocketTimeout()).toString();
+        return JsonUtils.toPrettyString(JsonUtils.toJson(this));
     }
 }

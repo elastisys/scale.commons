@@ -1,10 +1,9 @@
 package com.elastisys.scale.commons.util.diff;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 /**
  * Compares two sets of objects, a source set and a destination set, and
@@ -40,8 +39,9 @@ public class SetDiff<T> {
      * @return
      */
     public Set<T> added() {
-        return Sets.difference(this.destinationSet, this.sourceSet).immutableCopy();
-
+        Set<T> destCopy = new HashSet<>(this.destinationSet);
+        destCopy.removeAll(this.sourceSet);
+        return destCopy;
     }
 
     /**
@@ -51,7 +51,9 @@ public class SetDiff<T> {
      * @return
      */
     public Set<T> removed() {
-        return Sets.difference(this.sourceSet, this.destinationSet).immutableCopy();
+        Set<T> sourceCopy = new HashSet<>(this.sourceSet);
+        sourceCopy.removeAll(this.destinationSet);
+        return sourceCopy;
     }
 
     /**
@@ -62,7 +64,9 @@ public class SetDiff<T> {
      * @return
      */
     public Set<T> common() {
-        return Sets.intersection(this.sourceSet, this.destinationSet).immutableCopy();
+        Set<T> sourceCopy = new HashSet<>(this.sourceSet);
+        sourceCopy.retainAll(this.destinationSet);
+        return sourceCopy;
     }
 
 }

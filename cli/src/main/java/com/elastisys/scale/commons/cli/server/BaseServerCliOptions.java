@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.cli.server;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,7 @@ import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.Option;
 
 import com.elastisys.scale.commons.cli.CommandLineOptions;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.Range;
+import com.elastisys.scale.commons.util.precond.Preconditions;
 
 /**
  * A base class for HTTP(S) server command-line option parsing.
@@ -94,13 +93,15 @@ public abstract class BaseServerCliOptions implements CommandLineOptions {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("httpPort", this.httpPort).add("httpsPort", this.httpsPort)//
-                .add("sslKeyStore", this.sslKeyStore).add("sslKeyStorePassword", this.sslKeyStorePassword)//
-                .add("requireClientCert", this.requireClientCert)//
-                .add("sslTrustStore", this.sslTrustStore).add("sslTrustStorePassword", this.sslTrustStorePassword)
-                .add("requireBasicAuth", this.requireBasicAuth) //
-                .add("realmFile", this.realmFile).add("requireRole", this.requireRole)//
-                .add("help", this.help).add("version", this.version).toString();
+        return new StringBuilder(this.getClass().getSimpleName()).append("httpPort=" + this.httpPort)
+                .append("httpsPort=" + this.httpsPort)//
+                .append("sslKeyStore=" + this.sslKeyStore).append("sslKeyStorePassword=" + this.sslKeyStorePassword)//
+                .append("requireClientCert=" + this.requireClientCert)//
+                .append("sslTrustStore=" + this.sslTrustStore)
+                .append("sslTrustStorePassword=" + this.sslTrustStorePassword)
+                .append("requireBasicAuth=" + this.requireBasicAuth) //
+                .append("realmFile=" + this.realmFile).append("requireRole=" + this.requireRole)//
+                .append("help=" + this.help).append("version=" + this.version).toString();
     }
 
     /**
@@ -111,15 +112,15 @@ public abstract class BaseServerCliOptions implements CommandLineOptions {
      */
     @Override
     public void validate() throws IllegalArgumentException {
-        checkArgument(this.httpPort != null || this.httpsPort != null,
+        Preconditions.checkArgument(this.httpPort != null || this.httpsPort != null,
                 "neither --http-port nor --https-port specified");
         if (this.httpPort != null) {
-            checkArgument(Range.closed(MIN_PORT, MAX_PORT).contains(this.httpPort),
+            checkArgument(MIN_PORT <= this.httpPort && this.httpPort <= MAX_PORT,
                     "--http-port: allowed port range is [1,65535]");
         }
 
         if (this.httpsPort != null) {
-            checkArgument(Range.closed(MIN_PORT, MAX_PORT).contains(this.httpsPort),
+            checkArgument(MIN_PORT <= this.httpsPort && this.httpsPort <= MAX_PORT,
                     "--https-port: allowed port range is [1,65535]");
             checkArgument(this.sslKeyStore != null, "--ssl-keystore is required when a https port is specified");
             checkArgument(this.sslKeyStorePassword != null, "no --ssl-keystore-password specified");

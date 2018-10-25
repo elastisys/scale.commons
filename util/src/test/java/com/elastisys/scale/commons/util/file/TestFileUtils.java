@@ -5,9 +5,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,8 +19,6 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.io.Files;
 
 /**
  * Exercises teh {@link FileUtils} class.
@@ -35,6 +37,35 @@ public class TestFileUtils {
     @After
     public void afterTestMethod() throws IOException {
         FileUtils.deleteRecursively(DIR_OWNED_BY_USER);
+    }
+
+    @Test
+    public void touch() throws IOException {
+        File file = Paths.get(DIR_OWNED_BY_USER.getPath(), "a.txt").toFile();
+        if (file.exists()) {
+            file.delete();
+        }
+
+        assertFalse(file.exists());
+        FileUtils.touch(file);
+        assertTrue(file.exists());
+    }
+
+    /**
+     * {@link FileUtils#touch(File)} should throw {@link IOException} on failure
+     * to create file.
+     */
+    @Test
+    public void touchOnPermissionDenied() throws IOException {
+        File file = Paths.get("/root", "a.txt").toFile();
+        assertFalse(file.exists());
+        try {
+            FileUtils.touch(file);
+            fail("should not be allowed to touch /root/a.txt");
+        } catch (IOException e) {
+            assertTrue(e.getMessage().contains("Permission denied"));
+        }
+        assertFalse(file.exists());
     }
 
     /**
@@ -72,7 +103,7 @@ public class TestFileUtils {
     @Test
     public void deleteRecursivelyWithFile() throws IOException {
         File fileToBeDeleted = new File(DIR_OWNED_BY_USER, "file.txt");
-        Files.touch(fileToBeDeleted);
+        FileUtils.touch(fileToBeDeleted);
         assertThat(dirFiles(DIR_OWNED_BY_USER), is(asList("file.txt")));
 
         FileUtils.deleteRecursively(fileToBeDeleted);
@@ -93,15 +124,16 @@ public class TestFileUtils {
         assertTrue(dir1.mkdirs());
         assertTrue(dir2.mkdirs());
         assertTrue(dir3.mkdirs());
-        Files.touch(file1);
-        Files.touch(file2);
-        Files.touch(file3);
+        FileUtils.touch(file1);
+        FileUtils.touch(file2);
+        FileUtils.touch(file3);
 
         // verify directory content
-        List<File> dirEntries = new ArrayList<>();
-        Files.fileTreeTraverser().preOrderTraversal(rootDir).forEach(dirEntries::add);
+        List<Path> dirEntries = new ArrayList<>();
+        Files.walk(rootDir.toPath()).forEach(dirEntries::add);
         Collections.sort(dirEntries);
-        assertThat(dirEntries, is(asList(rootDir, dir1, file1, dir2, file2, dir3, file3)));
+        assertThat(dirEntries, is(asList(rootDir.toPath(), dir1.toPath(), file1.toPath(), dir2.toPath(), file2.toPath(),
+                dir3.toPath(), file3.toPath())));
 
         FileUtils.deleteRecursively(rootDir);
 

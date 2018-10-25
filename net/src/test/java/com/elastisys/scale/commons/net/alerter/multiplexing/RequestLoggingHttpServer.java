@@ -2,6 +2,7 @@ package com.elastisys.scale.commons.net.alerter.multiplexing;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,8 +16,6 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 /**
  * A simple embedded HTTP server that keeps track (in memory) of all requests it
@@ -99,7 +98,7 @@ public class RequestLoggingHttpServer implements Closeable {
         public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
                 throws IOException, ServletException {
 
-            String receivedMessage = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+            String receivedMessage = IO.toString(request.getInputStream(), StandardCharsets.UTF_8.displayName());
             logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(),
                     receivedMessage);
             this.postedMessages.add(receivedMessage);

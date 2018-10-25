@@ -1,21 +1,16 @@
 package com.elastisys.scale.commons.json;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 
 import com.elastisys.scale.commons.json.typeadapters.GsonDateTimeDeserializer;
 import com.elastisys.scale.commons.json.typeadapters.GsonDateTimeSerializer;
-import com.elastisys.scale.commons.json.typeadapters.ImmutableListDeserializer;
-import com.google.common.base.Charsets;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
+import com.elastisys.scale.commons.util.io.IoUtils;
+import com.elastisys.scale.commons.util.precond.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -62,10 +57,10 @@ public class JsonUtils {
     public static JsonElement parseJsonResource(String resourceName)
             throws JsonParseException, IllegalArgumentException {
         Preconditions.checkArgument(resourceName != null, "null resource not allowed");
-        URL resource = Resources.getResource(resourceName);
+
         try {
-            return parseJsonString(Resources.toString(resource, Charsets.UTF_8));
-        } catch (IOException e) {
+            return parseJsonString(IoUtils.toString(resourceName, StandardCharsets.UTF_8));
+        } catch (Exception e) {
             throw new JsonParseException(
                     String.format("failed to parse JSON resource %s: %s", resourceName, e.getMessage()), e);
         }
@@ -83,8 +78,8 @@ public class JsonUtils {
     public static JsonElement parseJsonFile(File jsonFile) throws JsonParseException, IllegalArgumentException {
         Preconditions.checkArgument(jsonFile != null, "null file not allowed");
         try {
-            return parseJsonString(Files.toString(jsonFile, Charsets.UTF_8));
-        } catch (IOException e) {
+            return parseJsonString(IoUtils.toString(jsonFile, StandardCharsets.UTF_8));
+        } catch (Exception e) {
             throw new JsonParseException(
                     String.format("failed to parse JSON file %s: %s", jsonFile.getAbsolutePath(), e.getMessage()), e);
         }
@@ -232,7 +227,6 @@ public class JsonUtils {
     public static GsonBuilder prepareGsonBuilder() {
         return new GsonBuilder().registerTypeAdapter(DateTime.class, new GsonDateTimeDeserializer())
                 .registerTypeAdapter(DateTime.class, new GsonDateTimeSerializer())
-                .registerTypeAdapter(ImmutableList.class, new ImmutableListDeserializer())
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     }

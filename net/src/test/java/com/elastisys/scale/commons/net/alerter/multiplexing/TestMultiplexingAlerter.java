@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +15,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.impl.SynchronousEventBus;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.json.types.TimeInterval;
 import com.elastisys.scale.commons.net.alerter.Alert;
@@ -32,11 +37,9 @@ import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.net.smtp.SmtpTestServerUtil;
 import com.elastisys.scale.commons.net.ssl.BasicCredentials;
+import com.elastisys.scale.commons.util.collection.Maps;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonElement;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
@@ -45,6 +48,8 @@ import com.icegreen.greenmail.util.GreenMailUtil;
  * Exercise the {@link MultiplexingAlerter} class.
  */
 public class TestMultiplexingAlerter {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TestMultiplexingAlerter.class);
 
     /** Trusted user on SSL server. */
     private static final String USERNAME = "user";
@@ -62,7 +67,7 @@ public class TestMultiplexingAlerter {
     /** Fake email SMTP server with SSL. */
     private GreenMail sslMailServer;
 
-    private EventBus eventBus = new EventBus();
+    private EventBus eventBus = new SynchronousEventBus(LOG);
 
     /** Object under test. */
     private MultiplexingAlerter multiplexingAlerter;
@@ -116,7 +121,7 @@ public class TestMultiplexingAlerter {
         List<SmtpAlerterConfig> smtpAlerters = null;
         HttpAlerterConfig http1Config = httpConfig("http://hook", ".*");
         List<HttpAlerterConfig> httpAlerters = Arrays.asList(http1Config);
-        Map<String, JsonElement> standardTags = ImmutableMap.of();
+        Map<String, JsonElement> standardTags = Maps.of();
 
         AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters, null);
 
@@ -142,7 +147,7 @@ public class TestMultiplexingAlerter {
         SmtpAlerterConfig smtp1Conf = smtpConfig("john@doe.com", ".*");
         List<SmtpAlerterConfig> smtpAlerters = Arrays.asList(smtp1Conf);
         List<HttpAlerterConfig> httpAlerters = null;
-        Map<String, JsonElement> standardTags = ImmutableMap.of();
+        Map<String, JsonElement> standardTags = Maps.of();
         AlertersConfig alertConfig = alertConfig(smtpAlerters, httpAlerters, null);
 
         this.multiplexingAlerter.registerAlerters(alertConfig, standardTags);
@@ -323,16 +328,16 @@ public class TestMultiplexingAlerter {
     }
 
     private Map<String, JsonElement> standardTags() {
-        return ImmutableMap.of("ip", JsonUtils.toJson("1.2.3.4"), //
+        return Maps.of("ip", JsonUtils.toJson("1.2.3.4"), //
                 "poolName", JsonUtils.toJson("cloudpool"));
 
     }
 
     private List<Alerter> alerters(Alerter... alerters) {
         if (alerters == null) {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
-        return ImmutableList.copyOf(alerters);
+        return Collections.unmodifiableList(Arrays.asList(alerters));
     }
 
     private AlertersConfig alertConfig(List<SmtpAlerterConfig> emailAlerters, List<HttpAlerterConfig> httpAlerters,

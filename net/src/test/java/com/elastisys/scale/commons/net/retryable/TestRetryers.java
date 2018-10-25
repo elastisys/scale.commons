@@ -26,7 +26,7 @@ public class TestRetryers {
         assertThat(retryer.call(), is(4));
         assertThat(retryer.getAttempts(), is(4));
         // should be 3 retries => 3 * 10 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 30);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 30);
 
         // should fail
         counter = new FailNTimesCounter(3, fault);
@@ -39,7 +39,7 @@ public class TestRetryers {
         }
         assertThat(retryer.getAttempts(), is(3));
         // should be 2 retries => 2 * 10 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 20);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 20);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class TestRetryers {
         assertThat(retryer.call(), is(10));
         assertThat(retryer.getAttempts(), is(10));
         // should be 9 retries => 9 * 10 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 90);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 90);
 
         // should fail
         counter = new FailNTimesCounter(3, fault);
@@ -68,7 +68,7 @@ public class TestRetryers {
         }
         assertThat(retryer.getAttempts(), is(8));
         // should be 7 retries => 7 * 10 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 70);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 70);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class TestRetryers {
         assertThat(retryer.call(), is(4));
         assertThat(retryer.getAttempts(), is(4));
         // should be 3 retries => 2^3 - 1 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 7);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 7);
 
         // should fail
         counter = new FailNTimesCounter(5, fault);
@@ -98,7 +98,7 @@ public class TestRetryers {
         }
         assertThat(retryer.getAttempts(), is(5));
         // should be 4 retries => 2^4 -1 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 15);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 15);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class TestRetryers {
         assertThat(retryer.call(), is(10));
         assertThat(retryer.getAttempts(), is(10));
         // should be 9 retries => 2^9 - 1 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 511);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 511);
 
         // should fail
         counter = new FailNTimesCounter(3, fault);
@@ -129,7 +129,7 @@ public class TestRetryers {
         }
         assertThat(retryer.getAttempts(), is(8));
         // should be 7 retries => 2^7 - 1 ms delay at least
-        assertTrue(retryer.getTimer().elapsed(MILLISECONDS) >= 127);
+        assertTrue(retryer.getTimer().getTime(MILLISECONDS) >= 127);
     }
 
     /**

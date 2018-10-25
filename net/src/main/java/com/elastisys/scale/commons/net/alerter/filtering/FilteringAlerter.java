@@ -1,7 +1,8 @@
 package com.elastisys.scale.commons.net.alerter.filtering;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -15,11 +16,10 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.eventbus.Subscriber;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.Alerter;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.Subscribe;
 
 /**
  * An {@link Alerter} decorator that wraps an {@link Alerter} to suppress
@@ -139,7 +139,7 @@ public class FilteringAlerter implements Alerter {
         this.alertObservations = new ConcurrentHashMap<>();
     }
 
-    @Subscribe
+    @Subscriber
     @Override
     public void handleAlert(Alert alert) throws RuntimeException {
         checkEvictionNeed();
@@ -194,7 +194,7 @@ public class FilteringAlerter implements Alerter {
         LOG.debug("evicting dated alerts from filter ...");
         DateTime now = UtcTime.now();
 
-        Set<String> keys = ImmutableSet.copyOf(this.alertObservations.keySet());
+        Set<String> keys = new HashSet<>(this.alertObservations.keySet());
         for (String alertIdentity : keys) {
             DateTime lastOccurrence = this.alertObservations.get(alertIdentity);
             Duration timeSinceLastOccurrence = new Duration(lastOccurrence, now);

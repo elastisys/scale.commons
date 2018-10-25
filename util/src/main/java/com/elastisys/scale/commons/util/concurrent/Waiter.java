@@ -1,7 +1,6 @@
 package com.elastisys.scale.commons.util.concurrent;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import java.util.Objects;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,9 +13,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * Typically the {@link Waiter} will be shared between several threads, where
  * threads will call the {@link #await()} method, which blocks until at least
  * one other {@link Thread} has called the {@link #set(Object)} method.
- * 
- * 
- * 
+ *
+ *
+ *
  * @param <T>
  *            The type of the object.
  */
@@ -41,7 +40,7 @@ public class Waiter<T> {
 
     /**
      * Constructs a new {@link Waiter} with an initial value set.
-     * 
+     *
      * @param value
      */
     public Waiter(T value) {
@@ -51,14 +50,14 @@ public class Waiter<T> {
     /**
      * Sets the value. Any threads blocking on an {@link #await()} call will
      * return with the set value.
-     * 
+     *
      * @param value
      *            The value to set.
      * @throws NullPointerException
      *             if a <code>null</code> value is set.
      */
     public void set(T value) {
-        checkNotNull(value, "attempt to set null value");
+        Objects.requireNonNull(value, "attempt to set null value");
 
         // set object and signal waiting threads
         this.valueLock.lock();
@@ -75,7 +74,7 @@ public class Waiter<T> {
      * Returns the value set in this {@link Waiter}. For the cases where no
      * value has been set, the method will block until a value has been
      * {@link #set(Object)} by a different {@link Thread}.
-     * 
+     *
      * @return The object.
      * @throws InterruptedException
      */

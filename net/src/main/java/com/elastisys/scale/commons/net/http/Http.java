@@ -13,9 +13,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Range;
-
 /**
  * A HTTP(S) client. Use {@link Http#builder()} to construct a new instance.
  * <p/>
@@ -85,7 +82,9 @@ public class Http {
                 this.logger.debug(format("sending request (%s)", request));
                 httpResponse = client.execute(request);
             } catch (Exception e) {
-                Throwables.propagateIfInstanceOf(e, IOException.class);
+                if (e instanceof IOException) {
+                    throw e;
+                }
                 throw new IOException(format("failed to send request (%s): %s", request, e.getMessage()), e);
             }
 
@@ -93,7 +92,7 @@ public class Http {
             int responseCode = response.getStatusCode();
             String responseBody = response.getResponseBody();
             // raise error if response code is not 2XX
-            if (!Range.closed(200, 299).contains(responseCode)) {
+            if (responseCode < 200 || responseCode > 299) {
                 throw new HttpResponseException(responseCode,
                         format("error response received from remote endpoint " + "on request (%s): %s:\n%s", request,
                                 responseCode, responseBody));

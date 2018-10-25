@@ -11,10 +11,6 @@
   <packaging>jar</packaging>
 
   <dependencies>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
     <!-- DateTime support. -->
     <dependency>
       <groupId>joda-time</groupId>
@@ -41,7 +37,12 @@
       <artifactId>commons.json</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.elastisys.scale</groupId>
+      <artifactId>commons.eventbus</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
     <!-- Test dependencies -->
     <dependency>
       <groupId>junit</groupId>

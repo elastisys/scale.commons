@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.net.http;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;

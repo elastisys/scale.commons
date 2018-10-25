@@ -16,7 +16,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.reflect.TypeToken;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -206,17 +206,4 @@ public class TestJsonUtils {
         assertThat(JsonUtils.toString(json), is("{\"base64\":\"aGVsbG8geW91IQ==\"}"));
     }
 
-    @Test
-    public void testImmutableList() {
-        String rawJsonString = "{ \"strings\": [\"a\", \"b\", \"c\"] }";
-        List<String> mutableStrings = new LinkedList<String>();
-        mutableStrings.add("a");
-        mutableStrings.add("b");
-        mutableStrings.add("c");
-        SomeClassWithImmutableList expectedObject = new SomeClassWithImmutableList(mutableStrings);
-
-        SomeClassWithImmutableList actualObject = JsonUtils.toObject(JsonUtils.parseJsonString(rawJsonString),
-                SomeClassWithImmutableList.class);
-        assertEquals(expectedObject, actualObject);
-    }
 }

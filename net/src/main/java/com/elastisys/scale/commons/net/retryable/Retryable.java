@@ -7,10 +7,9 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Stopwatch;
 
 /**
  * A {@link Callable} that repeatedly invokes a wrapped {@link Callable} until
@@ -91,7 +90,7 @@ public class Retryable<R> implements Callable<R> {
     /** The number of attempts that have been made thus far. */
     private int attempts;
     /** Tracks the elapsed time thus far. */
-    private Stopwatch timer;
+    private StopWatch timer;
 
     /**
      * Creates a {@link Retryable} that will retry a given {@link Callable} with
@@ -202,7 +201,7 @@ public class Retryable<R> implements Callable<R> {
     @Override
     public R call() throws Exception {
         this.attempts = 0;
-        this.timer = Stopwatch.createStarted();
+        this.timer = StopWatch.createStarted();
         Object lastResult = null;
         try {
             while (true) {
@@ -219,7 +218,7 @@ public class Retryable<R> implements Callable<R> {
                 } finally {
                     logResult(this.attempts, lastResult);
                 }
-                long elapsedTimeMillis = this.timer.elapsed(MILLISECONDS);
+                long elapsedTimeMillis = this.timer.getTime(MILLISECONDS);
                 if (this.stopStrategy.giveUp(this.attempts, elapsedTimeMillis)) {
                     giveUp(this.attempts, elapsedTimeMillis, lastResult);
                 }
@@ -298,7 +297,7 @@ public class Retryable<R> implements Callable<R> {
      *
      * @return
      */
-    Stopwatch getTimer() {
+    StopWatch getTimer() {
         return this.timer;
     }
 

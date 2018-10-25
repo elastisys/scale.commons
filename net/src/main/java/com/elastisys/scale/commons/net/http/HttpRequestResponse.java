@@ -3,6 +3,7 @@ package com.elastisys.scale.commons.net.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -15,10 +16,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.util.EntityUtils;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.Range;
 
 /**
  * Represents a response to a HTTP request.
@@ -53,7 +50,7 @@ public class HttpRequestResponse {
      * @throws IOException
      */
     public HttpRequestResponse(CloseableHttpResponse httpResponse) throws IOException {
-        this(httpResponse, Charsets.UTF_8);
+        this(httpResponse, StandardCharsets.UTF_8);
     }
 
     /**
@@ -152,8 +149,8 @@ public class HttpRequestResponse {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("statusCode", this.statusCode).add("headers", this.headers)
-                .toString();
+        return new StringBuilder(getClass().getSimpleName()).append("{").append("statusCode=" + this.statusCode)
+                .append("headers=" + this.headers).append("}").toString();
     }
 
     /**
@@ -163,6 +160,6 @@ public class HttpRequestResponse {
      * @return
      */
     public static Predicate<HttpRequestResponse> isOkResponse() {
-        return response -> Range.closed(200, 299).contains(response.getStatusCode());
+        return response -> response.getStatusCode() >= 200 && response.getStatusCode() < 300;
     }
 }

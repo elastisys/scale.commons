@@ -19,9 +19,6 @@ import java.util.function.Predicate;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.collect.Range;
-import com.google.common.util.concurrent.Callables;
-
 /**
  * Verifies the behavior of the {@link Retryable} and its interaction with the
  * different strategies for determining successful responses, how long to wait
@@ -39,7 +36,7 @@ public class TestRetryable {
      */
     @Test
     public void testWithDefaultsOnSuccess() throws Exception {
-        Callable<String> task = Callables.returning("hello world");
+        Callable<String> task = () -> "hello world";
 
         Retryable<String> retryable = new Retryable<>(task);
         String result = retryable.call();
@@ -198,7 +195,8 @@ public class TestRetryable {
                 .delay(fixed(20, MILLISECONDS));
         assertThat(retryable.call(), is(1));
         assertThat(retryable.getAttempts(), is(1));
-        assertTrue(retryable.getTimer().elapsed(MILLISECONDS) < 20);
+        long elapsed = retryable.getTimer().getTime(MILLISECONDS);
+        assertTrue(elapsed < 20);
 
         // delay 20 ms between each new attempt, 2 attempts needed so a 20 ms
         // delay should have been introduced
@@ -207,7 +205,8 @@ public class TestRetryable {
         assertThat(retryable.call(), is(2));
         assertThat(retryable.getAttempts(), is(2));
         // delay should be at least 20 ms, but not too much higher
-        assertTrue(Range.closed(20L, 30L).contains(retryable.getTimer().elapsed(MILLISECONDS)));
+        elapsed = retryable.getTimer().getTime(MILLISECONDS);
+        assertTrue(elapsed >= 20L && elapsed <= 30L);
 
         // delay 20 ms between each new attempt, 4 attempts needed so a 60 ms
         // delay should have been introduced
@@ -216,7 +215,8 @@ public class TestRetryable {
         assertThat(retryable.call(), is(4));
         assertThat(retryable.getAttempts(), is(4));
         // delay should be at least 20 ms, but not too much higher
-        assertTrue(Range.closed(60L, 70L).contains(retryable.getTimer().elapsed(MILLISECONDS)));
+        elapsed = retryable.getTimer().getTime(MILLISECONDS);
+        assertTrue(elapsed >= 60L && elapsed <= 70);
     }
 
     /**
@@ -248,9 +248,8 @@ public class TestRetryable {
         // 10 attempts => 9 retry delays => 2^9 - 1 = 511 ms.
         long expectedDelay = 2L << 9 - 1;
         long margin = 40L;
-        assertTrue(Range.closed(expectedDelay, expectedDelay + margin)
-                .contains(retryable.getTimer().elapsed(MILLISECONDS)));
-
+        long elapsed = retryable.getTimer().getTime(MILLISECONDS);
+        assertTrue(expectedDelay <= elapsed && elapsed <= expectedDelay + margin);
     }
 
     /**

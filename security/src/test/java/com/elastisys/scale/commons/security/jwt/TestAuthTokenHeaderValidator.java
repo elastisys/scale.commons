@@ -7,6 +7,9 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.joda.time.DateTime;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jwk.RsaJwkGenerator;
@@ -18,15 +21,12 @@ import org.jose4j.lang.JoseException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Matchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
-import com.google.common.io.BaseEncoding;
 
 /**
  * Verifies the behavior of the {@link AuthTokenHeaderValidator}.
@@ -145,13 +145,13 @@ public class TestAuthTokenHeaderValidator {
         // try to modify the signature part of the token
         // <B64-encoded header>.<B64-encoded claims>.<B64-encoded signature>
         String[] parts = legitToken.split("\\.");
-        String claims = new String(BaseEncoding.base64().decode(parts[1]), Charsets.UTF_8);
+        String claims = new String(Base64.getDecoder().decode(parts[1]), StandardCharsets.UTF_8);
         JwtClaims legitClaims = JwtClaims.parse(claims);
         LOG.debug("legit claims: {}", legitClaims);
         legitClaims.setSubject("malicious@elastisys.com");
         LOG.debug("tampered claims: {}", legitClaims);
-        parts[1] = BaseEncoding.base64().encode(legitClaims.toJson().getBytes());
-        String tamperedToken = Joiner.on(".").join(parts);
+        parts[1] = Base64.getEncoder().encodeToString(legitClaims.toJson().getBytes());
+        String tamperedToken = String.join(".", parts);
         LOG.debug("tampered token: {}", tamperedToken);
 
         String authzHeader = "Bearer " + tamperedToken;
@@ -193,7 +193,7 @@ public class TestAuthTokenHeaderValidator {
     public void failingAuthTokenValidator() throws Exception {
         AuthTokenValidator failingValidator = mock(AuthTokenValidator.class);
 
-        when(failingValidator.validate(Mockito.anyString())).thenThrow(new RuntimeException("internal error"));
+        when(failingValidator.validate(Matchers.anyString())).thenThrow(new RuntimeException("internal error"));
 
         validator = new AuthTokenHeaderValidator(failingValidator);
 

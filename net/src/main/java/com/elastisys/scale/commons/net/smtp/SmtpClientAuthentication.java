@@ -2,7 +2,7 @@ package com.elastisys.scale.commons.net.smtp;
 
 import java.util.Objects;
 
-import com.google.common.base.Preconditions;
+import com.elastisys.scale.commons.util.precond.Preconditions;
 
 /**
  * Client username/password authentication for use with SMTP servers that

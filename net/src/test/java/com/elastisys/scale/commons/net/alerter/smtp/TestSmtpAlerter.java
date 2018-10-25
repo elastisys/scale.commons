@@ -14,7 +14,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.impl.SynchronousEventBus;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertBuilder;
@@ -23,10 +27,9 @@ import com.elastisys.scale.commons.net.host.HostUtils;
 import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.net.smtp.SmtpTestServerUtil;
+import com.elastisys.scale.commons.util.collection.Maps;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.eventbus.EventBus;
 import com.google.gson.JsonElement;
 import com.icegreen.greenmail.util.GreenMail;
 
@@ -35,6 +38,8 @@ import com.icegreen.greenmail.util.GreenMail;
  * server.
  */
 public class TestSmtpAlerter {
+
+    private static Logger LOG = LoggerFactory.getLogger(TestSmtpAlerter.class);
 
     /** Trusted user on SSL server. */
     private static final String USERNAME = "user";
@@ -67,7 +72,7 @@ public class TestSmtpAlerter {
         // freeze current time in tests
         FrozenTime.setFixed(UtcTime.parse("2014-03-12T12:00:00Z"));
 
-        this.eventBus = new EventBus();
+        this.eventBus = new SynchronousEventBus(LOG);
     }
 
     /**
@@ -154,7 +159,7 @@ public class TestSmtpAlerter {
         assertThat(this.sslMailServer.getReceivedMessages().length, is(0));
 
         JsonElement tag2Value = JsonUtils.parseJsonString("{\"k1\": true, \"k2\": \"value2\"}");
-        Map<String, JsonElement> standardTags = ImmutableMap.of("tag1", JsonUtils.toJson("value1"), "tag2", tag2Value);
+        Map<String, JsonElement> standardTags = Maps.of("tag1", JsonUtils.toJson("value1"), "tag2", tag2Value);
         SmtpClientConfig clientSettings = new SmtpClientConfig("localhost", SMTP_PORT, null, false);
         SmtpAlerterConfig config = new SmtpAlerterConfig(Arrays.asList("recipient@elastisys.com"),
                 "sender@elastisys.com", "subject", null, clientSettings);

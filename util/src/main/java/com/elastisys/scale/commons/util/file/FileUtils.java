@@ -1,14 +1,15 @@
 package com.elastisys.scale.commons.util.file;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-import com.google.common.io.Files;
+import com.elastisys.scale.commons.util.precond.Preconditions;
 
 /**
  * Convenience file system methods.
@@ -35,9 +36,9 @@ public class FileUtils {
      *             than a directory.
      */
     public static boolean canWriteTo(File directory) throws IllegalArgumentException {
-        checkArgument(directory != null, "directory cannot be null");
-        checkArgument(directory.exists(), "directory %s doesn't exist", directory.getAbsolutePath());
-        checkArgument(directory.isDirectory(), "%s is not a directory", directory.getAbsolutePath());
+        Preconditions.checkArgument(directory != null, "directory cannot be null");
+        Preconditions.checkArgument(directory.exists(), "directory %s doesn't exist", directory.getAbsolutePath());
+        Preconditions.checkArgument(directory.isDirectory(), "%s is not a directory", directory.getAbsolutePath());
         try {
             File probe = File.createTempFile("testprobe", null, directory);
             probe.delete();
@@ -56,7 +57,7 @@ public class FileUtils {
      *             Thrown if deletion fails.
      */
     public static void deleteRecursively(File dirEntry) throws IOException {
-        checkArgument(dirEntry != null, "null directory entry");
+        Preconditions.checkArgument(dirEntry != null, "null directory entry");
 
         if (!dirEntry.exists()) {
             return;
@@ -80,8 +81,8 @@ public class FileUtils {
      * @return
      */
     public static List<File> listDirectories(File directory) {
-        checkNotNull(directory, "directory argument is null");
-        checkArgument(directory.isDirectory(), "%s is not a directory", directory);
+        Objects.requireNonNull(directory, "directory argument is null");
+        Preconditions.checkArgument(directory.isDirectory(), "%s is not a directory", directory);
         File[] directories = directory.listFiles(File::isDirectory);
         return Arrays.asList(directories);
     }
@@ -93,6 +94,20 @@ public class FileUtils {
      */
     public static File cwd() {
         return new File(System.getProperty("user.dir"));
+    }
+
+    /**
+     *
+     * @param filePath
+     * @throws IOException
+     */
+    public static void touch(File file) throws IOException {
+        if (!file.exists()) {
+            // create empty
+            new FileOutputStream(file).close();
+        }
+        // update modification timestamp
+        file.setLastModified(System.currentTimeMillis());
     }
 
     /**
@@ -111,8 +126,9 @@ public class FileUtils {
         // have sufficient permissions to write in the directory)
         if (!file.exists()) {
             try {
-                Files.createParentDirs(file);
-                Files.touch(file);
+                Path parentDir = file.getParentFile().toPath();
+                Files.createDirectories(parentDir);
+                touch(file);
                 return;
             } catch (IOException e) {
                 throw new IllegalArgumentException(String.format("failed to initialize file %s", filePath), e);

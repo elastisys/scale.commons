@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.net.http.client;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
@@ -11,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 /**
  * A {@link Servlet} used in tests that merely greets the requester both on
@@ -34,7 +33,7 @@ public class HelloWorldServlet extends HttpServlet {
     }
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        String body = IO.toString(request.getInputStream(), StandardCharsets.UTF_8.displayName());
         logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
         response.setContentType("text/html;charset=utf-8");

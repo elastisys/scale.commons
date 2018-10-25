@@ -2,10 +2,10 @@ package com.elastisys.scale.commons.net.validate;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.function.Predicate;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * A {@link Predicate} that checks if a given URL string is a valid web
@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableSet;
  */
 public class ValidHttpUrl implements Predicate<String> {
 
-    private static final Collection<String> ALLOWED_PROTOCOLS = ImmutableSet.of("http", "https");
+    private static final Collection<String> ALLOWED_PROTOCOLS = new HashSet<>(Arrays.asList("http", "https"));
 
     /**
      * Validates a given URL for correctness.

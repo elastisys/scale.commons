@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.net.http.client;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -10,8 +11,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 /**
  * A servlet that will respond with 200 to all requests (GET and POST) with a
@@ -23,7 +22,7 @@ public class SilentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        String body = IO.toString(request.getInputStream(), StandardCharsets.UTF_8.displayName());
         logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -33,7 +32,7 @@ public class SilentServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        String body = IO.toString(request.getInputStream(), StandardCharsets.UTF_8.displayName());
         logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);

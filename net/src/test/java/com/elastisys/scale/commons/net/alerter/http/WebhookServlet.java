@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.net.alerter.http;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
-import com.google.common.base.Charsets;
 
 /**
  * A {@link Servlet} used in tests that saves a list of all received POST
@@ -43,7 +43,7 @@ public class WebhookServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        String body = IO.toString(request.getInputStream(), StandardCharsets.UTF_8.displayName());
         logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
         this.receivedAlerts.add(JsonUtils.toObject(JsonUtils.parseJsonString(body), Alert.class));
 

@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.google.common.base.Preconditions;
+import com.elastisys.scale.commons.util.precond.Preconditions;
 
 /**
  * Convenience methods for working with {@link String}s.

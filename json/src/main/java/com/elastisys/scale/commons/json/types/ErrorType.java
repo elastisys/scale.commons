@@ -3,7 +3,7 @@ package com.elastisys.scale.commons.json.types;
 import java.util.Objects;
 
 import com.elastisys.scale.commons.json.JsonUtils;
-import com.google.common.base.Throwables;
+import com.elastisys.scale.commons.util.exception.Stacktrace;
 
 /**
  * A JSON type typically used in REST API responses to convey error information.
@@ -47,7 +47,7 @@ public class ErrorType {
      * @param exception
      */
     public ErrorType(String message, Exception exception) {
-        this(message, Throwables.getStackTraceAsString(exception));
+        this(message, Stacktrace.toString(exception));
     }
 
     /**
@@ -57,7 +57,7 @@ public class ErrorType {
      * @param exception
      */
     public ErrorType(Exception exception) {
-        this(exception.getMessage(), Throwables.getStackTraceAsString(exception));
+        this(exception.getMessage(), Stacktrace.toString(exception));
     }
 
     /**

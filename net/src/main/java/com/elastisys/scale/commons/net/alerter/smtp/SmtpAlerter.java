@@ -8,6 +8,8 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.Subscriber;
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.Alerter;
@@ -15,8 +17,6 @@ import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.smtp.SmtpMessage;
 import com.elastisys.scale.commons.net.smtp.SmtpSender;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonElement;
 
 /**
@@ -85,7 +85,7 @@ public class SmtpAlerter implements Alerter {
      * @param alert
      */
     @Override
-    @Subscribe
+    @Subscriber
     public void handleAlert(Alert alert) {
         // apply severity filter
         SeverityFilter severityFilter = this.config.getSeverityFilter();

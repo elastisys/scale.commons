@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 
 import com.elastisys.scale.commons.eventbus.EventBus;
@@ -130,13 +131,25 @@ class BaseEventBus implements EventBus {
         // all public methods of the object class (or its superclasses)
         Method[] methods = object.getClass().getMethods();
         for (Method method : methods) {
-            if (method.isAnnotationPresent(Subscriber.class)) {
+            if (isSubscriberAnnotatedMethod(method)) {
                 ensureSingleParameterMethod(method);
                 subscriberMethods.add(method);
             }
         }
 
         return subscriberMethods;
+    }
+
+    /**
+     * Returns <code>true</code> if the method itself is annotated with a
+     * {@link Subscriber} annotation, or if one of the methods in
+     * super-classes/interfaces that it overrides is annotated.
+     *
+     * @param method
+     * @return
+     */
+    static boolean isSubscriberAnnotatedMethod(Method method) {
+        return MethodUtils.getAnnotation(method, Subscriber.class, true, true) != null;
     }
 
     /**

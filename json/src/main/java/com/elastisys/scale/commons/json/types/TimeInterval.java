@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.json.types;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

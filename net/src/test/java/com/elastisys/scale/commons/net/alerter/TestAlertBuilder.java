@@ -11,9 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.elastisys.scale.commons.json.JsonUtils;
+import com.elastisys.scale.commons.util.collection.Maps;
 import com.elastisys.scale.commons.util.time.FrozenTime;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 
 /**
@@ -36,7 +36,7 @@ public class TestAlertBuilder {
 
         // check default values
         assertThat(alert.getTimestamp(), is(UtcTime.now()));
-        Map<String, JsonElement> emptyMap = ImmutableMap.of();
+        Map<String, JsonElement> emptyMap = Maps.of();
         assertThat(alert.getMetadata(), is(emptyMap));
     }
 
@@ -45,17 +45,17 @@ public class TestAlertBuilder {
         DateTime time = UtcTime.now().minusYears(1);
         Alert alert = AlertBuilder.create().topic("/topic").severity(AlertSeverity.INFO).message("message")
                 .timestamp(time).addMetadata("host", "my.host").addMetadata("list", Arrays.asList(true, false, true))
-                .addMetadata("map", ImmutableMap.of("k1", "v1", "k2", "v2"))
-                .addMetadata(ImmutableMap.of("extra", JsonUtils.toJson("v3"))).build();
+                .addMetadata("map", Maps.of("k1", "v1", "k2", "v2"))
+                .addMetadata(Maps.of("extra", JsonUtils.toJson("v3"))).build();
 
         assertThat(alert.getTopic(), is("/topic"));
         assertThat(alert.getSeverity(), is(AlertSeverity.INFO));
         assertThat(alert.getMessage(), is("message"));
         assertThat(alert.getTimestamp(), is(time));
-        Map<String, JsonElement> expectedMetadata = ImmutableMap.of(//
+        Map<String, JsonElement> expectedMetadata = Maps.of(//
                 "host", JsonUtils.toJson("my.host"), //
                 "list", JsonUtils.toJson(Arrays.asList(true, false, true)), //
-                "map", JsonUtils.toJson(ImmutableMap.of("k1", "v1", "k2", "v2")), //
+                "map", JsonUtils.toJson(Maps.of("k1", "v1", "k2", "v2")), //
                 "extra", JsonUtils.toJson("v3"));
         assertThat(alert.getMetadata(), is(expectedMetadata));
         assertThat(JsonUtils.toString(JsonUtils.toJson(expectedMetadata)), is(

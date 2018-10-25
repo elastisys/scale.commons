@@ -1,13 +1,14 @@
 package com.elastisys.scale.commons.json.persistence;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.util.file.FileUtils;
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import com.elastisys.scale.commons.util.io.IoUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
@@ -121,7 +122,7 @@ public class PersistentState<T> {
             }
 
             Gson gson = prepareGson();
-            T recoveredState = gson.fromJson(Files.toString(this.storageLocation, Charsets.UTF_8),
+            T recoveredState = gson.fromJson(IoUtils.toString(this.storageLocation, StandardCharsets.UTF_8),
                     this.stateType.getType());
             return recoveredState;
         } catch (Exception e) {
@@ -142,7 +143,7 @@ public class PersistentState<T> {
                 Gson gson = prepareGson();
                 JsonElement stateAsJson = gson.toJsonTree(this.state);
                 String prettifiedJson = gson.toJson(stateAsJson);
-                Files.write(prettifiedJson, this.storageLocation, Charsets.UTF_8);
+                Files.write(this.storageLocation.toPath(), prettifiedJson.getBytes(StandardCharsets.UTF_8));
             } catch (Exception e) {
                 throw new PersistentStateException(String.format("failed to write state of type %s to %s: %s",
                         this.stateType, this.storageLocation.getAbsolutePath(), e.getMessage()), e);

@@ -2,7 +2,7 @@ package com.elastisys.scale.commons.net.retryable;
 
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.elastisys.scale.commons.util.concurrent.Sleep;
 
 /**
  * A collection of different {@link DelayStrategy} implementations.
@@ -35,7 +35,7 @@ public class DelayStrategies {
      * @return
      */
     public static DelayStrategy fixed(final long duration, final TimeUnit unit) {
-        return (failedAttempts, elapsedTimeMillis) -> Uninterruptibles.sleepUninterruptibly(duration, unit);
+        return (failedAttempts, elapsedTimeMillis) -> Sleep.forTime(duration, unit);
     }
 
     /**
@@ -59,7 +59,7 @@ public class DelayStrategies {
     public static DelayStrategy exponentialBackoff(final long initialDelay, final TimeUnit unit) {
         return (failedAttempts, elapsedTimeMillis) -> {
             long sleepTime = initialDelay * (1 << failedAttempts - 1);
-            Uninterruptibles.sleepUninterruptibly(sleepTime, unit);
+            Sleep.forTime(sleepTime, unit);
         };
     }
 

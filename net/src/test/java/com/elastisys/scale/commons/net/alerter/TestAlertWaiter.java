@@ -11,17 +11,20 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.impl.AsynchronousEventBus;
+import com.elastisys.scale.commons.util.concurrent.Sleep;
 
 /**
  * Exercise {@link AlertWaiter}.
  */
 public class TestAlertWaiter {
+    private static final Logger LOG = LoggerFactory.getLogger(TestAlertWaiter.class);
 
     private final static Alert debugAlert = AlertBuilder.create().topic("debug").severity(DEBUG).message("debug!")
             .build();
@@ -29,7 +32,7 @@ public class TestAlertWaiter {
     private final static Alert errorAlert = AlertBuilder.create().topic("error").severity(ERROR).message("error!")
             .build();
 
-    private final static EventBus eventBus = new AsyncEventBus(Executors.newCachedThreadPool());
+    private final static EventBus eventBus = new AsynchronousEventBus(Executors.newCachedThreadPool(), LOG);
 
     /** Predicate used to determine what constitutes a satisfying alert. */
     private final Predicate<Alert> wantErrorAlert = input -> input.getSeverity() == ERROR;
@@ -72,15 +75,15 @@ public class TestAlertWaiter {
 
         // start poster in a separate thread, which doesn't immediately post
         Runnable poster = () -> {
-            Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+            Sleep.forTime(50, TimeUnit.MILLISECONDS);
             eventBus.post(errorAlert);
         };
         new Thread(poster).start();
 
         // verify that we wait for the result to appear on the bus
-        Stopwatch timer = Stopwatch.createStarted();
+        StopWatch timer = StopWatch.createStarted();
         assertThat(waiter.await(), is(errorAlert));
-        long waitTime = timer.elapsed(TimeUnit.MILLISECONDS);
+        long waitTime = timer.getTime(TimeUnit.MILLISECONDS);
         assertTrue("expected wait time to be at least 50ms, was: " + waitTime, waitTime >= 50L);
     }
 
@@ -94,7 +97,7 @@ public class TestAlertWaiter {
         AlertWaiter waiter = new AlertWaiter(eventBus, alertPredicate);
 
         Runnable poster = () -> {
-            Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+            Sleep.forTime(50, TimeUnit.MICROSECONDS);
             eventBus.post(debugAlert);
             eventBus.post(warnAlert);
             eventBus.post(errorAlert);

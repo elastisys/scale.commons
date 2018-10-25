@@ -5,9 +5,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import com.elastisys.scale.commons.eventbus.AllowConcurrentEvents;
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.Subscriber;
 
 /**
  * A listener that allows a client to wait for an {@link Alert} satisfying a
@@ -56,7 +56,7 @@ public class AlertWaiter {
         return this.awaitedAlert;
     }
 
-    @Subscribe
+    @Subscriber
     @AllowConcurrentEvents
     public void onAlert(Alert alert) {
         if (this.awaitedPredictate.test(alert)) {

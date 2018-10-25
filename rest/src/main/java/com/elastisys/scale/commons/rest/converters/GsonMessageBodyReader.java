@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -25,8 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.json.JsonUtils;
 import com.elastisys.scale.commons.json.types.ErrorType;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
+import com.elastisys.scale.commons.util.io.IoUtils;
 import com.google.gson.JsonParseException;
 
 /**
@@ -55,8 +55,8 @@ public class GsonMessageBodyReader<T> implements MessageBodyReader<T> {
     public T readFrom(Class<T> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
-        try (Reader entityReader = new InputStreamReader(entityStream, Charsets.UTF_8)) {
-            String entity = CharStreams.toString(entityReader);
+        try (Reader entityReader = new InputStreamReader(entityStream, StandardCharsets.UTF_8)) {
+            String entity = IoUtils.toString(entityReader);
             if (entity == null || entity.isEmpty()) {
                 throw new NoContentException("failed to deserialize JSON entity: " + "empty/null entity stream");
             }

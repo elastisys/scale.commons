@@ -18,7 +18,7 @@ import com.elastisys.scale.commons.json.SomeClassWithTimestamp;
 import com.elastisys.scale.commons.json.SomeNestedClass;
 import com.elastisys.scale.commons.util.file.FileUtils;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.collect.ImmutableMap;
+import com.elastisys.scale.commons.util.collection.Maps;
 import com.google.gson.reflect.TypeToken;
 
 public class TestPersistentState {
@@ -110,7 +110,7 @@ public class TestPersistentState {
         assertThat(state.get(), is(Optional.empty()));
 
         // store
-        Map<String, DateTime> timestamps = ImmutableMap.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
+        Map<String, DateTime> timestamps = Maps.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
                 "12", UtcTime.parse("2015-01-01T12:00:00.000Z"));
         SomeNestedClass complexObject = new SomeNestedClass(10, "ten", timestamps,
                 new SomeClassWithTimestamp("midnight", UtcTime.parse("2015-01-01T00:00:00.000Z")));
@@ -134,7 +134,7 @@ public class TestPersistentState {
         assertThat(state.get(), is(Optional.empty()));
 
         // store
-        Map<String, DateTime> timestamps = ImmutableMap.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
+        Map<String, DateTime> timestamps = Maps.of("10", UtcTime.parse("2015-01-01T10:00:00.000Z"), //
                 "12", UtcTime.parse("2015-01-01T12:00:00.000Z"));
         state.update(timestamps);
 

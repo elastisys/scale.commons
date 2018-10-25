@@ -1,6 +1,6 @@
 package com.elastisys.scale.commons.security.jwt.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
 import java.security.PublicKey;
 import java.util.function.Supplier;

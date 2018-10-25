@@ -3,18 +3,15 @@ package com.elastisys.scale.commons.json.schema;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import com.elastisys.scale.commons.util.io.IoUtils;
 
 import org.junit.Test;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Throwables;
-import com.google.common.io.Resources;
 
 /**
  * Exercises the {@link JsonValidator} class.
- * 
- * 
- * 
  */
 public class TestJsonValidator {
 
@@ -36,7 +33,7 @@ public class TestJsonValidator {
      * Perform validation of JSON document instances against a fairly complex
      * JSON schema (multiple levels of nesting and minimum and enum
      * constraints).
-     * 
+     *
      * @throws JsonValidatorException
      */
     @Test
@@ -81,9 +78,9 @@ public class TestJsonValidator {
 
     public static String load(String resourceName) {
         try {
-            return Resources.toString(Resources.getResource(resourceName), Charsets.UTF_8);
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
+            return IoUtils.toString(resourceName, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

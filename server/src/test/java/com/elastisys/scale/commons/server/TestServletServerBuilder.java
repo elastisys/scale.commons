@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
+import com.elastisys.scale.commons.util.collection.Maps;
+import com.elastisys.scale.commons.util.io.Resources;
 
 /**
  * Exercises the {@link ServletServerBuilder}.
@@ -505,7 +505,7 @@ public class TestServletServerBuilder {
         this.server = ServletServerBuilder.create().httpPort(this.httpPort).addServlet(servlet).build();
 
         this.server.start();
-        Map<String, String> expectedInitParams = ImmutableMap.of(//
+        Map<String, String> expectedInitParams = Maps.of(//
                 "param1", "value1", //
                 "param2", "value2");
         assertThat(deployedServlet.getInitParams(), is(expectedInitParams));

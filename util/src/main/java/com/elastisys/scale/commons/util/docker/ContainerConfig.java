@@ -1,14 +1,12 @@
 package com.elastisys.scale.commons.util.docker;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.google.common.base.MoreObjects;
 
 /**
  * Describes a {@link Docker} container to be launched.
@@ -89,8 +87,9 @@ public class ContainerConfig {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("image", this.image).add("portMappings", this.portMappings)
-                .add("env", this.env).toString();
+        return new StringBuilder(this.getClass().getSimpleName()).append("{").append("image=" + this.image)
+                .append("portMappings=" + this.portMappings).append("env=" + this.env).append("}").toString();
+
     }
 
     /**

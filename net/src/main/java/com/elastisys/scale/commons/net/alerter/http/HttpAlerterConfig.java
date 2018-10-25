@@ -1,7 +1,8 @@
 package com.elastisys.scale.commons.net.alerter.http;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.elastisys.scale.commons.util.precond.Preconditions.checkArgument;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,7 +11,6 @@ import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.SeverityFilter;
 import com.elastisys.scale.commons.net.validate.ValidHttpUrl;
-import com.google.common.collect.ImmutableList;
 
 /**
  * {@link HttpAlerter} configuration.
@@ -143,7 +143,7 @@ public class HttpAlerterConfig {
      * @return
      */
     public List<String> getDestinationUrls() {
-        return ImmutableList.copyOf(this.destinationUrls);
+        return Collections.unmodifiableList(this.destinationUrls);
     }
 
     /**

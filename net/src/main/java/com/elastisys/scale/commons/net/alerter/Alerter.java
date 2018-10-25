@@ -1,8 +1,8 @@
 package com.elastisys.scale.commons.net.alerter;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import com.elastisys.scale.commons.eventbus.AllowConcurrentEvents;
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.Subscriber;
 
 /**
  * An {@link Alerter} is responsible for notifying the outside world about
@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
  * {@link Alerter}s can be registered with an {@link EventBus} to forward any
  * {@link Alert}s posted on the bus. To this end, the
  * {@link #handleAlert(Alert)} method has been annotated with the
- * {@link Subscribe} annotation.
+ * {@link Subscriber} annotation.
  */
 public interface Alerter {
 
@@ -30,7 +30,7 @@ public interface Alerter {
      * @throws RuntimeException
      *             if the alert could not be sent.
      */
-    @Subscribe
+    @Subscriber
     @AllowConcurrentEvents
     public void handleAlert(Alert alert) throws RuntimeException;
 }

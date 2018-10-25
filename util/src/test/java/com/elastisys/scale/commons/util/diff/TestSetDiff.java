@@ -3,11 +3,11 @@ package com.elastisys.scale.commons.util.diff;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-
-import com.google.common.collect.Sets;
 
 /**
  * Exercise the {@link SetDiff} class.
@@ -95,6 +95,6 @@ public class TestSetDiff {
     }
 
     private Set<String> set(String... members) {
-        return Sets.newHashSet(members);
+        return new HashSet<>(Arrays.asList(members));
     }
 }

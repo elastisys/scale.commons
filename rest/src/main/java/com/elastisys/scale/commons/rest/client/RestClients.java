@@ -13,7 +13,6 @@ import com.elastisys.scale.commons.net.ssl.SslContextBuilder;
 import com.elastisys.scale.commons.net.ssl.SslUtils;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyReader;
 import com.elastisys.scale.commons.rest.converters.GsonMessageBodyWriter;
-import com.google.common.base.Throwables;
 import com.google.gson.JsonObject;
 
 /**
@@ -91,7 +90,7 @@ public class RestClients {
                     .hostnameVerifier(SslUtils.allowAllHostNames()).register(GsonMessageBodyReader.class)
                     .register(GsonMessageBodyWriter.class).build();
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -144,7 +143,7 @@ public class RestClients {
      * @return The created {@link Client}.
      */
     public static Client httpNoAuth() {
-        return ClientBuilder.newBuilder().register(GsonMessageBodyReader.class)
-                .register(GsonMessageBodyWriter.class).build();
+        return ClientBuilder.newBuilder().register(GsonMessageBodyReader.class).register(GsonMessageBodyWriter.class)
+                .build();
     }
 }

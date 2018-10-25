@@ -31,8 +31,12 @@
       <artifactId>commons.security</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-
+    <dependency>
+      <groupId>com.elastisys.scale</groupId>
+      <artifactId>commons.util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    
     <!-- JAX-RS API -->
     <dependency>
       <groupId>javax.ws.rs</groupId>

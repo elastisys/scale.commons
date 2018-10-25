@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.elastisys.scale.commons.eventbus.EventBus;
+import com.elastisys.scale.commons.eventbus.impl.AsynchronousEventBus;
 import com.elastisys.scale.commons.net.alerter.Alert;
 import com.elastisys.scale.commons.net.alerter.AlertSeverity;
 import com.elastisys.scale.commons.net.alerter.Alerter;
@@ -13,8 +18,6 @@ import com.elastisys.scale.commons.net.alerter.smtp.SmtpAlerterConfig;
 import com.elastisys.scale.commons.net.smtp.SmtpClientAuthentication;
 import com.elastisys.scale.commons.net.smtp.SmtpClientConfig;
 import com.elastisys.scale.commons.util.time.UtcTime;
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
 
 /**
  * A simple lab program that exercises the {@link SmtpAlerter}.
@@ -22,6 +25,8 @@ import com.google.common.eventbus.EventBus;
  * Some parameters need to be set as environment variables.
  */
 public class SmtpAlerterLab {
+    private static final Logger LOG = LoggerFactory.getLogger(SmtpAlerterLab.class);
+
     // TODO: make sure ${EMAIL_ADDRESS} is set
     private static final List<String> RECIPIENTS = Arrays.asList(System.getenv("EMAIL_ADDRESS"));
     // TODO: make sure ${EMAIL_SERVER} is set
@@ -32,7 +37,7 @@ public class SmtpAlerterLab {
 
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(5);
-        EventBus eventBus = new AsyncEventBus("alert-bus", executor);
+        EventBus eventBus = new AsynchronousEventBus(executor, LOG);
 
         SmtpClientConfig smtpClientconfig = new SmtpClientConfig(MAIL_SERVER, MAIL_PORT, AUTH, USE_SSL);
         Alerter alerter = new SmtpAlerter(new SmtpAlerterConfig(RECIPIENTS, "noreply@elastisys.com", "alert message",

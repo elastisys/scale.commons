@@ -17,10 +17,6 @@
       <artifactId>gson</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.elastisys.scale</groupId>
       <artifactId>commons.util</artifactId>
       <version>${project.version}</version>

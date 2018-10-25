@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -20,8 +21,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
+import com.elastisys.scale.commons.util.io.IoUtils;
 
 public class TestPemUtils {
     private static final File KEY_DIR = new File("src/test/resources/keys");
@@ -145,10 +145,10 @@ public class TestPemUtils {
 
         // verify that toPem produces the exact same strings as were in the
         // original files.
-        String publicKeyFileContents = Files.toString(sshkeygenPublic, Charsets.UTF_8);
+        String publicKeyFileContents = IoUtils.toString(sshkeygenPublic, StandardCharsets.UTF_8);
         assertThat(PemUtils.toPem(rsaPublicKey), is(publicKeyFileContents));
 
-        String privateKeyFileContents = Files.toString(sshkeygenPrivate, Charsets.UTF_8);
+        String privateKeyFileContents = IoUtils.toString(sshkeygenPrivate, StandardCharsets.UTF_8);
         assertThat(PemUtils.toPem(rsaPrivateKey), is(privateKeyFileContents));
 
     }

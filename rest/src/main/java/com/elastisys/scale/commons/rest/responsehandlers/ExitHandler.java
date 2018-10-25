@@ -14,18 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.elastisys.scale.commons.rest.server.JaxRsApplication;
-import com.google.common.util.concurrent.Uninterruptibles;
+import com.elastisys.scale.commons.util.concurrent.Sleep;
 
 /**
  * A REST response handler resource that handles requests to terminate a server.
  * It listens for {@code GET /exit} requests and, when received, exits the
  * server process, causing the server it's running in to terminate.
  * <p/>
- * 
+ *
  * @see JaxRsApplication
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @Path("/exit")
 public class ExitHandler {
@@ -37,7 +37,7 @@ public class ExitHandler {
 
     /**
      * Terminates the REST server process.
-     * 
+     *
      * @return A {@code 200} {@link Response}.
      */
     @GET
@@ -51,7 +51,7 @@ public class ExitHandler {
             // shut down in a separate thread (after some delay) to give server
             // a chance to respond to client
             Executors.newSingleThreadExecutor().submit(() -> {
-                Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+                Sleep.forTime(1, TimeUnit.SECONDS);
                 System.exit(0);
             });
         }

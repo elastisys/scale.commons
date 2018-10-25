@@ -4,14 +4,12 @@ import static java.util.Arrays.asList;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 
 /**
  * A simple class for managing Docker containers using the command-line
@@ -101,7 +99,7 @@ public class Docker {
      * @throws DockerException
      */
     private static String execute(List<String> runCmd) throws DockerException {
-        LOG.debug("running: {}", Joiner.on(" ").join(runCmd));
+        LOG.debug("running: {}", String.join(" ", runCmd));
         StreamReader reader = null;
         int exitStatus = 0;
         try {
@@ -110,7 +108,7 @@ public class Docker {
             reader.start();
             exitStatus = process.waitFor();
         } catch (Exception e) {
-            String output = (reader != null) ? reader.getOutput() : "no output was captured";
+            String output = reader != null ? reader.getOutput() : "no output was captured";
             throw new DockerException(String.format("failed on docker run: captured output:\n%s", output), e);
         }
         if (exitStatus != 0) {
@@ -140,7 +138,7 @@ public class Docker {
             try {
                 byte[] block = new byte[1024];
                 while (this.stream.read(block) > 0) {
-                    this.buffer.write(new String(block, Charsets.UTF_8));
+                    this.buffer.write(new String(block, StandardCharsets.UTF_8));
                 }
             } catch (Exception e) {
                 throw new RuntimeException("read failed: " + e.getMessage(), e);

@@ -1,7 +1,6 @@
 package com.elastisys.scale.commons.net.smtp;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.mail.Email;
@@ -75,7 +74,7 @@ public class SmtpSender implements Callable<Boolean> {
      * @throws SmtpSenderException
      */
     private void send(Email email, SmtpClientConfig settings) throws SmtpSenderException {
-        checkNotNull(email, "email message cannot be null");
+        Objects.requireNonNull(email, "email message cannot be null");
         if (LOG.isTraceEnabled()) {
             LOG.trace("sending email to {} with server settings {}", email.getToAddresses(), settings);
         }

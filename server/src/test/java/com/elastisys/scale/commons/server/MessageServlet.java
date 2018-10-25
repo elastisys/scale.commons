@@ -1,6 +1,7 @@
 package com.elastisys.scale.commons.server;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,14 +17,9 @@ import org.eclipse.jetty.util.IO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-
 /**
  * Dummy {@link Servlet} that always responds with the same message.Intended for
  * use in tests.
- *
- *
- *
  */
 public class MessageServlet extends HttpServlet {
     static final Logger logger = LoggerFactory.getLogger(MessageServlet.class);
@@ -63,7 +59,7 @@ public class MessageServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String body = IO.toString(request.getInputStream(), Charsets.UTF_8.displayName());
+        String body = IO.toString(request.getInputStream(), StandardCharsets.UTF_8);
         logger.debug("received {} request: {}\n  Body: '{}'", request.getMethod(), request.getRequestURI(), body);
 
         response.setContentType("text/html;charset=utf-8");
