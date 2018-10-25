@@ -19,18 +19,49 @@ import org.junit.Test;
 
 public class TestIoUtils {
 
+    /**
+     * Verify the behavior of {@link IoUtils#readBytes(InputStream)}.
+     */
+    @Test
+    public void readBytesOnInputStream() throws IOException {
+        String streamContent = "A very\ninteresting string\nindeed.";
+        InputStream inputStream = new ByteArrayInputStream(streamContent.getBytes());
+
+        assertThat(IoUtils.readBytes(inputStream), is(streamContent.getBytes()));
+    }
+
+    /**
+     * {@link IoUtils#readBytes(InputStream)} should not close the stream after
+     * reading.
+     */
+    @Test
+    public void readBytesOnInputStreamShouldNotClose() throws IOException {
+        final AtomicReference<Boolean> isClosed = new AtomicReference<Boolean>(Boolean.valueOf(false));
+        InputStream stream = new ByteArrayInputStream("some string".getBytes()) {
+            @Override
+            public void close() throws IOException {
+                isClosed.set(true);
+                super.close();
+            };
+        };
+
+        assertThat(IoUtils.readBytes(stream), is("some string".getBytes()));
+        assertThat(isClosed.get(), is(false));
+    }
+
+    /**
+     * Verify the behavior of
+     * {@link IoUtils#toString(InputStream, java.nio.charset.Charset)}.
+     */
     @Test
     public void toStringOnInputStream() throws IOException {
-        String streamContent = "A very\ninteresting string\nindeed.";
+        String streamContent = "abc\nåäö\n";
         InputStream inputStream = new ByteArrayInputStream(streamContent.getBytes());
         assertTrue(inputStream.available() > 0);
 
         String streamAsString = IoUtils.toString(inputStream, StandardCharsets.UTF_8);
         // verify that stream contents were properly read
         assertThat(streamAsString, is(streamContent));
-        // verify that stream was exhausted (and closed)
-        assertTrue(inputStream.available() == 0);
-        assertTrue(inputStream.read() == -1);
     }
 
     /**
@@ -60,6 +91,9 @@ public class TestIoUtils {
         assertThat(resourceAsString, is(expectedResourceContent));
     }
 
+    /**
+     * Verify proper behavior of {@link IoUtils#toString(File)}.
+     */
     @Test
     public void toStringOnFile() throws IOException, URISyntaxException {
         String expectedFileContent = "A very\ninteresting string\nindeed.";
@@ -67,11 +101,13 @@ public class TestIoUtils {
         URL resource = Resources.getResource(resourcePath);
         File file = new File(resource.toURI());
 
-        String fileAsString = IoUtils.toString(file, StandardCharsets.UTF_8);
         // verify that stream contents were properly read
-        assertThat(fileAsString, is(expectedFileContent));
+        assertThat(IoUtils.toString(file, StandardCharsets.UTF_8), is(expectedFileContent));
     }
 
+    /**
+     * Verify proper behavior of {@link IoUtils#toString(Reader)}.
+     */
     @Test
     public void toStringOnReader() throws IOException {
         assertThat(IoUtils.toString(new StringReader("")), is(""));
@@ -81,7 +117,8 @@ public class TestIoUtils {
     }
 
     /**
-     * {@link IoUtils#toString()} should not close the reader after reading.
+     * {@link IoUtils#toString(Reader)} should not close the reader after
+     * reading.
      */
     @Test
     public void toStringOnReaderShouldNotClose() throws IOException {

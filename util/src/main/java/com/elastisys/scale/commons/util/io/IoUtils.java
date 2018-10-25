@@ -1,5 +1,6 @@
 package com.elastisys.scale.commons.util.io;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,10 +49,31 @@ public class IoUtils {
     }
 
     /**
-     * Reads a {@link Reader} fully into a {@link String}. Does not close the
-     * {@link Reader} after all available data has been read.
+     * Reads all available bytes from an {@link InputStream}. Does not close the
+     * {@link InputStream} after available data has been read.
+     *
+     * @param input
+     *            An {@link InputStream} to read bytes from.
+     * @return
+     * @throws IOException
+     */
+    public static byte[] readBytes(InputStream input) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] block = new byte[4096];
+        int readBytes = 0;
+        while ((readBytes = input.read(block, 0, block.length)) != -1) {
+            buffer.write(block, 0, readBytes);
+        }
+        return buffer.toByteArray();
+    }
+
+    /**
+     * Reads all available characters from a {@link Reader} into a
+     * {@link String}. Does not close the {@link Reader} after available data
+     * has been read.
      *
      * @param reader
+     *            An {@link Reader} to read characters from.
      * @return
      * @throws IOException
      */
@@ -105,9 +127,12 @@ public class IoUtils {
     public static String toString(String resourceName, Charset charset) {
         Objects.requireNonNull(resourceName, "null resourceName not allowed");
         Objects.requireNonNull(charset, "null charset not allowed");
+
         try {
             URL resourceUrl = Resources.getResource(resourceName);
-            return IoUtils.toString(resourceUrl.openStream(), charset);
+            try (InputStream stream = resourceUrl.openStream()) {
+                return new String(IoUtils.readBytes(stream), charset);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
